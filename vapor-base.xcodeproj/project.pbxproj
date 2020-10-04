@@ -23,6 +23,7 @@
 /* Begin PBXBuildFile section */
 		DB3588FA2529703400AB8CE1 /* MailgunDomain+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3588F92529703400AB8CE1 /* MailgunDomain+Extension.swift */; };
 		DB3589482529705700AB8CE1 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3589472529705700AB8CE1 /* APIKeys.swift */; };
+		DB3589952529759800AB8CE1 /* SMTPCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB3589942529759800AB8CE1 /* SMTPCredentials.swift */; };
 		OBJ_2275 /* UsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* UsersController.swift */; };
 		OBJ_2276 /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* DB.swift */; };
 		OBJ_2277 /* FieldKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* FieldKeys.swift */; };
@@ -5871,6 +5872,7 @@
 /* Begin PBXFileReference section */
 		DB3588F92529703400AB8CE1 /* MailgunDomain+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MailgunDomain+Extension.swift"; sourceTree = "<group>"; };
 		DB3589472529705700AB8CE1 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
+		DB3589942529759800AB8CE1 /* SMTPCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMTPCredentials.swift; sourceTree = "<group>"; };
 		OBJ_10 /* UsersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersController.swift; sourceTree = "<group>"; };
 		OBJ_1000 /* algorithm.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = algorithm.c; sourceTree = "<group>"; };
 		OBJ_1001 /* asn1_gen.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = asn1_gen.c; sourceTree = "<group>"; };
@@ -8666,6 +8668,7 @@
 			children = (
 				DB3588F92529703400AB8CE1 /* MailgunDomain+Extension.swift */,
 				DB3589472529705700AB8CE1 /* APIKeys.swift */,
+				DB3589942529759800AB8CE1 /* SMTPCredentials.swift */,
 			);
 			path = Private;
 			sourceTree = "<group>";
@@ -15344,6 +15347,7 @@
 				OBJ_2285 /* UserBearerAuthenticator.swift in Sources */,
 				OBJ_2286 /* NewSession.swift in Sources */,
 				OBJ_2287 /* Token.swift in Sources */,
+				DB3589952529759800AB8CE1 /* SMTPCredentials.swift in Sources */,
 				OBJ_2288 /* User.swift in Sources */,
 				OBJ_2289 /* FollowingFollower.swift in Sources */,
 				OBJ_2290 /* boot.swift in Sources */,
