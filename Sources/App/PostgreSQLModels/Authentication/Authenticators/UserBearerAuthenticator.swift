@@ -18,11 +18,14 @@ struct UserBearerAuthenticator: BearerAuthenticator {
     }
     
     func authenticate(bearer: BearerAuthorization, for request: Request) -> EventLoopFuture<Void> {
-        Token.query(on: request.db).with(\.$user).filter(\.$value == bearer.token).first().map {
-            if let token = $0 {
+        Token.query(on: request.db).with(\.$user).filter(\.$value == bearer.token).first().map { token in
+            do {
+                guard let token = token else { throw CustomAbort.invalidToken }
                 let user = token.user
+                if Constants.requireEmailVerification && !user.isEmailVerified { throw CustomAbort.emailIsNotVerified }
                 guard self.adminsOnly else { request.auth.login(user); return }
                 if user.isAdmin { request.auth.login(user) }
+            } catch {
             }
         }
     }

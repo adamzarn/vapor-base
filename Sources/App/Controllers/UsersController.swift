@@ -9,30 +9,26 @@ import Foundation
 import Vapor
 import Fluent
 import Mailgun
+import Leaf
 
 class UsersController: RouteCollection {
     
     func boot(routes: RoutesBuilder) throws {
         
         let usersRoute = routes.grouped(User.pathComponent)
-        // Signup
         usersRoute.post(SessionSource.signup.pathComponent, use: createUser)
+        usersRoute.get(":userId", "verifyEmail", use: verifyEmail)
         
         let passwordProtectedUsersRoute = usersRoute
             .grouped(UserBasicAuthenticator())
-        // Login
         passwordProtectedUsersRoute.post(SessionSource.login.pathComponent, use: login)
         
-        // All routes besides signup/login can be authenticated using basic or bearer authorization
         let tokenProtectedUsersRoute = usersRoute
             .grouped(UserBasicAuthenticator())
             .grouped(UserBearerAuthenticator())
 
-        tokenProtectedUsersRoute.get("me", use: getMyOwnUser)
-        tokenProtectedUsersRoute.post("setFollowingStatus", use: setFollowingStatus)
-        tokenProtectedUsersRoute.get("me", "followers", use: getMyFollowers)
-        tokenProtectedUsersRoute.get("me", "following", use: getMyFollowing)
-        tokenProtectedUsersRoute.delete("me", use: deleteMyUser)
+        tokenProtectedUsersRoute.get(":userId", use: getUser)
+        tokenProtectedUsersRoute.post(":userId", "setFollowingStatus", use: setFollowingStatus)
         
         let tokenProtectedAdminUsersRoute = usersRoute
             .grouped(UserBasicAuthenticator(adminsOnly: true))
@@ -41,7 +37,7 @@ class UsersController: RouteCollection {
         tokenProtectedAdminUsersRoute.get(use: getAllUsers)
         tokenProtectedAdminUsersRoute.get(":userId", "followers", use: getFollowers)
         tokenProtectedAdminUsersRoute.get(":userId", "following", use: getFollowing)
-        tokenProtectedAdminUsersRoute.put("setAdminStatus", use: setAdminStatus)
+        tokenProtectedAdminUsersRoute.put(":userId", "setAdminStatus", use: setAdminStatus)
         tokenProtectedAdminUsersRoute.delete(":userId", use: deleteUser)
         
     }
@@ -64,26 +60,33 @@ class UsersController: RouteCollection {
                 token = newToken
                 return token.save(on: req.db)
             }.flatMapThrowing {
-                if let requireEmailVerification = req.query[Bool.self, at: "requireEmailVerification"], requireEmailVerification {
-                    self.sendWelcomeEmail(to: user, req: req)
+                if Constants.requireEmailVerification {
+                    self.sendEmailVerificationEmail(to: user, req: req)
                 }
                 return NewSession(token: token.value, user: try user.asPublic())
             }
         }
     }
     
-    func sendWelcomeEmail(to newUser: User, req: Request) {
-        let message = MailgunMessage(from: "alyssazarn@gmail.com",
-                                     to: newUser.email,
-                                     subject: "Welcome!",
-                                     text: "Hi \(newUser.firstName)",
-                                     html: "<h1>We're glad to have you!</h1>")
-        let send = req.mailgun().send(message)
-        send.whenSuccess { response in
-            print("Success: \(response)")
+    func sendEmailVerificationEmail(to newUser: User, req: Request) {
+        guard let userId = newUser.id else { return }
+        struct Context: Codable {
+            let name: String
+            let verifyEmailUrl: String
         }
-        send.whenFailure { response in
-            print("Failure: \(response)")
+        let verifyEmailUrl = "\(req.baseUrl)/users/\(userId.uuidString)/verifyEmail"
+        let context = Context(name: newUser.firstName, verifyEmailUrl: verifyEmailUrl)
+        let futureView = req.view.render("verify-email", context)
+        _ = futureView.flatMapThrowing { view in
+            let html = String(buffer: view.data)
+            let message = MailgunMessage(from: MailConstants.from,
+                                         to: newUser.email,
+                                         subject: "Please verify your email",
+                                         text: "",
+                                         html: html)
+            _ = req.mailgun().send(message).always { response in
+                print(response)
+            }
         }
     }
     
@@ -106,67 +109,70 @@ class UsersController: RouteCollection {
         }
     }
     
-    func getMyOwnUser(req: Request) throws -> User.Public {
-        let user = try req.auth.require(User.self)
-        return try user.asPublic()
+    func getUser(req: Request) throws -> EventLoopFuture<User.Public> {
+        let me = try req.auth.require(User.self)
+        guard let userId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
+        return User.find(userId, on: req.db).flatMapThrowing { user in
+            guard let user = user else { throw CustomAbort.userDoesNotExist }
+            return try user.asPublic()
+        }
     }
     
     func setAdminStatus(req: Request) throws -> EventLoopFuture<User.Public> {
         let _ = try req.auth.require(User.self)
-        guard let userId = req.query[UUID.self, at: "userId"] else {
-            return req.fail(CustomAbort.missingUserId)
-        }
-        guard let isAdmin = req.query[Bool.self, at: "isAdmin"] else {
+        guard let newAdminStatus = try? req.content.decode(NewAdminStatus.self) else {
             return req.fail(CustomAbort.missingAdminStatus)
         }
-        return User.find(userId, on: req.db).flatMap {
-            guard let user = $0 else { return req.fail(CustomAbort.userDoesNotExist) }
-            user.isAdmin = isAdmin
+        return User.find(req.parameters.get("userId"), on: req.db).flatMap { user in
+            guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
+            user.isAdmin = newAdminStatus.isAdmin
             return user.save(on: req.db).flatMapThrowing { try user.asPublic() }
         }
     }
     
     func setFollowingStatus(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         let me = try req.auth.require(User.self)
-        guard let otherUserId = req.query[UUID.self, at: "otherUserId"] else {
-            return req.fail(CustomAbort.missingUserId)
-        }
-        guard let follow = req.query[Bool.self, at: "follow"] else {
+        guard let newFollowingStatus = try? req.content.decode(NewFollowingStatus.self) else {
             return req.fail(CustomAbort.missingFollowingStatus)
         }
-        return User.find(otherUserId, on: req.db).flatMap {
-            guard let otherUser = $0 else { return req.fail(CustomAbort.userDoesNotExist) }
-            guard me.id != otherUser.id else { return req.fail(CustomAbort.cannotFollowSelf) }
-            if follow {
-                return me.$following.attach(otherUser, on: req.db).transform(to: HTTPStatus.ok)
-            } else {
-                return me.$following.detach(otherUser, on: req.db).transform(to: HTTPStatus.ok)
+        guard let followerId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
+        return User.find(followerId, on: req.db).flatMap { user in
+            return User.find(newFollowingStatus.otherUserId, on: req.db).flatMap { otherUser in
+                guard let user = user, let otherUser = otherUser else {
+                    return req.fail(CustomAbort.userDoesNotExist)
+                }
+                // Check if user is already following other user
+                return FollowingFollower.query(on: req.db)
+                    .filter(\.$follower.$id == user.id ?? UUID())
+                    .filter(\.$following.$id == otherUser.id ?? UUID())
+                    .first()
+                    .flatMap { existingConnection in
+                    if newFollowingStatus.follow {
+                        guard existingConnection == nil else { return req.success(HTTPStatus.ok) }
+                        guard user.id != otherUser.id else { return req.fail(CustomAbort.cannotFollowSelf) }
+                        return user.$following.attach(otherUser, on: req.db).transform(to: HTTPStatus.ok)
+                    } else {
+                        return user.$following.detach(otherUser, on: req.db).transform(to: HTTPStatus.ok)
+                    }
+                }
             }
         }
     }
     
-    func getMyFollowers(req: Request) throws -> EventLoopFuture<[User.Public]> {
-        let me = try req.auth.require(User.self)
-        return followers(of: me, req: req)
-    }
-    
-    func getMyFollowing(req: Request) throws -> EventLoopFuture<[User.Public]> {
-        let me = try req.auth.require(User.self)
-        return following(of: me, req: req)
-    }
-    
     func getFollowers(req: Request) throws -> EventLoopFuture<[User.Public]> {
-        _ = try req.auth.require(User.self)
-        return User.find(req.parameters.get("userId"), on: req.db).flatMap {
-            guard let user = $0 else { return req.fail(CustomAbort.userDoesNotExist) }
+        let me = try req.auth.require(User.self)
+        guard let userId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
+        return User.find(userId, on: req.db).flatMap { user in
+            guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
             return self.followers(of: user, req: req)
         }
     }
     
     func getFollowing(req: Request) throws -> EventLoopFuture<[User.Public]> {
-        _ = try req.auth.require(User.self)
-        return User.find(req.parameters.get("userId"), on: req.db).flatMap {
-            guard let user = $0 else { return req.fail(CustomAbort.userDoesNotExist) }
+        let me = try req.auth.require(User.self)
+        guard let userId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
+        return User.find(userId, on: req.db).flatMap { user in
+            guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
             return self.following(of: user, req: req)
         }
     }
@@ -183,26 +189,43 @@ class UsersController: RouteCollection {
         }
     }
     
-    func deleteMyUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        let user = try req.auth.require(User.self)
-        return delete(user: user, req: req)
-    }
-    
     func deleteUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        let _ = try req.auth.require(User.self)
-        return User.find(req.parameters.get("userId"), on: req.db).flatMap {
-            guard let user = $0 else { return req.fail(CustomAbort.userDoesNotExist) }
+        let me = try req.auth.require(User.self)
+        guard let userId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
+        return User.find(userId, on: req.db).flatMap { user in
+            guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
             return self.delete(user: user, req: req)
         }
     }
     
     func delete(user: User, req: Request) -> EventLoopFuture<HTTPStatus> {
         guard let userId = user.id else { return req.fail(CustomAbort.missingUserId) }
-        // Delete all tokens for this user
-        return Token.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
-            // Delete user
-            return user.delete(on: req.db).transform(to: HTTPStatus.ok)
+        // Delete following/follower records for this user
+        return FollowingFollower.query(on: req.db).group(.or) { group in
+            group.filter(\.$follower.$id == userId).filter(\.$following.$id == userId)
+        }.delete().flatMap {
+            // Delete all tokens for this user
+            return Token.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
+                // Delete user
+                return user.delete(on: req.db).transform(to: HTTPStatus.ok)
+            }
         }
+    }
+    
+    func verifyEmail(req: Request) throws -> EventLoopFuture<View> {
+        return User.find(req.parameters.get("userId"), on: req.db).flatMap { user in
+            guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
+            user.isEmailVerified = true
+            return user.save(on: req.db).flatMap {
+                return req.view.render("email-verified")
+            }
+        }
+    }
+    
+    func getUserId(me: User, req: Request) -> UUID? {
+        var userId = req.parameters.get("userId") ?? ""
+        if userId == "me" { userId = me.id?.uuidString ?? "" }
+        return UUID(userId)
     }
     
 }

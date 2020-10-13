@@ -15,6 +15,8 @@ enum CustomAbort: AbortError {
     case missingAdminStatus
     case missingFollowingStatus
     case cannotFollowSelf
+    case emailIsNotVerified
+    case invalidToken
     
     var reason: String {
         switch self {
@@ -24,6 +26,8 @@ enum CustomAbort: AbortError {
         case .missingAdminStatus: return "You must provide an admin status."
         case .missingFollowingStatus: return "You must provide a following status."
         case .cannotFollowSelf: return "Users cannot follow/unfollow themselves."
+        case .emailIsNotVerified: return "You must verify your email to be properly authenticated."
+        case .invalidToken: return "The provided token is not associated with any user."
         }
     }
     
@@ -35,6 +39,8 @@ enum CustomAbort: AbortError {
         case .missingAdminStatus: return .badRequest
         case .missingFollowingStatus: return .badRequest
         case .cannotFollowSelf: return .badRequest
+        case .emailIsNotVerified: return .unauthorized
+        case .invalidToken: return .unauthorized
         }
     }
     

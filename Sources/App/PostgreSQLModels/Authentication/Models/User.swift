@@ -20,6 +20,7 @@ final class User: Model, Content {
     @Field(key: .email) var email: String
     @Field(key: .passwordHash) var passwordHash: String
     @Field(key: .isAdmin) var isAdmin: Bool
+    @Field(key: .isEmailVerified) var isEmailVerified: Bool
     @Timestamp(key: .updatedAt, on: .update) var updatedAt: Date?
     @Timestamp(key: .createdAt, on: .create) var createdAt: Date?
     
@@ -31,21 +32,22 @@ final class User: Model, Content {
          lastName: String,
          email: String,
          passwordHash: String,
-         isAdmin: Bool = false) {
+         isAdmin: Bool = false,
+         isEmailVerified: Bool = Constants.requireEmailVerification ? false : true) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
         self.email = email
         self.passwordHash = passwordHash
         self.isAdmin = isAdmin
+        self.isEmailVerified = isEmailVerified
     }
     
     static func from(data: UserData) throws -> User {
         return User(firstName: data.firstName,
                     lastName: data.lastName,
                     email: data.email,
-                    passwordHash: try Bcrypt.hash(data.password),
-                    isAdmin: false)
+                    passwordHash: try Bcrypt.hash(data.password))
     }
     
     func createToken(source: SessionSource) throws -> Token {
@@ -65,6 +67,7 @@ final class User: Model, Content {
         let updatedAt: Date?
         let createdAt: Date?
         let isAdmin: Bool
+        let isEmailVerified: Bool
     }
     
     func asPublic() throws -> Public {
@@ -74,7 +77,8 @@ final class User: Model, Content {
                       email: email,
                       updatedAt: updatedAt,
                       createdAt: createdAt,
-                      isAdmin: isAdmin)
+                      isAdmin: isAdmin,
+                      isEmailVerified: isEmailVerified)
     }
     
 }

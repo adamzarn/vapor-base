@@ -20,6 +20,7 @@ struct CreateUsers: Migration {
             .field(.updatedAt, .datetime, .required)
             .field(.createdAt, .datetime, .required)
             .field(.isAdmin, .bool)
+            .field(.isEmailVerified, .bool)
             .ignoreExisting()
             .create()
     }

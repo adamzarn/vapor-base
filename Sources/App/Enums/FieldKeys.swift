@@ -21,6 +21,7 @@ extension FieldKey {
     static var email: Self { "email" }
     static var passwordHash: Self { "passwordHash" }
     static var isAdmin: Self { "isAdmin" }
+    static var isEmailVerified: Self { "isEmailVerified" }
     static var followingId: Self { "followingId" }
     static var followerId: Self { "followerId" }
     
