@@ -14,6 +14,7 @@ class ViewController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
                 
         let viewRoute = routes.grouped("view")
+        viewRoute.get("welcome", use: welcomeView)
         viewRoute.get("home", use: homeView)
         viewRoute.get("register", use: registerView)
         viewRoute.get("login", use: loginView)
@@ -23,16 +24,23 @@ class ViewController: RouteCollection {
         
     }
     
+    func welcomeView(req: Request) -> EventLoopFuture<View> {
+        return req.view.render("welcome")
+    }
+    
     func homeView(req: Request) -> EventLoopFuture<View> {
-        return req.view.render("home", BaseContext(baseUrl: req.baseUrl))
+        return User.query(on: req.db).all().flatMap { users in
+            let publicUsers = users.compactMap { try? $0.asPublic() }
+            return req.view.render("home", HomeContext(users: publicUsers))
+        }
     }
     
     func registerView(req: Request) throws -> EventLoopFuture<View> {
-        return req.view.render("register", BaseContext(baseUrl: req.baseUrl))
+        return req.view.render("register")
     }
     
     func loginView(req: Request) throws -> EventLoopFuture<View> {
-        return req.view.render("login", BaseContext(baseUrl: req.baseUrl))
+        return req.view.render("login")
     }
     
     func profileView(req: Request) throws -> EventLoopFuture<View> {
@@ -41,8 +49,7 @@ class ViewController: RouteCollection {
             let context = ProfileContext(firstName: user.firstName,
                                          lastName: user.lastName,
                                          email: user.email,
-                                         isAdmin: user.isAdmin,
-                                         baseUrl: req.baseUrl)
+                                         isAdmin: user.isAdmin)
             return req.view.render("profile", context)
         }
     }
@@ -69,9 +76,7 @@ class ViewController: RouteCollection {
             }
             return User.find(token.$user.id, on: req.db).flatMap { user in
                 guard user != nil else { return req.fail(CustomAbort.userDoesNotExist) }
-                let resetPasswordUrl = "\(req.baseUrl)/auth/resetPassword/\(tokenId)"
-                return req.view.render("password-reset", ResetPasswordContext(baseUrl: req.baseUrl,
-                                                                              resetPasswordUrl: resetPasswordUrl))
+                return req.view.render("password-reset", ResetPasswordContext(tokenId: "\(tokenId)"))
             }
         }
     }

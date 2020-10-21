@@ -8,9 +8,7 @@
   </head>
   <body>
     <h1 id="welcome">Hello!</h1>
-    <button id="register-button" onclick="register('#(baseUrl)')">Register</button>
-    <button id="login-button" onclick="login('#(baseUrl)')">Login</button>
-    <button id="profile-button" onclick="profile('#(baseUrl)')">My Profile</button>
-    <button id="logout-button" onclick="logout('#(baseUrl)')">Logout</button>
+    <button id="profile-button" onclick="profile()">My Profile</button>
+    <button id="logout-button" onclick="logout()">Logout</button>
   </body>
 </html>

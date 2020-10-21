@@ -62,6 +62,28 @@ class AuthController: RouteCollection {
         }
     }
     
+    func login(req: Request) throws -> EventLoopFuture<NewSession> {
+        let user = try req.auth.require(User.self)
+        if Constants.requireEmailVerification && !user.isEmailVerified {
+            return req.fail(CustomAbort.emailIsNotVerified)
+        }
+        let token = try user.createToken(source: .login)
+        // Delete any old access tokens for this user
+        return Token.query(on: req.db).filter(\.$user.$id == user.id ?? UUID()).group(.or) { group in
+            group.filter(\.$source == .registration).filter(\.$source == .login)
+        }.delete().flatMap {
+            // Save new token
+            return token.save(on: req.db).flatMapThrowing {
+                NewSession(id: token.id?.uuidString ?? "", token: token.value, user: try user.asPublic())
+            }
+        }
+    }
+    
+    func logout(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        let user = try req.auth.require(User.self)
+        return Token.query(on: req.db).filter(\.$user.$id == user.id ?? UUID()).delete().transform(to: HTTPStatus.ok)
+    }
+    
     func sendEmailVerificationEmail(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         let user = try req.auth.require(User.self)
         return self.sendEmailVerificationEmail(to: user, req: req)
@@ -96,28 +118,6 @@ class AuthController: RouteCollection {
         }
     }
     
-    func login(req: Request) throws -> EventLoopFuture<NewSession> {
-        let user = try req.auth.require(User.self)
-        if Constants.requireEmailVerification && !user.isEmailVerified {
-            return req.fail(CustomAbort.emailIsNotVerified)
-        }
-        let token = try user.createToken(source: .login)
-        // Delete any old access tokens for this user
-        return Token.query(on: req.db).filter(\.$user.$id == user.id ?? UUID()).group(.or) { group in
-            group.filter(\.$source == .registration).filter(\.$source == .login)
-        }.delete().flatMap {
-            // Save new token
-            return token.save(on: req.db).flatMapThrowing {
-                NewSession(id: token.id?.uuidString ?? "", token: token.value, user: try user.asPublic())
-            }
-        }
-    }
-    
-    func logout(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        let user = try req.auth.require(User.self)
-        return Token.query(on: req.db).filter(\.$user.$id == user.id ?? UUID()).delete().transform(to: HTTPStatus.ok)
-    }
-    
     func sendPasswordResetEmail(req: Request) -> EventLoopFuture<HTTPStatus> {
         guard let email = req.parameters.get("email") else { return req.fail(CustomAbort.missingEmail) }
         return User.query(on: req.db).filter(\.$email == email).first().flatMap { user in
@@ -144,6 +144,7 @@ class AuthController: RouteCollection {
     }
     
     func resetPassword(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        try NewPassword.validate(content: req)
         return Token.find(req.parameters.get("tokenId"), on: req.db).flatMap { token in
             guard let token = token, token.source.isValidForPasswordReset, token.isValid else {
                 return req.fail(CustomAbort.invalidToken)

@@ -1,4 +1,4 @@
-function register(baseUrl) {
+function register() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -10,7 +10,7 @@ function register(baseUrl) {
                     window.localStorage.setItem('id', newSession.id);
                     window.localStorage.setItem('token', newSession.token);
                     window.localStorage.setObject('user', newSession.user);
-                    window.location = baseUrl + "/view/home";
+                    window.location = getBaseUrl() + "/view/home";
                 }
             } else { 
                 // Otherwise the user should be prompted to verify their email.
@@ -22,7 +22,7 @@ function register(baseUrl) {
     };
     var body = getBody();
     if (body) {
-        xhttp.open("POST", baseUrl + "/auth/register");
+        xhttp.open("POST", getBaseUrl() + "/auth/register");
         xhttp.send(body);
     }
 }

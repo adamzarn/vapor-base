@@ -8,6 +8,5 @@
 import Foundation
 
 struct ResetPasswordContext: Codable {
-    let baseUrl: String
-    let resetPasswordUrl: String
+    let tokenId: String
 }

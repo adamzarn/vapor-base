@@ -7,11 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById("change-password-button").style.display = "inline-block";
 }, false);
 
-function changePassword(baseUrl) {
-    console.log(baseUrl);
+function changePassword() {
     const tokenId = window.localStorage.getItem('id');
-    console.log(tokenId);
     if (tokenId) {  
-        window.location = baseUrl + "/view/passwordReset/" + tokenId;
+        window.location = getBaseUrl() + "/view/passwordReset/" + tokenId;
     }
 }

@@ -12,3 +12,11 @@ function showResponseAlert(xhttp) {
         alert(response.reason);
     }
 }
+
+function getBaseUrl() {
+    const loc = window.location;
+    const scheme = loc.protocol;
+    const host = loc.hostname;
+    const port = loc.port;
+    return scheme + "//" + host + ":" + port;
+}

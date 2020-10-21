@@ -1,4 +1,4 @@
-function resetPassword(baseUrl, passwordResetUrl) {
+function resetPassword(tokenId) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
@@ -9,7 +9,7 @@ function resetPassword(baseUrl, passwordResetUrl) {
             } else {
                 message += " You will now be redirected to the login page.";
                 alert(message);
-                window.location = baseUrl + "/view/login";
+                window.location = getBaseUrl() + "/view/login";
             }
         } else if (this.readyState == 4) {    
             showResponseAlert(xhttp);
@@ -17,7 +17,7 @@ function resetPassword(baseUrl, passwordResetUrl) {
     };
     var body = getBody();
     if (body) {
-        xhttp.open("PUT", passwordResetUrl);
+        xhttp.open("PUT", getBaseUrl() + "/auth/resetPassword/" + tokenId);
         xhttp.send(body);
     }
 }

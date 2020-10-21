@@ -12,6 +12,6 @@
     <input id=email-input placeholder="Email"><br><br>
     <input id=password-input type="password" placeholder="Password"><br><br>
     <input id=verify-password-input type="password" placeholder="Verify Password"><br><br>
-    <button onclick="register('#(baseUrl)')">Register</button>
+    <button onclick="register()">Register</button>
   </body>
 </html>

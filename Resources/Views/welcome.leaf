@@ -3,10 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="/scripts/home.js"></script>
+    <script src="/scripts/welcome.js"></script>
+    <script src="/scripts/global.js"></script>
   </head>
   <body>
-    <p>Your email has been successfully verified.</p>
+    <h1 id="welcome">Welcome!</h1>
+    <button id="register-button" onclick="register()">Register</button>
     <button id="login-button" onclick="login()">Login</button>
   </body>
 </html>

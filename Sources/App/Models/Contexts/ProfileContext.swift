@@ -12,5 +12,4 @@ struct ProfileContext: Codable {
     let lastName: String
     let email: String
     let isAdmin: Bool
-    let baseUrl: String
 }
