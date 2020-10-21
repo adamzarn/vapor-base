@@ -26,16 +26,13 @@ function getBody() {
     var password = document.getElementById('password-input').value;
     var verifyPassword = document.getElementById('verify-password-input').value;
     if (password.length == 0 || verifyPassword.length == 0) {
-        console.log('here');
         alert("Invalid new password and/or verification.");
         return null;
     }
     if (password != verifyPassword) {
-        console.log('there');
         alert("Passwords don't match.");
         return null;
     }
-    console.log('everywhere');
     var body = new FormData();
     body.set('value', password);
     return body;

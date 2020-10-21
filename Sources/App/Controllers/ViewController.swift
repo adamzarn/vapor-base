@@ -19,28 +19,28 @@ class ViewController: RouteCollection {
         viewRoute.get("register", use: registerView)
         viewRoute.get("login", use: loginView)
         viewRoute.get("profile", ":userId", use: profileView)
-        viewRoute.get("verifyEmail", ":tokenId", use: verifyEmailView)
+        viewRoute.get("verifyEmail", ":tokenId", use: emailVerificationResultView)
         viewRoute.get("passwordReset", ":tokenId", use: passwordResetView)
         
     }
     
     func welcomeView(req: Request) -> EventLoopFuture<View> {
-        return req.view.render("welcome")
+        return req.view.render(LeafTemplate.welcome.rawValue)
     }
     
     func homeView(req: Request) -> EventLoopFuture<View> {
         return User.query(on: req.db).all().flatMap { users in
             let publicUsers = users.compactMap { try? $0.asPublic() }
-            return req.view.render("home", HomeContext(users: publicUsers))
+            return req.view.render(LeafTemplate.home.rawValue, HomeContext(users: publicUsers))
         }
     }
     
     func registerView(req: Request) throws -> EventLoopFuture<View> {
-        return req.view.render("register")
+        return req.view.render(LeafTemplate.register.rawValue)
     }
     
     func loginView(req: Request) throws -> EventLoopFuture<View> {
-        return req.view.render("login")
+        return req.view.render(LeafTemplate.login.rawValue)
     }
     
     func profileView(req: Request) throws -> EventLoopFuture<View> {
@@ -50,20 +50,26 @@ class ViewController: RouteCollection {
                                          lastName: user.lastName,
                                          email: user.email,
                                          isAdmin: user.isAdmin)
-            return req.view.render("profile", context)
+            return req.view.render(LeafTemplate.profile.rawValue, context)
         }
     }
     
-    func verifyEmailView(req: Request) throws -> EventLoopFuture<View> {
+    func emailVerificationResultView(req: Request) throws -> EventLoopFuture<View> {
+        var context = EmailVerificationResultContext(message: "")
         return Token.find(req.parameters.get("tokenId"), on: req.db).flatMap { token in
             guard let token = token, token.source == .emailVerification, token.isValid else {
-                return req.fail(CustomAbort.invalidToken)
+                context.message = CustomAbort.invalidToken.reason
+                return req.view.render(LeafTemplate.emailVerificationResult.rawValue, context)
             }
             return User.find(token.$user.id, on: req.db).flatMap { user in
-                guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
+                guard let user = user else {
+                    context.message = CustomAbort.userDoesNotExist.reason
+                    return req.view.render(LeafTemplate.emailVerificationResult.rawValue, context)
+                }
                 user.isEmailVerified = true
                 return user.save(on: req.db).flatMap {
-                    return req.view.render("email-verified")
+                    context.message = "Your email was successfully verified."
+                    return req.view.render(LeafTemplate.emailVerificationResult.rawValue, context)
                 }
             }
         }
@@ -76,7 +82,7 @@ class ViewController: RouteCollection {
             }
             return User.find(token.$user.id, on: req.db).flatMap { user in
                 guard user != nil else { return req.fail(CustomAbort.userDoesNotExist) }
-                return req.view.render("password-reset", ResetPasswordContext(tokenId: "\(tokenId)"))
+                return req.view.render(LeafTemplate.passwordReset.rawValue, ResetPasswordContext(tokenId: "\(tokenId)"))
             }
         }
     }

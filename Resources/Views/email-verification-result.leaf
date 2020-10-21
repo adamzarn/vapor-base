@@ -6,7 +6,7 @@
     <script src="/scripts/home.js"></script>
   </head>
   <body>
-    <p>Your email has been successfully verified.</p>
+    <p>#(message)</p>
     <button id="login-button" onclick="login()">Login</button>
   </body>
 </html>

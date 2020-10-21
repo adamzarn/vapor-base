@@ -34,6 +34,8 @@
 		DBFC4D16253FE9D20074599E /* ResetPasswordContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4D15253FE9D20074599E /* ResetPasswordContext.swift */; };
 		DBFC4DB6253FEAC00074599E /* EmailVerificationEmailContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4DB5253FEAC00074599E /* EmailVerificationEmailContext.swift */; };
 		DBFC4E56253FF39C0074599E /* ProfileContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4E55253FF39C0074599E /* ProfileContext.swift */; };
+		DBFC4F962540E2E10074599E /* EmailVerificationResultContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4F952540E2E10074599E /* EmailVerificationResultContext.swift */; };
+		DBFC4FE72540E45F0074599E /* LeafTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4FE62540E45F0074599E /* LeafTemplate.swift */; };
 		OBJ_2325 /* UsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* UsersController.swift */; };
 		OBJ_2326 /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* DB.swift */; };
 		OBJ_2327 /* FieldKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* FieldKeys.swift */; };
@@ -6362,6 +6364,8 @@
 		DBFC4D15253FE9D20074599E /* ResetPasswordContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordContext.swift; sourceTree = "<group>"; };
 		DBFC4DB5253FEAC00074599E /* EmailVerificationEmailContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerificationEmailContext.swift; sourceTree = "<group>"; };
 		DBFC4E55253FF39C0074599E /* ProfileContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileContext.swift; sourceTree = "<group>"; };
+		DBFC4F952540E2E10074599E /* EmailVerificationResultContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerificationResultContext.swift; sourceTree = "<group>"; };
+		DBFC4FE62540E45F0074599E /* LeafTemplate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LeafTemplate.swift; sourceTree = "<group>"; };
 		OBJ_10 /* UsersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersController.swift; sourceTree = "<group>"; };
 		OBJ_100 /* Mailgun+Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Mailgun+Request.swift"; sourceTree = "<group>"; };
 		OBJ_1000 /* sha512.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sha512.c; sourceTree = "<group>"; };
@@ -9277,6 +9281,7 @@
 				DBFC4D15253FE9D20074599E /* ResetPasswordContext.swift */,
 				DBFC4DB5253FEAC00074599E /* EmailVerificationEmailContext.swift */,
 				DBFC4E55253FF39C0074599E /* ProfileContext.swift */,
+				DBFC4F952540E2E10074599E /* EmailVerificationResultContext.swift */,
 			);
 			path = Contexts;
 			sourceTree = "<group>";
@@ -9524,6 +9529,7 @@
 				OBJ_13 /* FieldKeys.swift */,
 				OBJ_14 /* SessionSource.swift */,
 				DBFC4AE3253F723A0074599E /* Expiry.swift */,
+				DBFC4FE62540E45F0074599E /* LeafTemplate.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -16203,6 +16209,7 @@
 				OBJ_2325 /* UsersController.swift in Sources */,
 				OBJ_2326 /* DB.swift in Sources */,
 				DBAE953B2534B3DC00D5B0AB /* MailConstants.swift in Sources */,
+				DBFC4F962540E2E10074599E /* EmailVerificationResultContext.swift in Sources */,
 				DBFC4E56253FF39C0074599E /* ProfileContext.swift in Sources */,
 				OBJ_2327 /* FieldKeys.swift in Sources */,
 				DBAC907D253750FB00D95505 /* AuthController.swift in Sources */,
@@ -16212,6 +16219,7 @@
 				OBJ_2329 /* CustomAbort.swift in Sources */,
 				DBAE958C25360EF300D5B0AB /* Constants.swift in Sources */,
 				OBJ_2330 /* Request+Extensions.swift in Sources */,
+				DBFC4FE72540E45F0074599E /* LeafTemplate.swift in Sources */,
 				OBJ_2331 /* CreateFollowingFollowers.swift in Sources */,
 				DBAE967E2536199600D5B0AB /* NewFollowingStatus.swift in Sources */,
 				OBJ_2332 /* CreateTokens.swift in Sources */,
