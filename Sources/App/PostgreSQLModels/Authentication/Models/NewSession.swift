@@ -9,6 +9,7 @@ import Vapor
 import Fluent
 
 struct NewSession: Content {
-    let token: String
+    let id: String?
+    let token: String?
     let user: User.Public?
 }

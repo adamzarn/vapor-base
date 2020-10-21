@@ -21,11 +21,19 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		DBAC907D253750FB00D95505 /* AuthController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAC907C253750FB00D95505 /* AuthController.swift */; };
 		DBAE953B2534B3DC00D5B0AB /* MailConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAE953A2534B3DC00D5B0AB /* MailConstants.swift */; };
 		DBAE958C25360EF300D5B0AB /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAE958B25360EF300D5B0AB /* Constants.swift */; };
 		DBAE962D2536198C00D5B0AB /* NewAdminStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAE962C2536198C00D5B0AB /* NewAdminStatus.swift */; };
 		DBAE967E2536199600D5B0AB /* NewFollowingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAE967D2536199600D5B0AB /* NewFollowingStatus.swift */; };
 		DBAE96CF25364E0300D5B0AB /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBAE96CE25364E0300D5B0AB /* ViewController.swift */; };
+		DBFC4AE4253F723A0074599E /* Expiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4AE3253F723A0074599E /* Expiry.swift */; };
+		DBFC4B35253F8C7B0074599E /* NewPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4B34253F8C7B0074599E /* NewPassword.swift */; };
+		DBFC4C74253FE93F0074599E /* PasswordResetEmailContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4C73253FE93F0074599E /* PasswordResetEmailContext.swift */; };
+		DBFC4CC5253FE9A90074599E /* BaseContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4CC4253FE9A90074599E /* BaseContext.swift */; };
+		DBFC4D16253FE9D20074599E /* ResetPasswordContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4D15253FE9D20074599E /* ResetPasswordContext.swift */; };
+		DBFC4DB6253FEAC00074599E /* EmailVerificationEmailContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4DB5253FEAC00074599E /* EmailVerificationEmailContext.swift */; };
+		DBFC4E56253FF39C0074599E /* ProfileContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFC4E55253FF39C0074599E /* ProfileContext.swift */; };
 		OBJ_2325 /* UsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* UsersController.swift */; };
 		OBJ_2326 /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* DB.swift */; };
 		OBJ_2327 /* FieldKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* FieldKeys.swift */; };
@@ -6341,11 +6349,19 @@
 
 /* Begin PBXFileReference section */
 		DBA27104252C0AED00F17363 /* Resources */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Resources; sourceTree = "<group>"; };
+		DBAC907C253750FB00D95505 /* AuthController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthController.swift; sourceTree = "<group>"; };
 		DBAE953A2534B3DC00D5B0AB /* MailConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailConstants.swift; sourceTree = "<group>"; };
 		DBAE958B25360EF300D5B0AB /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		DBAE962C2536198C00D5B0AB /* NewAdminStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewAdminStatus.swift; sourceTree = "<group>"; };
 		DBAE967D2536199600D5B0AB /* NewFollowingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFollowingStatus.swift; sourceTree = "<group>"; };
 		DBAE96CE25364E0300D5B0AB /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		DBFC4AE3253F723A0074599E /* Expiry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expiry.swift; sourceTree = "<group>"; };
+		DBFC4B34253F8C7B0074599E /* NewPassword.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPassword.swift; sourceTree = "<group>"; };
+		DBFC4C73253FE93F0074599E /* PasswordResetEmailContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordResetEmailContext.swift; sourceTree = "<group>"; };
+		DBFC4CC4253FE9A90074599E /* BaseContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseContext.swift; sourceTree = "<group>"; };
+		DBFC4D15253FE9D20074599E /* ResetPasswordContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordContext.swift; sourceTree = "<group>"; };
+		DBFC4DB5253FEAC00074599E /* EmailVerificationEmailContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerificationEmailContext.swift; sourceTree = "<group>"; };
+		DBFC4E55253FF39C0074599E /* ProfileContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileContext.swift; sourceTree = "<group>"; };
 		OBJ_10 /* UsersController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersController.swift; sourceTree = "<group>"; };
 		OBJ_100 /* Mailgun+Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Mailgun+Request.swift"; sourceTree = "<group>"; };
 		OBJ_1000 /* sha512.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sha512.c; sourceTree = "<group>"; };
@@ -9245,10 +9261,24 @@
 		DBAE962B2536197800D5B0AB /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				DBFC4C72253FE92C0074599E /* Contexts */,
 				DBAE962C2536198C00D5B0AB /* NewAdminStatus.swift */,
 				DBAE967D2536199600D5B0AB /* NewFollowingStatus.swift */,
+				DBFC4B34253F8C7B0074599E /* NewPassword.swift */,
 			);
 			path = Models;
+			sourceTree = "<group>";
+		};
+		DBFC4C72253FE92C0074599E /* Contexts */ = {
+			isa = PBXGroup;
+			children = (
+				DBFC4C73253FE93F0074599E /* PasswordResetEmailContext.swift */,
+				DBFC4CC4253FE9A90074599E /* BaseContext.swift */,
+				DBFC4D15253FE9D20074599E /* ResetPasswordContext.swift */,
+				DBFC4DB5253FEAC00074599E /* EmailVerificationEmailContext.swift */,
+				DBFC4E55253FF39C0074599E /* ProfileContext.swift */,
+			);
+			path = Contexts;
 			sourceTree = "<group>";
 		};
 		OBJ_102 /* Models */ = {
@@ -9493,6 +9523,7 @@
 				OBJ_12 /* DB.swift */,
 				OBJ_13 /* FieldKeys.swift */,
 				OBJ_14 /* SessionSource.swift */,
+				DBFC4AE3253F723A0074599E /* Expiry.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -13872,6 +13903,7 @@
 			children = (
 				OBJ_10 /* UsersController.swift */,
 				DBAE96CE25364E0300D5B0AB /* ViewController.swift */,
+				DBAC907C253750FB00D95505 /* AuthController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -16171,7 +16203,11 @@
 				OBJ_2325 /* UsersController.swift in Sources */,
 				OBJ_2326 /* DB.swift in Sources */,
 				DBAE953B2534B3DC00D5B0AB /* MailConstants.swift in Sources */,
+				DBFC4E56253FF39C0074599E /* ProfileContext.swift in Sources */,
 				OBJ_2327 /* FieldKeys.swift in Sources */,
+				DBAC907D253750FB00D95505 /* AuthController.swift in Sources */,
+				DBFC4D16253FE9D20074599E /* ResetPasswordContext.swift in Sources */,
+				DBFC4B35253F8C7B0074599E /* NewPassword.swift in Sources */,
 				OBJ_2328 /* SessionSource.swift in Sources */,
 				OBJ_2329 /* CustomAbort.swift in Sources */,
 				DBAE958C25360EF300D5B0AB /* Constants.swift in Sources */,
@@ -16179,10 +16215,13 @@
 				OBJ_2331 /* CreateFollowingFollowers.swift in Sources */,
 				DBAE967E2536199600D5B0AB /* NewFollowingStatus.swift in Sources */,
 				OBJ_2332 /* CreateTokens.swift in Sources */,
+				DBFC4C74253FE93F0074599E /* PasswordResetEmailContext.swift in Sources */,
+				DBFC4AE4253F723A0074599E /* Expiry.swift in Sources */,
 				OBJ_2333 /* CreateUsers.swift in Sources */,
 				OBJ_2334 /* UserBasicAuthenticator.swift in Sources */,
 				OBJ_2335 /* UserBearerAuthenticator.swift in Sources */,
 				OBJ_2336 /* NewSession.swift in Sources */,
+				DBFC4DB6253FEAC00074599E /* EmailVerificationEmailContext.swift in Sources */,
 				OBJ_2337 /* Token.swift in Sources */,
 				DBAE96CF25364E0300D5B0AB /* ViewController.swift in Sources */,
 				OBJ_2338 /* User.swift in Sources */,
@@ -16193,6 +16232,7 @@
 				OBJ_2343 /* boot.swift in Sources */,
 				OBJ_2344 /* configure.swift in Sources */,
 				DBAE962D2536198C00D5B0AB /* NewAdminStatus.swift in Sources */,
+				DBFC4CC5253FE9A90074599E /* BaseContext.swift in Sources */,
 				OBJ_2345 /* routes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -3,8 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/scripts/home.js"></script>
   </head>
   <body>
     <p>Your email has been successfully verified.</p>
+    <button id="login-button" onclick="login('#(baseUrl)')">Login</button>
   </body>
 </html>

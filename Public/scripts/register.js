@@ -22,7 +22,7 @@ function register(baseUrl) {
     };
     var body = getBody();
     if (body) {
-        xhttp.open("POST", baseUrl + "/auth/signup");
+        xhttp.open("POST", baseUrl + "/auth/register");
         xhttp.send(body);
     }
 }

@@ -14,7 +14,6 @@ struct CreateTokens: Migration {
         return database.schema(Token.schema)
             .id()
             .field(.userId, .uuid, .references(User.schema, .id))
-            .unique(on: .userId)
             .field(.value, .string, .required).unique(on: .value)
             .field(.source, .int, .required)
             .field(.createdAt, .datetime, .required)

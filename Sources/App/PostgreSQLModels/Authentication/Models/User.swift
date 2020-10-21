@@ -44,15 +44,17 @@ final class User: Model, Content {
     }
     
     static func from(data: UserData) throws -> User {
-        return User(firstName: data.firstName,
-                    lastName: data.lastName,
+        return User(firstName: data.firstName.trimmingCharacters(in: .whitespacesAndNewlines),
+                    lastName: data.lastName.trimmingCharacters(in: .whitespacesAndNewlines),
                     email: data.email,
                     passwordHash: try Bcrypt.hash(data.password))
     }
     
     func createToken(source: SessionSource) throws -> Token {
         let calendar = Calendar(identifier: .gregorian)
-        let expiryDate = calendar.date(byAdding: .year, value: 1, to: Date())
+        let expiryDate = calendar.date(byAdding: source.tokenExpiry.component,
+                                       value: source.tokenExpiry.value,
+                                       to: Date())
         return try Token(userId: requireID(),
                          token: [UInt8].random(count: 16).base64,
                          source: source,
@@ -90,6 +92,8 @@ struct UserData: Content, Validatable {
     let password: String
     
     static func validations(_ validations: inout Validations) {
+        validations.add("firstName", as: String.self, is: !.empty)
+        validations.add("lastName", as: String.self, is: !.empty)
         validations.add("email", as: String.self, is: .email)
         validations.add("password", as: String.self, is: .count(6...))
     }

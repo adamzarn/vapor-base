@@ -21,7 +21,6 @@ struct UserBasicAuthenticator: BasicAuthenticator {
         User.query(on: request.db).filter(\.$email == basic.username).first().map { user in
             do {
                 if let user = user, try Bcrypt.verify(basic.password, created: user.passwordHash) {
-                    if Constants.requireEmailVerification && !user.isEmailVerified { throw CustomAbort.emailIsNotVerified }
                     guard self.adminsOnly else { request.auth.login(user); return }
                     if user.isAdmin { request.auth.login(user) }
                 }
