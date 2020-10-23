@@ -25,32 +25,35 @@ class ViewController: RouteCollection {
     }
     
     func welcomeView(req: Request) -> EventLoopFuture<View> {
-        return req.view.render(LeafTemplate.welcome.rawValue)
+        return req.leaf.render(LeafTemplate.welcome.rawValue)
     }
     
     func homeView(req: Request) -> EventLoopFuture<View> {
-        return User.query(on: req.db).all().flatMap { users in
-            let publicUsers = users.compactMap { try? $0.asPublic() }
-            return req.view.render(LeafTemplate.home.rawValue, HomeContext(users: publicUsers))
+        return User.query(on: req.db).all().flatMap {
+            let users = $0.compactMap { try? $0.asPublic() }.sorted(by: { $0.lastName < $1.lastName })
+            return req.leaf.render(LeafTemplate.home.rawValue, HomeContext(users: users))
         }
     }
     
     func registerView(req: Request) throws -> EventLoopFuture<View> {
-        return req.view.render(LeafTemplate.register.rawValue)
+        return req.leaf.render(LeafTemplate.register.rawValue)
     }
     
     func loginView(req: Request) throws -> EventLoopFuture<View> {
-        return req.view.render(LeafTemplate.login.rawValue)
+        return req.leaf.render(LeafTemplate.login.rawValue)
     }
     
     func profileView(req: Request) throws -> EventLoopFuture<View> {
         return User.find(req.parameters.get("userId"), on: req.db).flatMap { user in
             guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
-            let context = ProfileContext(firstName: user.firstName,
-                                         lastName: user.lastName,
-                                         email: user.email,
-                                         isAdmin: user.isAdmin)
-            return req.view.render(LeafTemplate.profile.rawValue, context)
+            return user.$followers.query(on: req.db).all().flatMap { followers in
+                return user.$following.query(on: req.db).all().flatMap { following in
+                    let context = ProfileContext(user: user,
+                                                 followers: followers,
+                                                 following: following)
+                    return req.leaf.render(LeafTemplate.profile.rawValue, context)
+                }
+            }
         }
     }
     
@@ -59,17 +62,17 @@ class ViewController: RouteCollection {
         return Token.find(req.parameters.get("tokenId"), on: req.db).flatMap { token in
             guard let token = token, token.source == .emailVerification, token.isValid else {
                 context.message = CustomAbort.invalidToken.reason
-                return req.view.render(LeafTemplate.emailVerificationResult.rawValue, context)
+                return req.leaf.render(LeafTemplate.emailVerificationResult.rawValue, context)
             }
             return User.find(token.$user.id, on: req.db).flatMap { user in
                 guard let user = user else {
                     context.message = CustomAbort.userDoesNotExist.reason
-                    return req.view.render(LeafTemplate.emailVerificationResult.rawValue, context)
+                    return req.leaf.render(LeafTemplate.emailVerificationResult.rawValue, context)
                 }
                 user.isEmailVerified = true
                 return user.save(on: req.db).flatMap {
                     context.message = "Your email was successfully verified."
-                    return req.view.render(LeafTemplate.emailVerificationResult.rawValue, context)
+                    return req.leaf.render(LeafTemplate.emailVerificationResult.rawValue, context)
                 }
             }
         }
@@ -82,7 +85,7 @@ class ViewController: RouteCollection {
             }
             return User.find(token.$user.id, on: req.db).flatMap { user in
                 guard user != nil else { return req.fail(CustomAbort.userDoesNotExist) }
-                return req.view.render(LeafTemplate.passwordReset.rawValue, ResetPasswordContext(tokenId: "\(tokenId)"))
+                return req.leaf.render(LeafTemplate.passwordReset.rawValue, ResetPasswordContext(tokenId: "\(tokenId)"))
             }
         }
     }

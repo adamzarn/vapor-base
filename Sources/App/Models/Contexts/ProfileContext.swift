@@ -8,8 +8,7 @@
 import Foundation
 
 struct ProfileContext: Codable {
-    let firstName: String
-    let lastName: String
-    let email: String
-    let isAdmin: Bool
+    let user: User
+    let followers: [User]
+    let following: [User]
 }

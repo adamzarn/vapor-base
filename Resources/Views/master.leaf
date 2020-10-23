@@ -3,11 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="/scripts/welcome.js"></script>
     <script src="/scripts/master.js"></script>
+    #evaluate(scripts)
   </head>
   <body>
-    <p>#(message)</p>
-    <button id="login-button" onclick="login()">Login</button>
+    #evaluate(body)
   </body>
 </html>

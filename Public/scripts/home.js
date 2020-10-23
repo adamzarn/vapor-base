@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function profile() {
     const user = window.localStorage.getObject('user');
     if (user) {
-        window.location = getBaseUrl() + "/view/profile/" + user.id;
+        navigateToUserProfile(user.id);
     }
 }
 
@@ -37,4 +37,9 @@ function updateView() {
     } else {
         window.location = getBaseUrl() + "/view/welcome";
     }
+}
+
+function navigateToUserProfile(id) {
+    console.log(id);
+    window.location = getBaseUrl() + "/view/profile/" + id;
 }

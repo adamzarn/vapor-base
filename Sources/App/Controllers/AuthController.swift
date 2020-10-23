@@ -102,7 +102,7 @@ class AuthController: RouteCollection {
                 guard let tokenId = token.id?.uuidString else { return req.fail(CustomAbort.invalidToken) }
                 let verifyEmailUrl = "\(req.baseUrl)/view/verifyEmail/\(tokenId)"
                 let context = EmailVerificationEmailContext(name: user.firstName, verifyEmailUrl: verifyEmailUrl)
-                return req.view.render(LeafTemplate.verifyEmailEmail.rawValue, context).flatMapThrowing { view in
+                return req.leaf.render(LeafTemplate.verifyEmailEmail.rawValue, context).flatMapThrowing { view in
                     let html = String(buffer: view.data)
                     let message = MailgunMessage(from: MailConstants.from,
                                                  to: user.email,
@@ -127,7 +127,7 @@ class AuthController: RouteCollection {
                 guard let tokenId = token.id?.uuidString else { return req.fail(CustomAbort.invalidToken) }
                 let passwordResetUrl = "\(req.baseUrl)/view/passwordReset/\(tokenId)"
                 let context = PasswordResetEmailContext(name: user.firstName, passwordResetUrl: passwordResetUrl)
-                return req.view.render(LeafTemplate.passwordResetEmail.rawValue, context).flatMapThrowing { view in
+                return req.leaf.render(LeafTemplate.passwordResetEmail.rawValue, context).flatMapThrowing { view in
                     let html = String(buffer: view.data)
                     let message = MailgunMessage(from: MailConstants.from,
                                                  to: user.email,

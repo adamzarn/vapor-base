@@ -13,3 +13,8 @@ function changePassword() {
         window.location = getBaseUrl() + "/view/passwordReset/" + tokenId;
     }
 }
+
+function navigateToUserProfile(id) {
+    console.log(id);
+    window.location = getBaseUrl() + "/view/profile/" + id;
+}

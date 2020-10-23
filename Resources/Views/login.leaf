@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="/scripts/login.js"></script>
-    <script src="/scripts/global.js"></script>
+    <script src="/scripts/master.js"></script>
   </head>
   <body>
     <input id="email-input" placeholder="Email"><br><br>
