@@ -1,3 +1,9 @@
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.localStorage.getItem('token')) {
+        window.location = getBaseUrl() + "/view/home";
+    }
+}, false);
+
 function login() {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
@@ -18,7 +24,7 @@ function login() {
         }
     };
     xhttp.open("POST", getBaseUrl() + "/auth/login");
-    xhttp.setRequestHeader("Authorization", getAuthorizationValue());
+    xhttp.setRequestHeader("Authorization", getBasicAuthorizationValue());
     xhttp.send();
 }
 
@@ -33,11 +39,11 @@ function resendEmailVerificationEmail() {
         }
     };
     xhttp.open("POST", getBaseUrl() + "/auth/sendEmailVerificationEmail");
-    xhttp.setRequestHeader("Authorization", getAuthorizationValue());
+    xhttp.setRequestHeader("Authorization", getBasicAuthorizationValue());
     xhttp.send();
 }
 
-function getAuthorizationValue() {
+function getBasicAuthorizationValue() {
     var email = document.getElementById("email-input").value
     var password = document.getElementById("password-input").value
     var base64Encoded = btoa(email + ":" + password);

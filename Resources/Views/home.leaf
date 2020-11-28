@@ -3,19 +3,25 @@
 #enddefine
 
 #define(body):
-<h1 id="welcome">Hello!</h1>
-<button id="profile-button" onclick="profile()">My Profile</button>
-<button id="logout-button" onclick="logout()">Logout</button>
-<h2>Users</h2>
-<table style="width:100%;" border="1">
-  #inline("user-table-header")
-  #for(user in users):
-  <tr onmouseover="onMouseOverUser(this)" onmouseout="onMouseOutUser(this)" onclick="navigateToUserProfile('#(user.id)')">
-    <td><p style="margin:0px;">#(user.firstName) #(user.lastName)</p></td>
-    <td><p style="margin:0px;">#(user.email)</p></td>
-  </tr>
-  #endfor
-</table>
-#enddefine
+<body>
+  <h1 id="welcome">Hello!</h1>
+  <h2>Users</h2>
+  <table style="width:100%; border-collapse:collapse;">
+    #inline("user-table-header")
+    #for(user in users):
+    <tr onmouseover="onMouseOverUser(this)" onmouseout="onMouseOutUser(this)" onclick='navigateToUserProfile("#(user.id)")'>
+      <td style="margin:0px;">#(user.firstName) #(user.lastName)</td>
+      <td style="margin:0px;">#(user.email)</td>
+      <td><button onclick='deleteUser(event,"#(user.id)")'>Delete</button></td>
+      #if(user.isAdmin):
+      <td><button onclick='setAdminStatus(event,"#(user.id)",false)'>Revoke Admin Access</button></td>
+      #else:
+      <td><button onclick='setAdminStatus(event,"#(user.id)",true)'>Give Admin Access</button></td>
+      #endif
+    </tr>
+    #endfor
+  </table>
+  #enddefine
+</body>
 
 #inline("master")

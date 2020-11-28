@@ -24,6 +24,8 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.get(":userId", "followers", use: getFollowers)
         tokenProtectedUsersRoute.get(":userId", "following", use: getFollowing)
         tokenProtectedUsersRoute.delete(":userId", use: deleteUser)
+//        tokenProtectedUsersRoute.put(":userId", "image", use: uploadImage)
+//        tokenProtectedUsersRoute.get(":userId", "image", use: getImage)
         
         let tokenProtectedAdminUsersRoute = usersRoute.grouped(UserBearerAuthenticator(adminsOnly: true))
         tokenProtectedAdminUsersRoute.put(":userId", "setAdminStatus", use: setAdminStatus)
@@ -150,4 +152,17 @@ class UsersController: RouteCollection {
         return UUID(userId)
     }
     
+//    func uploadImage(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+//        let me = try req.auth.require(User.self)
+//        guard let userId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
+//        return User.find(userId, on: req.db).flatMap { user in
+//            guard var user = user else { return req.fail(CustomAbort.userDoesNotExist) }
+//            user.image = req.content.form
+//        }
+//    }
+//
+//    func getImage(req: Request) throws -> EventLoopFuture<Data> {
+//
+//    }
+//
 }

@@ -21,6 +21,7 @@ final class User: Model, Content {
     @Field(key: .passwordHash) var passwordHash: String
     @Field(key: .isAdmin) var isAdmin: Bool
     @Field(key: .isEmailVerified) var isEmailVerified: Bool
+    //@Field(key: .image) var image: Data?
     @Timestamp(key: .updatedAt, on: .update) var updatedAt: Date?
     @Timestamp(key: .createdAt, on: .create) var createdAt: Date?
     

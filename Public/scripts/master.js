@@ -33,19 +33,43 @@ function onMouseOutUser(row) {
     row.style.cursor='auto'
 }
 
-class UserTableHeader extends HTMLElement {
-    constructor() {
-        super();
-    }
-    connectedCallback() {
-        this.innerHTML = `
-        <div>
-            <tr>
-                <td><b>Name</b></td>
-                <td><b>Email</b></td>
-            </tr>
-        </div>
-        `;
+function home() {
+    window.location = getBaseUrl() + "/view/home";
+}
+
+function profile() {
+    const user = window.localStorage.getObject('user');
+    if (user) {
+        navigateToUserProfile(user.id);
     }
 }
-customElements.define('user-table-th', UserTableHeader)
+
+function logout() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            endSession();
+            window.location = getBaseUrl() + "/view/welcome";
+        } else if (this.readyState == 4) {
+            showResponseAlert(xhttp);
+        }
+    };
+    xhttp.open("DELETE", getBaseUrl() + "/auth/logout");
+    xhttp.setRequestHeader("Authorization", getBearerAuthorizationValue());
+    xhttp.send();
+}
+
+function getBearerAuthorizationValue() {
+    return "Bearer " + window.localStorage.getItem('token');
+}
+
+function endSession() {
+    window.localStorage.removeItem('id');
+    window.localStorage.removeItem('token');
+    window.localStorage.removeItem('user');
+}
+
+function loggedInUserId() {
+    const user = window.localStorage.getObject('user');
+    return user.id;
+}

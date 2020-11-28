@@ -8,6 +8,6 @@
   </head>
   <body>
     <p>#(message)</p>
-    <button id="login-button" onclick="login()">Login</button>
+    <button id="login-button" onclick='login()'>Login</button>
   </body>
 </html>

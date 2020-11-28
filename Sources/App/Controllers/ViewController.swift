@@ -50,7 +50,8 @@ class ViewController: RouteCollection {
                 return user.$following.query(on: req.db).all().flatMap { following in
                     let context = ProfileContext(user: user,
                                                  followers: followers,
-                                                 following: following)
+                                                 following: following,
+                                                 followerIds: followers.compactMap { $0.id?.uuidString })
                     return req.leaf.render(LeafTemplate.profile.rawValue, context)
                 }
             }

@@ -8,7 +8,7 @@
   </head>
   <body>
     <h1 id="welcome">Welcome!</h1>
-    <button id="register-button" onclick="register()">Register</button>
-    <button id="login-button" onclick="login()">Login</button>
+    <button id="register-button" onclick='register()'>Register</button>
+    <button id="login-button" onclick='login()'>Login</button>
   </body>
 </html>
