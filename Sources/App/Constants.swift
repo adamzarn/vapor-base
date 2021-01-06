@@ -8,5 +8,5 @@
 import Foundation
 
 struct Constants {
-    static let requireEmailVerification: Bool = true
+    static let requireEmailVerification: Bool = false
 }
