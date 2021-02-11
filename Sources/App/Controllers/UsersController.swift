@@ -16,6 +16,7 @@ class UsersController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         
         let usersRoute = routes.grouped(User.pathComponent)
+        usersRoute.get("status", use: getUserStatusWithEmail)
         
         let tokenProtectedUsersRoute = usersRoute.grouped(UserBearerAuthenticator())
         tokenProtectedUsersRoute.get(":userId", use: getUser)
@@ -30,6 +31,16 @@ class UsersController: RouteCollection {
         let tokenProtectedAdminUsersRoute = usersRoute.grouped(UserBearerAuthenticator(adminsOnly: true))
         tokenProtectedAdminUsersRoute.put(":userId", "setAdminStatus", use: setAdminStatus)
         
+    }
+    
+    func getUserStatusWithEmail(req: Request) throws -> EventLoopFuture<UserStatus> {
+        guard let email = req.query[String.self, at: "email"] else {
+            throw CustomAbort.missingEmail
+        }
+        return User.query(on: req.db).filter(\.$email == email).first().flatMapThrowing { existingUser in
+            guard existingUser != nil else { return UserStatus(email: email, exists: false) }
+            return UserStatus(email: email, exists: true)
+        }
     }
     
     func getUser(req: Request) throws -> EventLoopFuture<User.Public> {
