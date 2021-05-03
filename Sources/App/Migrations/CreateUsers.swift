@@ -13,8 +13,9 @@ struct CreateUsers: Migration {
     func prepare(on database: Database) -> EventLoopFuture<Void> {
         return database.schema(User.schema)
             .id()
-            .field(.firstName, .string, .required)
-            .field(.lastName, .string, .required)
+            .field(.firstName, .string)
+            .field(.lastName, .string)
+            .field(.username, .string)
             .field(.email, .string, .required).unique(on: .email)
             .field(.passwordHash, .string, .required)
             .field(.updatedAt, .datetime, .required)

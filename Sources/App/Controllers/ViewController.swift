@@ -30,7 +30,7 @@ class ViewController: RouteCollection {
     
     func homeView(req: Request) -> EventLoopFuture<View> {
         return User.query(on: req.db).all().flatMap {
-            let users = $0.compactMap { try? $0.asPublic() }.sorted(by: { $0.lastName < $1.lastName })
+            let users = $0.compactMap { try? $0.asPublic() }.sorted(by: { ($0.lastName ?? "") < ($1.lastName ?? "") })
             return req.leaf.render(LeafTemplate.home.rawValue, HomeContext(users: users))
         }
     }

@@ -59,8 +59,10 @@ function sendPasswordResetEmail(email) {
             showResponseAlert(xhttp);
         }
     };
-    xhttp.open("POST", getBaseUrl() + "/auth/sendPasswordResetEmail/" + document.getElementById("email-input").value);
-    xhttp.send();
+    xhttp.open("POST", getBaseUrl() + "/auth/sendPasswordResetEmail")
+    var body = new FormData();
+    body.set('email', document.getElementById("email-input").value);
+    xhttp.send(body);
 }
 
 function forgotPassword() {

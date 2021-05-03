@@ -8,6 +8,6 @@
 import Foundation
 
 struct EmailVerificationEmailContext: Codable {
-    let name: String
+    let name: String?
     let verifyEmailUrl: String
 }

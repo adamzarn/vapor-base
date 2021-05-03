@@ -25,6 +25,7 @@ enum CustomAbort: AbortError {
     case missingPassword
     case couldNotCreateToken
     case couldNotCreatePasswordHash
+    case missingUserUpdate
     
     var reason: String {
         switch self {
@@ -44,6 +45,7 @@ enum CustomAbort: AbortError {
         case .missingPassword: return "You must provide a new password to update a user's password."
         case .couldNotCreateToken: return "A token could not be generated."
         case .couldNotCreatePasswordHash: return "The password could not be hashed."
+        case .missingUserUpdate: return "You must provide a valid user update object."
         }
     }
     
@@ -65,6 +67,7 @@ enum CustomAbort: AbortError {
         case .missingPassword: return .badRequest
         case .couldNotCreateToken: return .internalServerError
         case .couldNotCreatePasswordHash: return .internalServerError
+        case .missingUserUpdate: return .badRequest
         }
     }
     

@@ -21,7 +21,7 @@ class AuthController: RouteCollection {
             authRoute.post(SessionSource.registration.pathComponent, use: registerAndLogin)
         }
         authRoute.put("resetPassword", ":tokenId", use: resetPassword)
-        authRoute.post("sendPasswordResetEmail", ":email", use: sendPasswordResetEmail)
+        authRoute.post("sendPasswordResetEmail", use: sendPasswordResetEmail)
 
         let passwordProtectedAuthRoute = authRoute.grouped(UserBasicAuthenticator())
         passwordProtectedAuthRoute.post("sendEmailVerificationEmail", use: sendEmailVerificationEmail)
@@ -119,13 +119,15 @@ class AuthController: RouteCollection {
     }
     
     func sendPasswordResetEmail(req: Request) -> EventLoopFuture<HTTPStatus> {
-        guard let email = req.parameters.get("email") else { return req.fail(CustomAbort.missingEmail) }
+        let passwordReset = try? req.content.decode(PasswordReset.self)
+        guard let email = passwordReset?.email else { return req.fail(CustomAbort.missingEmail) }
         return User.query(on: req.db).filter(\.$email == email).first().flatMap { user in
             guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
             guard let token = try? user.createToken(source: .passwordReset) else { return req.fail(CustomAbort.couldNotCreateToken) }
             return token.save(on: req.db).flatMap {
                 guard let tokenId = token.id?.uuidString else { return req.fail(CustomAbort.invalidToken) }
-                let passwordResetUrl = "\(req.baseUrl)/view/passwordReset/\(tokenId)"
+                let passwordResetBaseUrl = passwordReset?.url ?? "\(req.baseUrl)/view/passwordReset/"
+                let passwordResetUrl = "\(passwordResetBaseUrl)\(tokenId)"
                 let context = PasswordResetEmailContext(name: user.firstName, passwordResetUrl: passwordResetUrl)
                 return req.leaf.render(LeafTemplate.passwordResetEmail.rawValue, context).flatMapThrowing { view in
                     let html = String(buffer: view.data)

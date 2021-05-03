@@ -8,6 +8,6 @@
 import Foundation
 
 struct PasswordResetEmailContext: Codable {
-    let name: String
+    let name: String?
     let passwordResetUrl: String
 }

@@ -22,6 +22,8 @@
 
 /* Begin PBXBuildFile section */
 		DB029D5A25AA3DF300EC1FC7 /* UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */; };
+		DB4F697B26390795004A5F70 /* PasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F697A26390795004A5F70 /* PasswordReset.swift */; };
+		DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F69CB263DC352004A5F70 /* UserUpdate.swift */; };
 		OBJ_2394 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Constants.swift */; };
 		OBJ_2395 /* AuthController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* AuthController.swift */; };
 		OBJ_2396 /* UsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* UsersController.swift */; };
@@ -6406,6 +6408,9 @@
 
 /* Begin PBXFileReference section */
 		DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatus.swift; sourceTree = "<group>"; };
+		DB4F697A26390795004A5F70 /* PasswordReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordReset.swift; sourceTree = "<group>"; };
+		DB4F69CB263DC352004A5F70 /* UserUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUpdate.swift; sourceTree = "<group>"; };
+		DBC8047B260A47F600C4F06D /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		OBJ_100 /* IntReturn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntReturn.swift; sourceTree = "<group>"; };
 		OBJ_1000 /* rsaz_exp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rsaz_exp.c; sourceTree = "<group>"; };
 		OBJ_1001 /* shift.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = shift.c; sourceTree = "<group>"; };
@@ -12324,6 +12329,8 @@
 				OBJ_37 /* NewFollowingStatus.swift */,
 				OBJ_38 /* NewPassword.swift */,
 				DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */,
+				DB4F697A26390795004A5F70 /* PasswordReset.swift */,
+				DB4F69CB263DC352004A5F70 /* UserUpdate.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -12894,9 +12901,10 @@
 			path = Client;
 			sourceTree = "<group>";
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
+				DBC8047B260A47F600C4F06D /* View.xib */,
 				OBJ_6 /* Package.swift */,
 				OBJ_7 /* Sources */,
 				OBJ_59 /* Tests */,
@@ -12909,7 +12917,6 @@
 				OBJ_2387 /* web.Dockerfile */,
 				OBJ_2388 /* CONTRIBUTING.md */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_505 /* Commands */ = {
@@ -16305,7 +16312,7 @@
 			knownRegions = (
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_2329 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -16411,6 +16418,7 @@
 				OBJ_2404 /* Request+Extensions.swift in Sources */,
 				OBJ_2405 /* CreateFollowingFollowers.swift in Sources */,
 				OBJ_2406 /* CreateTokens.swift in Sources */,
+				DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */,
 				OBJ_2407 /* CreateUsers.swift in Sources */,
 				OBJ_2408 /* EmailVerificationEmailContext.swift in Sources */,
 				OBJ_2409 /* EmailVerificationResultContext.swift in Sources */,
@@ -16430,6 +16438,7 @@
 				OBJ_2423 /* APIKeys.swift in Sources */,
 				DB029D5A25AA3DF300EC1FC7 /* UserStatus.swift in Sources */,
 				OBJ_2424 /* MailConstants.swift in Sources */,
+				DB4F697B26390795004A5F70 /* PasswordReset.swift in Sources */,
 				OBJ_2425 /* MailgunDomain+Extension.swift in Sources */,
 				OBJ_2426 /* SMTPCredentials.swift in Sources */,
 				OBJ_2427 /* boot.swift in Sources */,

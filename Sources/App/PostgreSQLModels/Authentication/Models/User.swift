@@ -15,8 +15,9 @@ final class User: Model, Content {
     static let pathComponent: PathComponent = "users"
 
     @ID(key: .id) var id: UUID?
-    @Field(key: .firstName) var firstName: String
-    @Field(key: .lastName) var lastName: String
+    @Field(key: .firstName) var firstName: String?
+    @Field(key: .lastName) var lastName: String?
+    @Field(key: .username) var username: String?
     @Field(key: .email) var email: String
     @Field(key: .passwordHash) var passwordHash: String
     @Field(key: .isAdmin) var isAdmin: Bool
@@ -29,8 +30,9 @@ final class User: Model, Content {
     @Siblings(through: FollowingFollower.self, from: \.$follower, to: \.$following) var following: [User]
 
     init(id: User.IDValue? = nil,
-         firstName: String,
-         lastName: String,
+         firstName: String?,
+         lastName: String?,
+         username: String?,
          email: String,
          passwordHash: String,
          isAdmin: Bool = false,
@@ -38,6 +40,7 @@ final class User: Model, Content {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
+        self.username = username
         self.email = email
         self.passwordHash = passwordHash
         self.isAdmin = isAdmin
@@ -45,8 +48,9 @@ final class User: Model, Content {
     }
     
     static func from(data: UserData) throws -> User {
-        return User(firstName: data.firstName.trimmingCharacters(in: .whitespacesAndNewlines),
-                    lastName: data.lastName.trimmingCharacters(in: .whitespacesAndNewlines),
+        return User(firstName: data.firstName?.trimmingCharacters(in: .whitespacesAndNewlines),
+                    lastName: data.lastName?.trimmingCharacters(in: .whitespacesAndNewlines),
+                    username: data.username?.trimmingCharacters(in: .whitespacesAndNewlines),
                     email: data.email,
                     passwordHash: try Bcrypt.hash(data.password))
     }
@@ -64,8 +68,9 @@ final class User: Model, Content {
     
     struct Public: Content {
         let id: UUID
-        let firstName: String
-        let lastName: String
+        let firstName: String?
+        let lastName: String?
+        let username: String?
         let email: String
         let updatedAt: Date?
         let createdAt: Date?
@@ -77,6 +82,7 @@ final class User: Model, Content {
         return Public(id: try requireID(),
                       firstName: firstName,
                       lastName: lastName,
+                      username: username,
                       email: email,
                       updatedAt: updatedAt,
                       createdAt: createdAt,
@@ -87,14 +93,16 @@ final class User: Model, Content {
 }
 
 struct UserData: Content, Validatable {
-    let firstName: String
-    let lastName: String
+    let firstName: String?
+    let lastName: String?
+    let username: String?
     let email: String
     let password: String
     
     static func validations(_ validations: inout Validations) {
         validations.add("firstName", as: String.self, is: !.empty)
         validations.add("lastName", as: String.self, is: !.empty)
+        validations.add("username", as: String.self, is: !.empty)
         validations.add("email", as: String.self, is: .email)
         validations.add("password", as: String.self, is: .count(6...))
     }

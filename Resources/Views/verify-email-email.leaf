@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <p>Hello #(name),</p>
+    #if(name):
+        <p>Hello #(name),</p>
+    #else:
+        <p>Hello,</p>
+    #endif
     <p>Please click <a href="#(verifyEmailUrl)">here</a> to verify your email.</p>
   </body>
 </html>

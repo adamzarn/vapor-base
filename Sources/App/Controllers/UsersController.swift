@@ -25,8 +25,7 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.get(":userId", "followers", use: getFollowers)
         tokenProtectedUsersRoute.get(":userId", "following", use: getFollowing)
         tokenProtectedUsersRoute.delete(":userId", use: deleteUser)
-//        tokenProtectedUsersRoute.put(":userId", "image", use: uploadImage)
-//        tokenProtectedUsersRoute.get(":userId", "image", use: getImage)
+        tokenProtectedUsersRoute.put(use: updateUser)
         
         let tokenProtectedAdminUsersRoute = usersRoute.grouped(UserBearerAuthenticator(adminsOnly: true))
         tokenProtectedAdminUsersRoute.put(":userId", "setAdminStatus", use: setAdminStatus)
@@ -92,7 +91,9 @@ class UsersController: RouteCollection {
     func getFollowers(req: Request) throws -> EventLoopFuture<[User.Public]> {
         let me = try req.auth.require(User.self)
         guard let userId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
-        if userId != me.id && !me.isAdmin { return req.fail(CustomAbort.mustBeAdminToGetFollowersOfAnotherUser) }
+        if userId != me.id && !me.isAdmin && Constants.onlyAdminsCanGetFollowersOfAnyUser {
+            return req.fail(CustomAbort.mustBeAdminToGetFollowersOfAnotherUser)
+        }
         return User.find(userId, on: req.db).flatMap { user in
             guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
             return self.followers(of: user, req: req)
@@ -102,7 +103,9 @@ class UsersController: RouteCollection {
     func getFollowing(req: Request) throws -> EventLoopFuture<[User.Public]> {
         let me = try req.auth.require(User.self)
         guard let userId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
-        if userId != me.id && !me.isAdmin { return req.fail(CustomAbort.mustBeAdminToGetFollowingOfAnotherUser) }
+        if userId != me.id && !me.isAdmin && Constants.onlyAdminsCanGetFollowingOfAnyUser {
+            return req.fail(CustomAbort.mustBeAdminToGetFollowingOfAnotherUser)
+        }
         return User.find(userId, on: req.db).flatMap { user in
             guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
             return self.following(of: user, req: req)
@@ -145,6 +148,20 @@ class UsersController: RouteCollection {
         }
     }
     
+    func updateUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        let me = try req.auth.require(User.self)
+        guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
+            return req.fail(CustomAbort.missingUserUpdate)
+        }
+        return User.find(me.id, on: req.db).flatMap { user in
+            guard let user = user else { return req.fail(CustomAbort.userDoesNotExist) }
+            if let firstName = userUpdate.firstName { user.firstName = firstName }
+            if let lastName = userUpdate.lastName { user.lastName = lastName }
+            if let username = userUpdate.username { user.username = username }
+            return user.save(on: req.db).transform(to: HTTPStatus.ok)
+        }
+    }
+    
     func setAdminStatus(req: Request) throws -> EventLoopFuture<User.Public> {
         let _ = try req.auth.require(User.self)
         guard let newAdminStatus = try? req.content.decode(NewAdminStatus.self) else {
@@ -162,18 +179,4 @@ class UsersController: RouteCollection {
         if userId == "me" { userId = me.id?.uuidString ?? "" }
         return UUID(userId)
     }
-    
-//    func uploadImage(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-//        let me = try req.auth.require(User.self)
-//        guard let userId = getUserId(me: me, req: req) else { return req.fail(CustomAbort.missingUserId) }
-//        return User.find(userId, on: req.db).flatMap { user in
-//            guard var user = user else { return req.fail(CustomAbort.userDoesNotExist) }
-//            user.image = req.content.form
-//        }
-//    }
-//
-//    func getImage(req: Request) throws -> EventLoopFuture<Data> {
-//
-//    }
-//
 }

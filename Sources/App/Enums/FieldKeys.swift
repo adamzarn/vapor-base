@@ -12,6 +12,7 @@ extension FieldKey {
     
     static var firstName: Self { "firstName" }
     static var lastName: Self { "lastName" }
+    static var username: Self { "username" }
     static var userId: Self { "userId" }
     static var value: Self { "value" }
     static var source: Self { "source" }
