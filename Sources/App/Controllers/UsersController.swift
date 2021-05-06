@@ -55,20 +55,32 @@ class UsersController: RouteCollection {
         let _ = try req.auth.require(User.self)
         let query = req.query[String.self, at: "query"] ?? ""
         let (start, end) = getSearchRange(req: req)
-        let futureUsers = User.query(on: req.db).group(.or) { group in
+        let queryBuilder = User.query(on: req.db).group(.or) { group in
             group.filter(\.$firstName, .custom("ilike"), "%\(query)%")
                 .filter(\.$lastName, .custom("ilike"), "%\(query)%")
                 .filter(\.$username, .custom("ilike"), "%\(query)%")
                 .filter(\.$email, .custom("ilike"), "%\(query)%")
-        }.range(start..<end).all()
+        }
+        let futureUsers = addAdminFilter(to: queryBuilder, req: req, start: start, end: end)
         return futureUsers.flatMapThrowing { users in
             return try users.compactMap { try $0.asPublic() }
         }
     }
     
+    private func addAdminFilter(to queryBuilder: QueryBuilder<User>, req: Request, start: Int, end: Int) -> EventLoopFuture<[User]> {
+        if let isAdminString = req.query[String.self, at: "isAdmin"], ["yes", "no"].contains(isAdminString) {
+            let isAdmin = isAdminString == "yes"
+            let queryBuilder = queryBuilder.filter(\.$isAdmin == isAdmin)
+            // Return all results if only retrieving admins
+            return isAdmin ? queryBuilder.all() : queryBuilder.range(start..<end).all()
+        } else {
+            return queryBuilder.range(start..<end).all()
+        }
+    }
+    
     private func getSearchRange(req: Request) -> (Int, Int) {
-        guard let start = req.query[Int.self, at: "start"] else { return (0, 50) }
-        guard let end = req.query[Int.self, at: "end"], end >= start else { return (start, start + 50) }
+        guard let start = req.query[Int.self, at: "start"] else { return (0, Constants.searchResultLimit) }
+        guard let end = req.query[Int.self, at: "end"], end >= start else { return (start, start + Constants.searchResultLimit) }
         return (start, end)
     }
     

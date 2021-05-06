@@ -11,4 +11,5 @@ struct Constants {
     static let requireEmailVerification: Bool = false
     static let onlyAdminsCanGetFollowersOfAnyUser: Bool = false
     static let onlyAdminsCanGetFollowingOfAnyUser: Bool = false
+    static let searchResultLimit: Int = 50
 }
