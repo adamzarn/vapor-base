@@ -20,7 +20,7 @@ class UsersController: RouteCollection {
         
         let tokenProtectedUsersRoute = usersRoute.grouped(UserBearerAuthenticator())
         tokenProtectedUsersRoute.get(":userId", use: getUser)
-        tokenProtectedUsersRoute.get(use: getAllUsers)
+        tokenProtectedUsersRoute.get("search", use: searchUsers)
         tokenProtectedUsersRoute.post(":userId", "setFollowingStatus", use: setFollowingStatus)
         tokenProtectedUsersRoute.get(":userId", "followers", use: getFollowers)
         tokenProtectedUsersRoute.get(":userId", "following", use: getFollowing)
@@ -51,11 +51,25 @@ class UsersController: RouteCollection {
         }
     }
     
-    func getAllUsers(req: Request) throws -> EventLoopFuture<[User.Public]> {
+    func searchUsers(req: Request) throws -> EventLoopFuture<[User.Public]> {
         let _ = try req.auth.require(User.self)
-        return User.query(on: req.db).all().flatMapThrowing { users in
+        let query = req.query[String.self, at: "query"] ?? ""
+        let (start, end) = getSearchRange(req: req)
+        let futureUsers = User.query(on: req.db).group(.or) { group in
+            group.filter(\.$firstName, .custom("ilike"), "%\(query)%")
+                .filter(\.$lastName, .custom("ilike"), "%\(query)%")
+                .filter(\.$username, .custom("ilike"), "%\(query)%")
+                .filter(\.$email, .custom("ilike"), "%\(query)%")
+        }.range(start..<end).all()
+        return futureUsers.flatMapThrowing { users in
             return try users.compactMap { try $0.asPublic() }
         }
+    }
+    
+    private func getSearchRange(req: Request) -> (Int, Int) {
+        guard let start = req.query[Int.self, at: "start"] else { return (0, 50) }
+        guard let end = req.query[Int.self, at: "end"], end >= start else { return (start, start + 50) }
+        return (start, end)
     }
     
     func setFollowingStatus(req: Request) throws -> EventLoopFuture<HTTPStatus> {
