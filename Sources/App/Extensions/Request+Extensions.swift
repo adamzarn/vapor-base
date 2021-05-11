@@ -10,7 +10,7 @@ import Vapor
 
 extension Request {
     
-    func fail<T>(_ error: AbortError) -> EventLoopFuture<T> {
+    func fail<T>(_ error: Error) -> EventLoopFuture<T> {
         return eventLoop.makeFailedFuture(error)
     }
     

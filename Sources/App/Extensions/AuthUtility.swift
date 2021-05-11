@@ -20,6 +20,12 @@ class AuthUtility {
     }
     
     class func getFailedFuture<T>(for error: Error, req: Request) -> EventLoopFuture<T> {
-        return req.fail((error as? Exception) ?? Exception.unknown)
+        if let abort = error as? Abort {
+            return req.fail(abort)
+        } else if let exception = error as? Exception {
+            return req.fail(exception)
+        } else {
+            return req.fail(Exception.unknown)
+        }
     }
 }
