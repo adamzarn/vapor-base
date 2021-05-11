@@ -24,6 +24,8 @@
 		DB029D5A25AA3DF300EC1FC7 /* UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */; };
 		DB4F697B26390795004A5F70 /* PasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F697A26390795004A5F70 /* PasswordReset.swift */; };
 		DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F69CB263DC352004A5F70 /* UserUpdate.swift */; };
+		DBCAB45B26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCAB45A26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift */; };
+		DBCAB4AC264B253D0089C4E8 /* AuthUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCAB4AB264B253D0089C4E8 /* AuthUtility.swift */; };
 		OBJ_2394 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Constants.swift */; };
 		OBJ_2395 /* AuthController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* AuthController.swift */; };
 		OBJ_2396 /* UsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* UsersController.swift */; };
@@ -33,7 +35,7 @@
 		OBJ_2400 /* FieldKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* FieldKeys.swift */; };
 		OBJ_2401 /* LeafTemplate.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* LeafTemplate.swift */; };
 		OBJ_2402 /* SessionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_19 /* SessionSource.swift */; };
-		OBJ_2403 /* CustomAbort.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* CustomAbort.swift */; };
+		OBJ_2403 /* Exception.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_21 /* Exception.swift */; };
 		OBJ_2404 /* Request+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_23 /* Request+Extensions.swift */; };
 		OBJ_2405 /* CreateFollowingFollowers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_25 /* CreateFollowingFollowers.swift */; };
 		OBJ_2406 /* CreateTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_26 /* CreateTokens.swift */; };
@@ -6411,6 +6413,8 @@
 		DB4F697A26390795004A5F70 /* PasswordReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordReset.swift; sourceTree = "<group>"; };
 		DB4F69CB263DC352004A5F70 /* UserUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUpdate.swift; sourceTree = "<group>"; };
 		DBC8047B260A47F600C4F06D /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
+		DBCAB45A26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseQuery+Filter+Method+Extension.swift"; sourceTree = "<group>"; };
+		DBCAB4AB264B253D0089C4E8 /* AuthUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthUtility.swift; sourceTree = "<group>"; };
 		OBJ_100 /* IntReturn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntReturn.swift; sourceTree = "<group>"; };
 		OBJ_1000 /* rsaz_exp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rsaz_exp.c; sourceTree = "<group>"; };
 		OBJ_1001 /* shift.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = shift.c; sourceTree = "<group>"; };
@@ -7460,7 +7464,7 @@
 		OBJ_2097 /* x509_cmp.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = x509_cmp.c; sourceTree = "<group>"; };
 		OBJ_2098 /* x509_d2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = x509_d2.c; sourceTree = "<group>"; };
 		OBJ_2099 /* x509_def.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = x509_def.c; sourceTree = "<group>"; };
-		OBJ_21 /* CustomAbort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomAbort.swift; sourceTree = "<group>"; };
+		OBJ_21 /* Exception.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exception.swift; sourceTree = "<group>"; };
 		OBJ_210 /* PostgresConnection+RequestTLS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PostgresConnection+RequestTLS.swift"; sourceTree = "<group>"; };
 		OBJ_2100 /* x509_ext.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = x509_ext.c; sourceTree = "<group>"; };
 		OBJ_2101 /* x509_lu.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = x509_lu.c; sourceTree = "<group>"; };
@@ -11464,7 +11468,7 @@
 		OBJ_20 /* Errors */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_21 /* CustomAbort.swift */,
+				OBJ_21 /* Exception.swift */,
 			);
 			path = Errors;
 			sourceTree = "<group>";
@@ -11882,6 +11886,8 @@
 			isa = PBXGroup;
 			children = (
 				OBJ_23 /* Request+Extensions.swift */,
+				DBCAB45A26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift */,
+				DBCAB4AB264B253D0089C4E8 /* AuthUtility.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -16414,7 +16420,7 @@
 				OBJ_2400 /* FieldKeys.swift in Sources */,
 				OBJ_2401 /* LeafTemplate.swift in Sources */,
 				OBJ_2402 /* SessionSource.swift in Sources */,
-				OBJ_2403 /* CustomAbort.swift in Sources */,
+				OBJ_2403 /* Exception.swift in Sources */,
 				OBJ_2404 /* Request+Extensions.swift in Sources */,
 				OBJ_2405 /* CreateFollowingFollowers.swift in Sources */,
 				OBJ_2406 /* CreateTokens.swift in Sources */,
@@ -16435,12 +16441,14 @@
 				OBJ_2420 /* Token.swift in Sources */,
 				OBJ_2421 /* User.swift in Sources */,
 				OBJ_2422 /* FollowingFollower.swift in Sources */,
+				DBCAB45B26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift in Sources */,
 				OBJ_2423 /* APIKeys.swift in Sources */,
 				DB029D5A25AA3DF300EC1FC7 /* UserStatus.swift in Sources */,
 				OBJ_2424 /* MailConstants.swift in Sources */,
 				DB4F697B26390795004A5F70 /* PasswordReset.swift in Sources */,
 				OBJ_2425 /* MailgunDomain+Extension.swift in Sources */,
 				OBJ_2426 /* SMTPCredentials.swift in Sources */,
+				DBCAB4AC264B253D0089C4E8 /* AuthUtility.swift in Sources */,
 				OBJ_2427 /* boot.swift in Sources */,
 				OBJ_2428 /* configure.swift in Sources */,
 				OBJ_2429 /* routes.swift in Sources */,
