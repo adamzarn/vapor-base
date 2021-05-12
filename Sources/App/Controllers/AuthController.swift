@@ -83,7 +83,7 @@ class AuthController: RouteCollection {
     
     func logout(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let user = try AuthUtility.getUser(req: req)
+            let user = try req.auth.require(User.self)
             return Token.query(on: req.db)
                 .filter(\.$user.$id == user.id ?? UUID())
                 .delete()
@@ -95,7 +95,7 @@ class AuthController: RouteCollection {
     
     func sendEmailVerificationEmail(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let user = try AuthUtility.getUser(req: req)
+            let user = try req.auth.require(User.self)
             return self.sendEmailVerificationEmail(to: user, req: req)
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
