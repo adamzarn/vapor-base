@@ -22,6 +22,7 @@ class AuthController: RouteCollection {
         }
         authRoute.put("resetPassword", ":tokenId", use: resetPassword)
         authRoute.post("sendPasswordResetEmail", use: sendPasswordResetEmail)
+        authRoute.put("verifyEmail", ":tokenId", use: verifyEmail)
 
         let passwordProtectedAuthRoute = authRoute.grouped(UserBasicAuthenticator())
         passwordProtectedAuthRoute.post("sendEmailVerificationEmail", use: sendEmailVerificationEmail)
@@ -65,15 +66,15 @@ class AuthController: RouteCollection {
     
     func login(req: Request) throws -> EventLoopFuture<NewSession> {
         do {
-            let user = try AuthUtility.getUser(req: req)
-            let token = try user.createToken(source: .login)
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
+            let token = try loggedInUser.createToken(source: .login)
             // Delete any old access tokens for this user
-            return Token.query(on: req.db).filter(\.$user.$id == user.id ?? UUID()).group(.or) { group in
+            return Token.query(on: req.db).filter(\.$user.$id == loggedInUser.id ?? UUID()).group(.or) { group in
                 group.filter(\.$source == .registration).filter(\.$source == .login)
             }.delete().flatMap {
                 // Save new token
                 return token.save(on: req.db).flatMapThrowing {
-                    NewSession(id: token.id?.uuidString ?? "", token: token.value, user: try user.asPublic())
+                    NewSession(id: token.id?.uuidString ?? "", token: token.value, user: try loggedInUser.asPublic())
                 }
             }
         } catch let error {
@@ -83,9 +84,9 @@ class AuthController: RouteCollection {
     
     func logout(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let user = try req.auth.require(User.self)
+            let loggedInUser = try req.auth.require(User.self)
             return Token.query(on: req.db)
-                .filter(\.$user.$id == user.id ?? UUID())
+                .filter(\.$user.$id == loggedInUser.id ?? UUID())
                 .delete()
                 .transform(to: HTTPStatus.ok)
         } catch let error {
@@ -95,8 +96,8 @@ class AuthController: RouteCollection {
     
     func sendEmailVerificationEmail(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let user = try req.auth.require(User.self)
-            return self.sendEmailVerificationEmail(to: user, req: req)
+            let loggedInUser = try req.auth.require(User.self)
+            return self.sendEmailVerificationEmail(to: loggedInUser, req: req)
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }
@@ -114,8 +115,8 @@ class AuthController: RouteCollection {
             return token.save(on: req.db).flatMap {
                 guard let tokenId = token.id?.uuidString else { return req.fail(Exception.invalidToken) }
                 var verifyEmailUrl: String
-                if let emailVerificationUrl = try? req.content.decode(UserData.self).emailVerificationUrl {
-                    verifyEmailUrl = "\(emailVerificationUrl)/\(tokenId)"
+                if let frontendBaseUrl = try? req.content.decode(UserData.self).frontendBaseUrl {
+                    verifyEmailUrl = "\(frontendBaseUrl)/\(tokenId)"
                 } else {
                     verifyEmailUrl = "\(req.baseUrl)/view/verifyEmail/\(tokenId)"
                 }
@@ -165,7 +166,10 @@ class AuthController: RouteCollection {
     
     func resetPassword(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         try NewPassword.validate(content: req)
-        return Token.find(req.parameters.get("tokenId"), on: req.db).flatMap { token in
+        guard let tokenId = req.parameters.get("tokenId") else {
+            return req.fail(Exception.missingTokenId)
+        }
+        return Token.find(UUID(uuidString: tokenId), on: req.db).flatMap { token in
             guard let token = token, token.source.isValidForPasswordReset, token.isValid else {
                 return req.fail(Exception.invalidToken)
             }
@@ -178,6 +182,26 @@ class AuthController: RouteCollection {
                     return req.fail(Exception.couldNotCreatePasswordHash)
                 }
                 user.passwordHash = passwordHash
+                return user.save(on: req.db).flatMap {
+                    return token.delete(on: req.db).transform(to: HTTPStatus.ok)
+                }
+            }
+        }
+    }
+    
+    func verifyEmail(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        guard let tokenId = req.parameters.get("tokenId") else {
+            return req.fail(Exception.missingTokenId)
+        }
+        return Token.find(UUID(uuidString: tokenId), on: req.db).flatMap { token in
+            guard let token = token, token.source == .emailVerification, token.isValid else {
+                return req.fail(Exception.invalidToken)
+            }
+            return User.find(token.$user.id, on: req.db).flatMap { user in
+                guard let user = user else {
+                    return req.fail(Exception.userDoesNotExist)
+                }
+                user.isEmailVerified = true
                 return user.save(on: req.db).flatMap {
                     return token.delete(on: req.db).transform(to: HTTPStatus.ok)
                 }

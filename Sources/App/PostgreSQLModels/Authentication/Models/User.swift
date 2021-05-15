@@ -98,7 +98,7 @@ struct UserData: Content, Validatable {
     let username: String?
     let email: String
     let password: String
-    let emailVerificationUrl: String?
+    let frontendBaseUrl: String?
     
     static func validations(_ validations: inout Validations) {
         validations.add("firstName", as: String.self, is: !.empty)

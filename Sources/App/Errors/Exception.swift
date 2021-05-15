@@ -19,10 +19,6 @@ enum Exception: String, AbortError {
     case emailIsNotVerified
     case userIsNotAdmin
     case invalidToken
-    case mustBeAdminToSetFollowingStatusOfAnotherUser
-    case mustBeAdminToGetFollowersOfAnotherUser
-    case mustBeAdminToGetFollowingOfAnotherUser
-    case mustBeAdminToDeleteAnotherUser
     case missingEmail
     case missingPassword
     case couldNotCreateToken
@@ -41,12 +37,8 @@ enum Exception: String, AbortError {
         case .missingFollowingStatus: description = "You must provide a following status."
         case .cannotFollowSelf: description = "Users cannot follow/unfollow themselves."
         case .emailIsNotVerified: description = "Email verification is required."
-        case .userIsNotAdmin: description = "User must be an admin to access this resource."
+        case .userIsNotAdmin: description = "User must be an admin to access or modify this resource."
         case .invalidToken: description = "The provided token is either expired or it is not associated with any user."
-        case .mustBeAdminToSetFollowingStatusOfAnotherUser: description = "You must be an admin to set the following status for another user."
-        case .mustBeAdminToGetFollowersOfAnotherUser: description = "You must be an admin to get the followers of another user."
-        case .mustBeAdminToGetFollowingOfAnotherUser: description = "You must be an admin to get the following of another user."
-        case .mustBeAdminToDeleteAnotherUser: description = "You must be an admin to delete another user."
         case .missingEmail: description = "You must provide an email to reset a user's password."
         case .missingPassword: description = "You must provide a new password to update a user's password."
         case .couldNotCreateToken: description = "A token could not be generated."
@@ -69,10 +61,6 @@ enum Exception: String, AbortError {
         case .emailIsNotVerified: return .unauthorized
         case .userIsNotAdmin: return .unauthorized
         case .invalidToken: return .unauthorized
-        case .mustBeAdminToSetFollowingStatusOfAnotherUser: return .unauthorized
-        case .mustBeAdminToGetFollowersOfAnotherUser: return .unauthorized
-        case .mustBeAdminToGetFollowingOfAnotherUser: return .unauthorized
-        case .mustBeAdminToDeleteAnotherUser: return .unauthorized
         case .missingEmail: return .badRequest
         case .missingPassword: return .badRequest
         case .couldNotCreateToken: return .internalServerError

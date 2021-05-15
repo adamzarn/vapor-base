@@ -17,7 +17,6 @@ class UsersController: RouteCollection {
         
         let usersRoute = routes.grouped(User.pathComponent)
         usersRoute.get("status", use: getUserStatusWithEmail)
-        usersRoute.put("verifyEmail", ":tokenId", use: verifyEmail)
         
         let tokenProtectedUsersRoute = usersRoute.grouped(UserBearerAuthenticator())
         tokenProtectedUsersRoute.get(":userId", use: getUser)
@@ -27,9 +26,7 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.get(":userId", "following", use: getFollowing)
         tokenProtectedUsersRoute.delete(":userId", use: deleteUser)
         tokenProtectedUsersRoute.put(use: updateUser)
-        
-        let tokenProtectedAdminUsersRoute = usersRoute.grouped(UserBearerAuthenticator(adminsOnly: true))
-        tokenProtectedAdminUsersRoute.put(":userId", "setAdminStatus", use: setAdminStatus)
+        tokenProtectedUsersRoute.put(":userId", "setAdminStatus", use: setAdminStatus)
         
     }
     
@@ -45,8 +42,8 @@ class UsersController: RouteCollection {
     
     func getUser(req: Request) throws -> EventLoopFuture<User.Public> {
         do {
-            let me = try AuthUtility.getUser(req: req)
-            guard let userId = getUserId(me: me, req: req) else { return req.fail(Exception.missingUserId) }
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
+            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else { return req.fail(Exception.missingUserId) }
             return User.find(userId, on: req.db).flatMapThrowing { user in
                 guard let user = user else { throw Exception.userDoesNotExist }
                 return try user.asPublic()
@@ -58,7 +55,7 @@ class UsersController: RouteCollection {
     
     func searchUsers(req: Request) throws -> EventLoopFuture<[User.Public]> {
         do {
-            let _ = try AuthUtility.getUser(req: req)
+            let _ = try AuthUtility.getAuthorizedUser(req: req)
             let query = req.query[String.self, at: "query"] ?? ""
             let (start, end) = getSearchRange(req: req)
             let queryBuilder = User.query(on: req.db).group(.or) { group in
@@ -95,12 +92,12 @@ class UsersController: RouteCollection {
     
     func setFollowingStatus(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let me = try AuthUtility.getUser(req: req)
+            let loggedInUser = try req.auth.require(User.self)
+            guard let followerId = getUserId(loggedInUser: loggedInUser, req: req) else { return req.fail(Exception.missingUserId) }
+            let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: followerId != loggedInUser.id && !loggedInUser.isAdmin)
             guard let newFollowingStatus = try? req.content.decode(NewFollowingStatus.self) else {
                 return req.fail(Exception.missingFollowingStatus)
             }
-            guard let followerId = getUserId(me: me, req: req) else { return req.fail(Exception.missingUserId) }
-            if followerId != me.id && !me.isAdmin { return req.fail(Exception.mustBeAdminToSetFollowingStatusOfAnotherUser) }
             return User.find(followerId, on: req.db).flatMap { user in
                 return User.find(newFollowingStatus.otherUserId, on: req.db).flatMap { otherUser in
                     guard let user = user, let otherUser = otherUser else {
@@ -129,11 +126,9 @@ class UsersController: RouteCollection {
     
     func getFollowers(req: Request) throws -> EventLoopFuture<[User.Public]> {
         do {
-            let me = try AuthUtility.getUser(req: req)
-            guard let userId = getUserId(me: me, req: req) else { return req.fail(Exception.missingUserId) }
-            if userId != me.id && !me.isAdmin && Constants.onlyAdminsCanGetFollowersOfAnyUser {
-                return req.fail(Exception.mustBeAdminToGetFollowersOfAnotherUser)
-            }
+            let loggedInUser = try req.auth.require(User.self)
+            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else { return req.fail(Exception.missingUserId) }
+            let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: userId != loggedInUser.id && Constants.onlyAdminsCanGetFollowersOfAnyUser)
             return User.find(userId, on: req.db).flatMap { user in
                 guard let user = user else { return req.fail(Exception.userDoesNotExist) }
                 return self.followers(of: user, req: req)
@@ -145,11 +140,9 @@ class UsersController: RouteCollection {
     
     func getFollowing(req: Request) throws -> EventLoopFuture<[User.Public]> {
         do {
-            let me = try AuthUtility.getUser(req: req)
-            guard let userId = getUserId(me: me, req: req) else { return req.fail(Exception.missingUserId) }
-            if userId != me.id && !me.isAdmin && Constants.onlyAdminsCanGetFollowingOfAnyUser {
-                return req.fail(Exception.mustBeAdminToGetFollowingOfAnotherUser)
-            }
+            let loggedInUser = try req.auth.require(User.self)
+            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else { return req.fail(Exception.missingUserId) }
+            let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: userId != loggedInUser.id && Constants.onlyAdminsCanGetFollowingOfAnyUser)
             return User.find(userId, on: req.db).flatMap { user in
                 guard let user = user else { return req.fail(Exception.userDoesNotExist) }
                 return self.following(of: user, req: req)
@@ -173,11 +166,11 @@ class UsersController: RouteCollection {
     
     func deleteUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let me = try AuthUtility.getUser(req: req)
-            guard let userId = getUserId(me: me, req: req) else {
+            let loggedInUser = try req.auth.require(User.self)
+            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
                 return req.fail(Exception.missingUserId)
             }
-            if userId != me.id && !me.isAdmin { return req.fail(Exception.mustBeAdminToDeleteAnotherUser) }
+            let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: userId != loggedInUser.id)
             return User.find(userId, on: req.db).flatMap { user in
                 guard let user = user else { return req.fail(Exception.userDoesNotExist) }
                 return self.delete(user: user, req: req)
@@ -203,11 +196,11 @@ class UsersController: RouteCollection {
     
     func updateUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let me = try AuthUtility.getUser(req: req)
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
                 return req.fail(Exception.missingUserUpdate)
             }
-            return User.find(me.id, on: req.db).flatMap { user in
+            return User.find(loggedInUser.id, on: req.db).flatMap { user in
                 guard let user = user else { return req.fail(Exception.userDoesNotExist) }
                 if let firstName = userUpdate.firstName { user.firstName = firstName }
                 if let lastName = userUpdate.lastName { user.lastName = lastName }
@@ -219,30 +212,16 @@ class UsersController: RouteCollection {
         }
     }
     
-    func verifyEmail(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        return Token.find(req.parameters.get("tokenId"), on: req.db).flatMap { token in
-            guard let token = token, token.source == .emailVerification, token.isValid else {
-                return req.fail(Exception.invalidToken)
-            }
-            return User.find(token.$user.id, on: req.db).flatMap { user in
-                guard let user = user else {
-                    return req.fail(Exception.userDoesNotExist)
-                }
-                user.isEmailVerified = true
-                return user.save(on: req.db).flatMap {
-                    return token.delete(on: req.db).transform(to: HTTPStatus.ok)
-                }
-            }
-        }
-    }
-    
     func setAdminStatus(req: Request) throws -> EventLoopFuture<User.Public> {
         do {
-            let _ = try AuthUtility.getUser(req: req)
+            let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: true)
             guard let newAdminStatus = try? req.content.decode(NewAdminStatus.self) else {
                 return req.fail(Exception.missingAdminStatus)
             }
-            return User.find(req.parameters.get("userId"), on: req.db).flatMap { user in
+            guard let userId = req.parameters.get("userId") else {
+                return req.fail(Exception.missingUserId)
+            }
+            return User.find(UUID(uuidString: userId), on: req.db).flatMap { user in
                 guard let user = user else { return req.fail(Exception.userDoesNotExist) }
                 user.isAdmin = newAdminStatus.isAdmin
                 return user.save(on: req.db).flatMapThrowing { try user.asPublic() }
@@ -252,9 +231,9 @@ class UsersController: RouteCollection {
         }
     }
     
-    func getUserId(me: User, req: Request) -> UUID? {
-        var userId = req.parameters.get("userId") ?? ""
-        if userId == "me" { userId = me.id?.uuidString ?? "" }
+    func getUserId(loggedInUser: User, req: Request) -> UUID? {
+        var userId = req.parameters.get("userId") ?? "me"
+        if userId == "me" { userId = loggedInUser.id?.uuidString ?? "" }
         return UUID(userId)
     }
 }

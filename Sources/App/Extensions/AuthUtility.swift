@@ -9,11 +9,14 @@ import Foundation
 import Vapor
 
 class AuthUtility {
-    class func getUser(req: Request) throws -> User {
+    class func getAuthorizedUser(req: Request, mustBeAdmin: Bool = false) throws -> User {
         do {
             let user = try req.auth.require(User.self)
             if Constants.requireEmailVerification && user.isEmailVerified == false {
                 throw Exception.emailIsNotVerified
+            }
+            if user.isAdmin == false && mustBeAdmin {
+                throw Exception.userIsNotAdmin
             }
             return user
         }
