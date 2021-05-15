@@ -45,7 +45,9 @@ class ViewController: RouteCollection {
     
     func profileView(req: Request) throws -> EventLoopFuture<View> {
         return User.find(req.parameters.get("userId"), on: req.db).flatMap { user in
-            guard let user = user else { return req.fail(Exception.userDoesNotExist) }
+            guard let user = user else {
+                return req.fail(Exception.userDoesNotExist)
+            }
             return user.$followers.query(on: req.db).all().flatMap { followers in
                 return user.$following.query(on: req.db).all().flatMap { following in
                     let context = ProfileContext(user: user,
@@ -85,7 +87,9 @@ class ViewController: RouteCollection {
                 return req.fail(Exception.invalidToken)
             }
             return User.find(token.$user.id, on: req.db).flatMap { user in
-                guard user != nil else { return req.fail(Exception.userDoesNotExist) }
+                guard user != nil else {
+                    return req.fail(Exception.userDoesNotExist)
+                }
                 return req.leaf.render(LeafTemplate.passwordReset.rawValue, ResetPasswordContext(tokenId: "\(tokenId)"))
             }
         }

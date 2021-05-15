@@ -24,6 +24,8 @@ enum Exception: String, AbortError {
     case couldNotCreateToken
     case couldNotCreatePasswordHash
     case missingUserUpdate
+    case missingFollowType
+    case invalidFollowType
     case unknown
     
     var reason: String {
@@ -44,6 +46,8 @@ enum Exception: String, AbortError {
         case .couldNotCreateToken: description = "A token could not be generated."
         case .couldNotCreatePasswordHash: description = "The password could not be hashed."
         case .missingUserUpdate: description = "You must provide a valid user update object."
+        case .missingFollowType: description = "You must provide a follow type of followers or following"
+        case .invalidFollowType: description = "You must provide a follow type of followers or following"
         case .unknown: description = "An unknown exception occurred."
         }
         return "\(rawValue): \(description)"
@@ -66,6 +70,8 @@ enum Exception: String, AbortError {
         case .couldNotCreateToken: return .internalServerError
         case .couldNotCreatePasswordHash: return .internalServerError
         case .missingUserUpdate: return .badRequest
+        case .missingFollowType: return .badRequest
+        case .invalidFollowType: return .badRequest
         case .unknown: return .internalServerError
         }
     }
