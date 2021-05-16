@@ -179,7 +179,7 @@ class UsersController: RouteCollection {
             guard let followType = req.parameters.get("followType") else {
                 return req.fail(Exception.missingFollowType)
             }
-            let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: userId != loggedInUser.id && Constants.onlyAdminsCanGetFollowsOfAnyUser)
+            let _ = try AuthUtility.getAuthorizedUser(req: req)
             return User.find(userId, on: req.db).flatMap { user in
                 guard let user = user else {
                     return req.fail(Exception.userDoesNotExist)
@@ -260,6 +260,16 @@ class UsersController: RouteCollection {
                 if let firstName = userUpdate.firstName { user.firstName = firstName }
                 if let lastName = userUpdate.lastName { user.lastName = lastName }
                 if let username = userUpdate.username { user.username = username }
+                if let email = userUpdate.email {
+                    return User.query(on: req.db).filter(\.$email == email).first().flatMap { existingUser in
+                        if existingUser != nil {
+                            return req.fail(Exception.userAlreadyExists)
+                        }
+                        user.email = email
+                        user.isEmailVerified = false
+                        return user.save(on: req.db).transform(to: HTTPStatus.ok)
+                    }
+                }
                 return user.save(on: req.db).transform(to: HTTPStatus.ok)
             }
         } catch let error {

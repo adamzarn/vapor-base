@@ -9,6 +9,5 @@ import Foundation
 
 struct Constants {
     static let requireEmailVerification: Bool = true
-    static let onlyAdminsCanGetFollowsOfAnyUser: Bool = false
     static let searchResultLimit: Int = 50
 }

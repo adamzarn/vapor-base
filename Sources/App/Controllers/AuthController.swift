@@ -17,6 +17,9 @@ class AuthController: RouteCollection {
         let authRoute = routes.grouped("auth")
         let passwordProtectedAuthRoute = authRoute.grouped(UserBasicAuthenticator())
         let tokenProtectedAuthRoute = authRoute.grouped(UserBearerAuthenticator())
+        let passwordTokenProtectedRoute = authRoute
+            .grouped(UserBasicAuthenticator())
+            .grouped(UserBearerAuthenticator())
 
         if Constants.requireEmailVerification {
             authRoute.post(SessionSource.registration.pathComponent, use: registerWithEmailVerification)
@@ -25,7 +28,7 @@ class AuthController: RouteCollection {
         }
         passwordProtectedAuthRoute.post(SessionSource.login.pathComponent, use: login)
         tokenProtectedAuthRoute.delete("logout", use: logout)
-        passwordProtectedAuthRoute.post("sendEmailVerificationEmail", use: sendEmailVerificationEmail)
+        passwordTokenProtectedRoute.post("sendEmailVerificationEmail", use: sendEmailVerificationEmail)
         authRoute.put("verifyEmail", ":tokenId", use: verifyEmail)
         authRoute.post("sendPasswordResetEmail", use: sendPasswordResetEmail)
         authRoute.put("resetPassword", ":tokenId", use: resetPassword)
@@ -96,6 +99,9 @@ class AuthController: RouteCollection {
             let loggedInUser = try req.auth.require(User.self)
             return Token.query(on: req.db)
                 .filter(\.$user.$id == loggedInUser.id ?? UUID())
+                .group(.or) { group in
+                    group.filter(\.$source == .registration).filter(\.$source == .login)
+                }
                 .delete()
                 .transform(to: HTTPStatus.ok)
         } catch let error {
@@ -150,6 +156,8 @@ class AuthController: RouteCollection {
     private func getVerifyEmailUrl(req: Request, tokenId: String) -> String {
         if let frontendBaseUrl = try? req.content.decode(UserData.self).frontendBaseUrl {
             return "\(frontendBaseUrl)/\(tokenId)"
+        } else if let frontendBaseUrl = try? req.content.decode(UserUpdate.self).frontendBaseUrl {
+            return "\(frontendBaseUrl)/\(tokenId)"
         } else {
             return "\(req.baseUrl)/view/verifyEmail/\(tokenId)"
         }
@@ -170,8 +178,12 @@ class AuthController: RouteCollection {
                     return req.fail(Exception.userDoesNotExist)
                 }
                 user.isEmailVerified = true
-                return user.save(on: req.db).flatMap {
-                    return token.delete(on: req.db).transform(to: HTTPStatus.ok)
+                if token.source == .emailVerification {
+                    return user.save(on: req.db).flatMap {
+                        return token.delete(on: req.db).transform(to: HTTPStatus.ok)
+                    }
+                } else {
+                    return user.save(on: req.db).transform(to: HTTPStatus.ok)
                 }
             }
         }
@@ -236,8 +248,12 @@ class AuthController: RouteCollection {
                     return req.fail(Exception.couldNotCreatePasswordHash)
                 }
                 user.passwordHash = passwordHash
-                return user.save(on: req.db).flatMap {
-                    return token.delete(on: req.db).transform(to: HTTPStatus.ok)
+                if token.source == .passwordReset {
+                    return user.save(on: req.db).flatMap {
+                        return token.delete(on: req.db).transform(to: HTTPStatus.ok)
+                    }
+                } else {
+                    return user.save(on: req.db).transform(to: HTTPStatus.ok)
                 }
             }
         }
