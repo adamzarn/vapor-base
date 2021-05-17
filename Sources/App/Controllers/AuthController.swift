@@ -21,7 +21,7 @@ class AuthController: RouteCollection {
             .grouped(UserBasicAuthenticator())
             .grouped(UserBearerAuthenticator())
 
-        if Constants.requireEmailVerification {
+        if Settings().requireEmailVerification {
             authRoute.post(SessionSource.registration.pathComponent, use: registerWithEmailVerification)
         } else {
             authRoute.post(SessionSource.registration.pathComponent, use: registerAndLogin)
@@ -139,7 +139,7 @@ class AuthController: RouteCollection {
                 let context = EmailVerificationEmailContext(name: user.firstName, verifyEmailUrl: verifyEmailUrl)
                 return req.leaf.render(LeafTemplate.verifyEmailEmail.rawValue, context).flatMapThrowing { view in
                     let html = String(buffer: view.data)
-                    let message = MailgunMessage(from: MailConstants.from,
+                    let message = MailgunMessage(from: MailSettings.from,
                                                  to: user.email,
                                                  subject: "Please verify your email",
                                                  text: "",
@@ -212,7 +212,7 @@ class AuthController: RouteCollection {
                 let context = PasswordResetEmailContext(name: user.firstName, passwordResetUrl: passwordResetUrl)
                 return req.leaf.render(LeafTemplate.passwordResetEmail.rawValue, context).flatMapThrowing { view in
                     let html = String(buffer: view.data)
-                    let message = MailgunMessage(from: MailConstants.from,
+                    let message = MailgunMessage(from: MailSettings.from,
                                                  to: user.email,
                                                  subject: "Password Reset",
                                                  text: "",

@@ -5,7 +5,8 @@ import Leaf
 public func routes(_ app: Application) throws {
 
     try app.register(collection: AuthController())
-    try app.register(collection: ViewController())
     try app.register(collection: UsersController())
+    try app.register(collection: SettingsController())
+    try app.register(collection: ViewController())
     
 }

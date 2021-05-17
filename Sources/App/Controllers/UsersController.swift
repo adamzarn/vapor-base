@@ -95,10 +95,10 @@ class UsersController: RouteCollection {
     
     private func getSearchRange(req: Request) -> (Int, Int) {
         guard let start = req.query[Int.self, at: "start"] else {
-            return (0, Constants.searchResultLimit)
+            return (0, Settings().searchResultLimit)
         }
         guard let end = req.query[Int.self, at: "end"], end >= start else {
-            return (start, start + Constants.searchResultLimit)
+            return (start, start + Settings().searchResultLimit)
         }
         return (start, end)
     }
@@ -247,7 +247,7 @@ class UsersController: RouteCollection {
     
     // MARK: Update User
     
-    func updateUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+    func updateUser(req: Request) throws -> EventLoopFuture<Settings> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
@@ -267,10 +267,10 @@ class UsersController: RouteCollection {
                         }
                         user.email = email
                         user.isEmailVerified = false
-                        return user.save(on: req.db).transform(to: HTTPStatus.ok)
+                        return user.save(on: req.db).transform(to: Settings())
                     }
                 }
-                return user.save(on: req.db).transform(to: HTTPStatus.ok)
+                return user.save(on: req.db).transform(to: Settings())
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)

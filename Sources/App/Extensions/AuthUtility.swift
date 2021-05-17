@@ -12,7 +12,7 @@ class AuthUtility {
     class func getAuthorizedUser(req: Request, mustBeAdmin: Bool = false) throws -> User {
         do {
             let user = try req.auth.require(User.self)
-            if Constants.requireEmailVerification && user.isEmailVerified == false {
+            if Settings().requireEmailVerification && user.isEmailVerified == false {
                 throw Exception.emailIsNotVerified
             }
             if user.isAdmin == false && mustBeAdmin {

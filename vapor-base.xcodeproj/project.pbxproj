@@ -24,9 +24,10 @@
 		DB029D5A25AA3DF300EC1FC7 /* UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */; };
 		DB4F697B26390795004A5F70 /* PasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F697A26390795004A5F70 /* PasswordReset.swift */; };
 		DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F69CB263DC352004A5F70 /* UserUpdate.swift */; };
+		DB55B3DA2652C45600E4D9BC /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB55B3D92652C45600E4D9BC /* SettingsController.swift */; };
 		DBCAB45B26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCAB45A26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift */; };
 		DBCAB4AC264B253D0089C4E8 /* AuthUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCAB4AB264B253D0089C4E8 /* AuthUtility.swift */; };
-		OBJ_2394 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Constants.swift */; };
+		OBJ_2394 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Settings.swift */; };
 		OBJ_2395 /* AuthController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* AuthController.swift */; };
 		OBJ_2396 /* UsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* UsersController.swift */; };
 		OBJ_2397 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* ViewController.swift */; };
@@ -6412,6 +6413,7 @@
 		DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatus.swift; sourceTree = "<group>"; };
 		DB4F697A26390795004A5F70 /* PasswordReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordReset.swift; sourceTree = "<group>"; };
 		DB4F69CB263DC352004A5F70 /* UserUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUpdate.swift; sourceTree = "<group>"; };
+		DB55B3D92652C45600E4D9BC /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		DBC8047B260A47F600C4F06D /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DBCAB45A26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseQuery+Filter+Method+Extension.swift"; sourceTree = "<group>"; };
 		DBCAB4AB264B253D0089C4E8 /* AuthUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthUtility.swift; sourceTree = "<group>"; };
@@ -8300,7 +8302,7 @@
 		OBJ_897 /* e_null.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = e_null.c; sourceTree = "<group>"; };
 		OBJ_898 /* e_rc2.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = e_rc2.c; sourceTree = "<group>"; };
 		OBJ_899 /* e_rc4.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = e_rc4.c; sourceTree = "<group>"; };
-		OBJ_9 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		OBJ_9 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		OBJ_90 /* LKDataValue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LKDataValue.swift; sourceTree = "<group>"; };
 		OBJ_900 /* e_tls.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = e_tls.c; sourceTree = "<group>"; };
 		OBJ_901 /* tls_cbc.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tls_cbc.c; sourceTree = "<group>"; };
@@ -9379,6 +9381,7 @@
 			children = (
 				OBJ_11 /* AuthController.swift */,
 				OBJ_12 /* UsersController.swift */,
+				DB55B3D92652C45600E4D9BC /* SettingsController.swift */,
 				OBJ_13 /* ViewController.swift */,
 			);
 			path = Controllers;
@@ -13715,7 +13718,7 @@
 		OBJ_8 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_9 /* Constants.swift */,
+				OBJ_9 /* Settings.swift */,
 				OBJ_10 /* Controllers */,
 				OBJ_14 /* Enums */,
 				OBJ_20 /* Errors */,
@@ -16411,7 +16414,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 0;
 			files = (
-				OBJ_2394 /* Constants.swift in Sources */,
+				OBJ_2394 /* Settings.swift in Sources */,
 				OBJ_2395 /* AuthController.swift in Sources */,
 				OBJ_2396 /* UsersController.swift in Sources */,
 				OBJ_2397 /* ViewController.swift in Sources */,
@@ -16435,6 +16438,7 @@
 				OBJ_2414 /* NewAdminStatus.swift in Sources */,
 				OBJ_2415 /* NewFollowingStatus.swift in Sources */,
 				OBJ_2416 /* NewPassword.swift in Sources */,
+				DB55B3DA2652C45600E4D9BC /* SettingsController.swift in Sources */,
 				OBJ_2417 /* UserBasicAuthenticator.swift in Sources */,
 				OBJ_2418 /* UserBearerAuthenticator.swift in Sources */,
 				OBJ_2419 /* NewSession.swift in Sources */,

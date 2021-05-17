@@ -36,7 +36,7 @@ final class User: Model, Content {
          email: String,
          passwordHash: String,
          isAdmin: Bool = false,
-         isEmailVerified: Bool = Constants.requireEmailVerification ? false : true) {
+         isEmailVerified: Bool = Settings().requireEmailVerification ? false : true) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
