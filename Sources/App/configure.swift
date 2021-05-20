@@ -24,8 +24,12 @@ public func configure(_ app: Application) throws {
     
     app.middleware.use(cors)
 
-    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory)) // Serves files from `Public/` directory
-    app.middleware.use(ErrorMiddleware.default(environment: app.environment)) // Catches errors and converts to HTTP response
+    // Serves files from `Public/` directory
+    app.routes.defaultMaxBodySize = ByteCount(integerLiteral: Settings().maxBodySizeInBytes)
+    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    
+    // Catches errors and converts to HTTP response
+    app.middleware.use(ErrorMiddleware.default(environment: app.environment))
     
     // Connect to Database
     if let databaseURL = Environment.get("DATABASE_URL") {

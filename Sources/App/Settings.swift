@@ -11,4 +11,6 @@ import Vapor
 struct Settings: Content {
     var requireEmailVerification: Bool = false
     var searchResultLimit: Int = 50
+    var allowedImageTypes: [String] = ["png", "jpeg", "jpg", "gif"]
+    var maxBodySizeInBytes: Int = 5*1_048_576
 }

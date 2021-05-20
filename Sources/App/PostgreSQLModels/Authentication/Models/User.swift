@@ -22,7 +22,7 @@ final class User: Model, Content {
     @Field(key: .passwordHash) var passwordHash: String
     @Field(key: .isAdmin) var isAdmin: Bool
     @Field(key: .isEmailVerified) var isEmailVerified: Bool
-    //@Field(key: .image) var image: Data?
+    @Field(key: .profilePhotoUrl) var profilePhotoUrl: String?
     @Timestamp(key: .updatedAt, on: .update) var updatedAt: Date?
     @Timestamp(key: .createdAt, on: .create) var createdAt: Date?
     
@@ -36,7 +36,8 @@ final class User: Model, Content {
          email: String,
          passwordHash: String,
          isAdmin: Bool = false,
-         isEmailVerified: Bool = Settings().requireEmailVerification ? false : true) {
+         isEmailVerified: Bool = Settings().requireEmailVerification ? false : true,
+         profilePhotoUrl: String? = nil) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
@@ -45,6 +46,7 @@ final class User: Model, Content {
         self.passwordHash = passwordHash
         self.isAdmin = isAdmin
         self.isEmailVerified = isEmailVerified
+        self.profilePhotoUrl = profilePhotoUrl
     }
     
     static func from(data: UserData) throws -> User {
@@ -76,6 +78,7 @@ final class User: Model, Content {
         let createdAt: Date?
         let isAdmin: Bool
         let isEmailVerified: Bool
+        let profilePhotoUrl: String?
     }
     
     func asPublic() throws -> Public {
@@ -87,7 +90,8 @@ final class User: Model, Content {
                       updatedAt: updatedAt,
                       createdAt: createdAt,
                       isAdmin: isAdmin,
-                      isEmailVerified: isEmailVerified)
+                      isEmailVerified: isEmailVerified,
+                      profilePhotoUrl: profilePhotoUrl)
     }
     
 }

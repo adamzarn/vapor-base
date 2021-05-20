@@ -25,6 +25,6 @@ extension FieldKey {
     static var isEmailVerified: Self { "isEmailVerified" }
     static var followingId: Self { "followingId" }
     static var followerId: Self { "followerId" }
-    static var image: Self { "image" }
+    static var profilePhotoUrl: Self { "profilePhotoUrl" }
     
 }

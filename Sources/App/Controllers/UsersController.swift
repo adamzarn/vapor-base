@@ -26,6 +26,7 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.get(":userId", ":followType", use: getFollows)
         tokenProtectedUsersRoute.delete(":userId", use: deleteUser)
         tokenProtectedUsersRoute.put(use: updateUser)
+        tokenProtectedUsersRoute.post("profilePhoto", use: uploadProfilePhoto)
         
     }
     
@@ -274,6 +275,61 @@ class UsersController: RouteCollection {
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
+        }
+    }
+    
+    // MARK: Upload Profile Photo
+    
+    func uploadProfilePhoto(req: Request) throws -> EventLoopFuture<String> {
+        do {
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
+            guard let userId = loggedInUser.id else {
+                return req.fail(Exception.missingUserId)
+            }
+            let photo = try req.content.decode(ProfilePhoto.self)
+            guard let ext = photo.file.extension?.lowercased(),
+                  Settings().allowedImageTypes.contains(ext) else {
+                return req.fail(Exception.invalidImageType)
+            }
+            
+            let profilePhotoInfo = ProfilePhotoInfo(req: req, userId: userId, ext: ext)
+            try FileManager.default.createDirectory(atPath: profilePhotoInfo.directoryPath,
+                                                    withIntermediateDirectories: true,
+                                                    attributes: nil)
+        
+            return saveProfilePhotoUrl(req: req,
+                                       userId: userId,
+                                       url: profilePhotoInfo.url).flatMap { exception in
+                if let exception = exception {
+                    return req.fail(exception)
+                }
+                return req.application.fileio.openFile(path: profilePhotoInfo.filePath,
+                                                       mode: .write,
+                                                       flags: .allowFileCreation(posixMode: S_IRWXU | S_IRWXG | S_IRWXO),
+                                                       eventLoop: req.eventLoop).flatMap { handle in
+                    req.application.fileio.write(fileHandle: handle,
+                                                 buffer: photo.file.data,
+                                                 eventLoop: req.eventLoop).flatMapThrowing { _ in
+                        try handle.close()
+                        return profilePhotoInfo.url
+                    }
+                }
+            }
+            
+        } catch let error {
+            return AuthUtility.getFailedFuture(for: error, req: req)
+        }
+    }
+    
+    func saveProfilePhotoUrl(req: Request,
+                             userId: UUID,
+                             url: String) -> EventLoopFuture<Exception?> {
+        return User.find(userId, on: req.db).flatMap { user in
+            guard let user = user else {
+                return req.success(Exception.userDoesNotExist)
+            }
+            user.profilePhotoUrl = url
+            return user.save(on: req.db).transform(to: nil)
         }
     }
     
