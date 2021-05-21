@@ -16,12 +16,31 @@ struct ProfilePhotoInfo {
     let req: Request
     let userId: UUID
     let ext: String
+    let existingUrl: String?
+    
+    init(_ req: Request,
+         _ userId: UUID,
+         ext: String = "",
+         existingUrl: String? = nil) {
+        self.req = req
+        self.userId = userId
+        self.ext = ext
+        self.existingUrl = existingUrl
+    }
+    
+    // MARK: New and Existing
     
     let folder = "images/profile-photos"
     
     var directoryPath: String {
-        return "\(req.application.directory.publicDirectory)/\(folder)"
+        return "\(req.application.directory.publicDirectory)\(folder)"
     }
+    
+    var url: String {
+        return "\(req.baseUrl)/\(folder)/\(filename)"
+    }
+    
+    // MARK: New
     
     var filename: String {
         return "\(userId.uuidString).\(ext)"
@@ -31,7 +50,16 @@ struct ProfilePhotoInfo {
         return "\(directoryPath)/\(filename)"
     }
     
-    var url: String {
-        return "\(req.baseUrl)/\(folder)/\(filename)"
+    // MARK: Existing
+    
+    var existingFilename: String? {
+        guard let url = existingUrl, let filename = url.split(separator: "/").last else { return nil }
+        return String(filename)
     }
+    
+    var existingFilePath: String? {
+        guard let filename = existingFilename else { return nil }
+        return "\(directoryPath)/\(filename)"
+    }
+    
 }

@@ -27,6 +27,7 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.delete(":userId", use: deleteUser)
         tokenProtectedUsersRoute.put(use: updateUser)
         tokenProtectedUsersRoute.post("profilePhoto", use: uploadProfilePhoto)
+        tokenProtectedUsersRoute.delete("profilePhoto", use: deleteProfilePhoto)
         
     }
     
@@ -292,7 +293,7 @@ class UsersController: RouteCollection {
                 return req.fail(Exception.invalidImageType)
             }
             
-            let profilePhotoInfo = ProfilePhotoInfo(req: req, userId: userId, ext: ext)
+            let profilePhotoInfo = ProfilePhotoInfo(req, userId, ext: ext)
             try FileManager.default.createDirectory(atPath: profilePhotoInfo.directoryPath,
                                                     withIntermediateDirectories: true,
                                                     attributes: nil)
@@ -316,6 +317,31 @@ class UsersController: RouteCollection {
                 }
             }
             
+        } catch let error {
+            return AuthUtility.getFailedFuture(for: error, req: req)
+        }
+    }
+    
+    // MARK: Delete Profile Photo
+    
+    func deleteProfilePhoto(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        do {
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
+            guard let userId = loggedInUser.id else {
+                return req.fail(Exception.missingUserId)
+            }
+            return User.find(userId, on: req.db).flatMap { user in
+                guard let user = user else {
+                    return req.fail(Exception.userDoesNotExist)
+                }
+                let profilePhotoInfo = ProfilePhotoInfo(req, userId, existingUrl: user.profilePhotoUrl)
+                guard let existingFilePath = profilePhotoInfo.existingFilePath else {
+                    return req.fail(Exception.unknown)
+                }
+                let _ = try? FileManager.default.removeItem(atPath: existingFilePath)
+                user.profilePhotoUrl = nil
+                return user.save(on: req.db).transform(to: HTTPStatus.ok)
+            }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }
