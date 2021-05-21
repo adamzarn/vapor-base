@@ -280,7 +280,7 @@ class UsersController: RouteCollection {
     
     // MARK: Upload Profile Photo
     
-    func uploadProfilePhoto(req: Request) throws -> EventLoopFuture<String> {
+    func uploadProfilePhoto(req: Request) throws -> EventLoopFuture<ProfilePhotoUploadResponse> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userId = loggedInUser.id else {
@@ -311,7 +311,7 @@ class UsersController: RouteCollection {
                                                  buffer: photo.file.data,
                                                  eventLoop: req.eventLoop).flatMapThrowing { _ in
                         try handle.close()
-                        return profilePhotoInfo.url
+                        return ProfilePhotoUploadResponse(url: profilePhotoInfo.url)
                     }
                 }
             }

@@ -26,6 +26,7 @@
 		DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F69CB263DC352004A5F70 /* UserUpdate.swift */; };
 		DB55B3DA2652C45600E4D9BC /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB55B3D92652C45600E4D9BC /* SettingsController.swift */; };
 		DB55B4C92656FEEB00E4D9BC /* ProfilePhoto.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB55B4C82656FEEB00E4D9BC /* ProfilePhoto.swift */; };
+		DB55B51A265830FE00E4D9BC /* ProfilePhotoUploadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB55B519265830FE00E4D9BC /* ProfilePhotoUploadResponse.swift */; };
 		DBCAB45B26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCAB45A26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift */; };
 		DBCAB4AC264B253D0089C4E8 /* AuthUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCAB4AB264B253D0089C4E8 /* AuthUtility.swift */; };
 		OBJ_2394 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_9 /* Settings.swift */; };
@@ -6416,6 +6417,7 @@
 		DB4F69CB263DC352004A5F70 /* UserUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUpdate.swift; sourceTree = "<group>"; };
 		DB55B3D92652C45600E4D9BC /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		DB55B4C82656FEEB00E4D9BC /* ProfilePhoto.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePhoto.swift; sourceTree = "<group>"; };
+		DB55B519265830FE00E4D9BC /* ProfilePhotoUploadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfilePhotoUploadResponse.swift; sourceTree = "<group>"; };
 		DBC8047B260A47F600C4F06D /* View.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = View.xib; sourceTree = "<group>"; };
 		DBCAB45A26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseQuery+Filter+Method+Extension.swift"; sourceTree = "<group>"; };
 		DBCAB4AB264B253D0089C4E8 /* AuthUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthUtility.swift; sourceTree = "<group>"; };
@@ -12343,6 +12345,7 @@
 				DB4F697A26390795004A5F70 /* PasswordReset.swift */,
 				DB4F69CB263DC352004A5F70 /* UserUpdate.swift */,
 				DB55B4C82656FEEB00E4D9BC /* ProfilePhoto.swift */,
+				DB55B519265830FE00E4D9BC /* ProfilePhotoUploadResponse.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -16429,6 +16432,7 @@
 				OBJ_2403 /* Exception.swift in Sources */,
 				OBJ_2404 /* Request+Extensions.swift in Sources */,
 				OBJ_2405 /* CreateFollowingFollowers.swift in Sources */,
+				DB55B51A265830FE00E4D9BC /* ProfilePhotoUploadResponse.swift in Sources */,
 				OBJ_2406 /* CreateTokens.swift in Sources */,
 				DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */,
 				OBJ_2407 /* CreateUsers.swift in Sources */,
