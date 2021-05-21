@@ -335,10 +335,9 @@ class UsersController: RouteCollection {
                     return req.fail(Exception.userDoesNotExist)
                 }
                 let profilePhotoInfo = ProfilePhotoInfo(req, userId, existingUrl: user.profilePhotoUrl)
-                guard let existingFilePath = profilePhotoInfo.existingFilePath else {
-                    return req.fail(Exception.unknown)
+                if let existingFilePath = profilePhotoInfo.existingFilePath {
+                    try? FileManager.default.removeItem(atPath: existingFilePath)
                 }
-                let _ = try? FileManager.default.removeItem(atPath: existingFilePath)
                 user.profilePhotoUrl = nil
                 return user.save(on: req.db).transform(to: HTTPStatus.ok)
             }
