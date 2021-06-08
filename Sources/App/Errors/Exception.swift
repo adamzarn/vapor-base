@@ -27,6 +27,7 @@ enum Exception: String, AbortError {
     case missingFollowType
     case invalidFollowType
     case invalidImageType
+    case invalidPost
     case unknown
     
     var reason: String {
@@ -50,6 +51,7 @@ enum Exception: String, AbortError {
         case .missingFollowType: description = "You must provide a follow type of followers or following"
         case .invalidFollowType: description = "You must provide a follow type of followers or following"
         case .invalidImageType: description = "Images must have one of the following extensions: \(Settings().allowedImageTypes)"
+        case .invalidPost: description = "You must provide a valid post object."
         case .unknown: description = "An unknown exception occurred."
         }
         return "\(rawValue): \(description)"
@@ -75,6 +77,7 @@ enum Exception: String, AbortError {
         case .missingFollowType: return .badRequest
         case .invalidFollowType: return .badRequest
         case .invalidImageType: return .badRequest
+        case .invalidPost: return .badRequest
         case .unknown: return .internalServerError
         }
     }

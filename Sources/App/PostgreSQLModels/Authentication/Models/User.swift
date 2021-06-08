@@ -28,6 +28,9 @@ final class User: Model, Content {
     
     @Siblings(through: FollowingFollower.self, from: \.$following, to: \.$follower) var followers: [User]
     @Siblings(through: FollowingFollower.self, from: \.$follower, to: \.$following) var following: [User]
+    
+    @Children(for: \.$user)
+    var posts: [Post]
 
     init(id: User.IDValue? = nil,
          firstName: String?,
@@ -66,6 +69,11 @@ final class User: Model, Content {
                          token: [UInt8].random(count: 16).base64,
                          source: source,
                          expiresAt: expiryDate)
+    }
+    
+    func createPost(from data: NewPost) throws -> Post {
+        return try Post(userId: try requireID(),
+                        text: data.text)
     }
     
     struct Public: Content {

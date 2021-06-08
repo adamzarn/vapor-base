@@ -68,7 +68,7 @@ class UsersController: RouteCollection {
         do {
             let _ = try AuthUtility.getAuthorizedUser(req: req)
             let query = req.query[String.self, at: "query"] ?? ""
-            let (start, end) = getSearchRange(req: req)
+            let (start, end) = req.searchRange
             let queryBuilder = User.query(on: req.db).group(.or) { group in
                 group.filter(\.$firstName, .caseInsensitiveContains, "%\(query)%")
                     .filter(\.$lastName, .caseInsensitiveContains, "%\(query)%")
@@ -93,16 +93,6 @@ class UsersController: RouteCollection {
         } else {
             return queryBuilder.range(start..<end).all()
         }
-    }
-    
-    private func getSearchRange(req: Request) -> (Int, Int) {
-        guard let start = req.query[Int.self, at: "start"] else {
-            return (0, Settings().searchResultLimit)
-        }
-        guard let end = req.query[Int.self, at: "end"], end >= start else {
-            return (start, start + Settings().searchResultLimit)
-        }
-        return (start, end)
     }
     
     // MARK: Set Admin Status

@@ -22,7 +22,7 @@ final class Token: Model, Content {
     
     @Parent(key: .userId) var user: User
   
-    init(id: UUID? = nil,
+    init(id: Token.IDValue? = nil,
          userId: User.IDValue,
          token: String,
          source: SessionSource,

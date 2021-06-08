@@ -22,6 +22,11 @@
 
 /* Begin PBXBuildFile section */
 		DB029D5A25AA3DF300EC1FC7 /* UserStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */; };
+		DB163130266EBD1E009B3CD3 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB16312F266EBD1E009B3CD3 /* Post.swift */; };
+		DB163181266EBE7E009B3CD3 /* PostsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB163180266EBE7E009B3CD3 /* PostsController.swift */; };
+		DB1631D2266EBEF0009B3CD3 /* CreatePosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1631D1266EBEF0009B3CD3 /* CreatePosts.swift */; };
+		DB163223266EC062009B3CD3 /* NewPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB163222266EC062009B3CD3 /* NewPost.swift */; };
+		DB163274266F2390009B3CD3 /* MyPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB163273266F2390009B3CD3 /* MyPost.swift */; };
 		DB4F697B26390795004A5F70 /* PasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F697A26390795004A5F70 /* PasswordReset.swift */; };
 		DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F69CB263DC352004A5F70 /* UserUpdate.swift */; };
 		DB55B3DA2652C45600E4D9BC /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB55B3D92652C45600E4D9BC /* SettingsController.swift */; };
@@ -6413,6 +6418,11 @@
 
 /* Begin PBXFileReference section */
 		DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserStatus.swift; sourceTree = "<group>"; };
+		DB16312F266EBD1E009B3CD3 /* Post.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
+		DB163180266EBE7E009B3CD3 /* PostsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsController.swift; sourceTree = "<group>"; };
+		DB1631D1266EBEF0009B3CD3 /* CreatePosts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePosts.swift; sourceTree = "<group>"; };
+		DB163222266EC062009B3CD3 /* NewPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPost.swift; sourceTree = "<group>"; };
+		DB163273266F2390009B3CD3 /* MyPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPost.swift; sourceTree = "<group>"; };
 		DB4F697A26390795004A5F70 /* PasswordReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordReset.swift; sourceTree = "<group>"; };
 		DB4F69CB263DC352004A5F70 /* UserUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUpdate.swift; sourceTree = "<group>"; };
 		DB55B3D92652C45600E4D9BC /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
@@ -9387,6 +9397,7 @@
 				OBJ_12 /* UsersController.swift */,
 				DB55B3D92652C45600E4D9BC /* SettingsController.swift */,
 				OBJ_13 /* ViewController.swift */,
+				DB163180266EBE7E009B3CD3 /* PostsController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -12292,6 +12303,7 @@
 				OBJ_25 /* CreateFollowingFollowers.swift */,
 				OBJ_26 /* CreateTokens.swift */,
 				OBJ_27 /* CreateUsers.swift */,
+				DB1631D1266EBEF0009B3CD3 /* CreatePosts.swift */,
 			);
 			path = Migrations;
 			sourceTree = "<group>";
@@ -12346,6 +12358,8 @@
 				DB4F69CB263DC352004A5F70 /* UserUpdate.swift */,
 				DB55B4C82656FEEB00E4D9BC /* ProfilePhoto.swift */,
 				DB55B519265830FE00E4D9BC /* ProfilePhotoUploadResponse.swift */,
+				DB163222266EC062009B3CD3 /* NewPost.swift */,
+				DB163273266F2390009B3CD3 /* MyPost.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -12646,6 +12660,7 @@
 			children = (
 				OBJ_40 /* Authentication */,
 				OBJ_48 /* FollowingFollower.swift */,
+				DB16312F266EBD1E009B3CD3 /* Post.swift */,
 			);
 			path = PostgreSQLModels;
 			sourceTree = "<group>";
@@ -16433,6 +16448,7 @@
 				OBJ_2404 /* Request+Extensions.swift in Sources */,
 				OBJ_2405 /* CreateFollowingFollowers.swift in Sources */,
 				DB55B51A265830FE00E4D9BC /* ProfilePhotoUploadResponse.swift in Sources */,
+				DB163181266EBE7E009B3CD3 /* PostsController.swift in Sources */,
 				OBJ_2406 /* CreateTokens.swift in Sources */,
 				DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */,
 				OBJ_2407 /* CreateUsers.swift in Sources */,
@@ -16444,19 +16460,23 @@
 				OBJ_2413 /* ResetPasswordContext.swift in Sources */,
 				OBJ_2414 /* NewAdminStatus.swift in Sources */,
 				OBJ_2415 /* NewFollowingStatus.swift in Sources */,
+				DB163130266EBD1E009B3CD3 /* Post.swift in Sources */,
 				OBJ_2416 /* NewPassword.swift in Sources */,
 				DB55B3DA2652C45600E4D9BC /* SettingsController.swift in Sources */,
 				OBJ_2417 /* UserBasicAuthenticator.swift in Sources */,
 				OBJ_2418 /* UserBearerAuthenticator.swift in Sources */,
 				DB55B4C92656FEEB00E4D9BC /* ProfilePhoto.swift in Sources */,
 				OBJ_2419 /* NewSession.swift in Sources */,
+				DB163274266F2390009B3CD3 /* MyPost.swift in Sources */,
 				OBJ_2420 /* Token.swift in Sources */,
 				OBJ_2421 /* User.swift in Sources */,
+				DB1631D2266EBEF0009B3CD3 /* CreatePosts.swift in Sources */,
 				OBJ_2422 /* FollowingFollower.swift in Sources */,
 				DBCAB45B26486A960089C4E8 /* DatabaseQuery+Filter+Method+Extension.swift in Sources */,
 				OBJ_2423 /* APIKeys.swift in Sources */,
 				DB029D5A25AA3DF300EC1FC7 /* UserStatus.swift in Sources */,
 				OBJ_2424 /* MailSettings.swift in Sources */,
+				DB163223266EC062009B3CD3 /* NewPost.swift in Sources */,
 				DB4F697B26390795004A5F70 /* PasswordReset.swift in Sources */,
 				OBJ_2425 /* MailgunDomain+Extension.swift in Sources */,
 				OBJ_2426 /* SMTPCredentials.swift in Sources */,

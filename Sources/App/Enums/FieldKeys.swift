@@ -26,5 +26,6 @@ extension FieldKey {
     static var followingId: Self { "followingId" }
     static var followerId: Self { "followerId" }
     static var profilePhotoUrl: Self { "profilePhotoUrl" }
+    static var text: Self { "text" }
     
 }

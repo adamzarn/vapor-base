@@ -26,4 +26,13 @@ extension Request {
         return "\(scheme)://\(host):\(port)"
     }
     
+    var searchRange: (Int, Int) {
+        guard let start = self.query[Int.self, at: "start"] else {
+            return (0, Settings().searchResultLimit)
+        }
+        guard let end = self.query[Int.self, at: "end"], end >= start else {
+            return (start, start + Settings().searchResultLimit)
+        }
+        return (start, end)
+    }
 }

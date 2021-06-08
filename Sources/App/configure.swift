@@ -42,6 +42,7 @@ public func configure(_ app: Application) throws {
     app.migrations.add(CreateUsers(), to: .psql)
     app.migrations.add(CreateTokens(), to: .psql)
     app.migrations.add(CreateFollowingFollowers(), to: .psql)
+    app.migrations.add(CreatePosts(), to: .psql)
     
     try app.autoMigrate().wait()
     
