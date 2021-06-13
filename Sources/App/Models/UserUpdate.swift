@@ -13,5 +13,6 @@ struct UserUpdate: Content {
     let lastName: String?
     let username: String?
     let email: String?
+    let isAdmin: Bool?
     let frontendBaseUrl: String?
 }

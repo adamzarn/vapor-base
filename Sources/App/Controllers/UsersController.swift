@@ -21,11 +21,12 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.get(":userId", use: getUser)
         usersRoute.get("status", use: getUserStatusWithEmail)
         tokenProtectedUsersRoute.get("search", use: searchUsers)
-        tokenProtectedUsersRoute.put(":userId", "setAdminStatus", use: setAdminStatus)
-        tokenProtectedUsersRoute.post(":userId", "setFollowingStatus", use: setFollowingStatus)
+        tokenProtectedUsersRoute.post(":userId", "follow", use: follow)
+        tokenProtectedUsersRoute.delete(":userId", "unfollow", use: unfollow)
         tokenProtectedUsersRoute.get(":userId", ":followType", use: getFollows)
         tokenProtectedUsersRoute.delete(":userId", use: deleteUser)
         tokenProtectedUsersRoute.put(use: updateUser)
+        tokenProtectedUsersRoute.put(":userId", use: updateUser)
         tokenProtectedUsersRoute.post("profilePhoto", use: uploadProfilePhoto)
         tokenProtectedUsersRoute.delete("profilePhoto", use: deleteProfilePhoto)
         
@@ -95,43 +96,25 @@ class UsersController: RouteCollection {
         }
     }
     
-    // MARK: Set Admin Status
-    
-    func setAdminStatus(req: Request) throws -> EventLoopFuture<User.Public> {
-        do {
-            let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: true)
-            guard let newAdminStatus = try? req.content.decode(NewAdminStatus.self) else {
-                return req.fail(Exception.missingAdminStatus)
-            }
-            guard let userId = req.parameters.get("userId") else {
-                return req.fail(Exception.missingUserId)
-            }
-            return User.find(UUID(uuidString: userId), on: req.db).flatMap { user in
-                guard let user = user else {
-                    return req.fail(Exception.userDoesNotExist)
-                }
-                user.isAdmin = newAdminStatus.isAdmin
-                return user.save(on: req.db).flatMapThrowing { try user.asPublic() }
-            }
-        } catch let error {
-            return AuthUtility.getFailedFuture(for: error, req: req)
-        }
-    }
-    
     // MARK: Set Following Status
     
-    func setFollowingStatus(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+    func follow(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        try setFollowingStatus(req: req, to: true)
+    }
+    
+    func unfollow(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        try setFollowingStatus(req: req, to: false)
+    }
+    
+    func setFollowingStatus(req: Request, to newFollowingStatus: Bool) throws -> EventLoopFuture<HTTPStatus> {
         do {
             let loggedInUser = try req.auth.require(User.self)
-            guard let followerId = getUserId(loggedInUser: loggedInUser, req: req) else {
+            guard let userId = loggedInUser.id,
+                  let otherUserId = req.parameters.get("userId") else {
                 return req.fail(Exception.missingUserId)
             }
-            let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: followerId != loggedInUser.id && !loggedInUser.isAdmin)
-            guard let newFollowingStatus = try? req.content.decode(NewFollowingStatus.self) else {
-                return req.fail(Exception.missingFollowingStatus)
-            }
-            return User.find(followerId, on: req.db).flatMap { user in
-                return User.find(newFollowingStatus.otherUserId, on: req.db).flatMap { otherUser in
+            return User.find(userId, on: req.db).flatMap { user in
+                return User.find(UUID(otherUserId), on: req.db).flatMap { otherUser in
                     guard let user = user, let otherUser = otherUser else {
                         return req.fail(Exception.userDoesNotExist)
                     }
@@ -141,7 +124,7 @@ class UsersController: RouteCollection {
                         .filter(\.$following.$id == otherUser.id ?? UUID())
                         .first()
                         .flatMap { existingConnection in
-                        if newFollowingStatus.follow {
+                        if newFollowingStatus == true {
                             guard existingConnection == nil else {
                                 return req.success(HTTPStatus.ok)
                             }
@@ -245,13 +228,17 @@ class UsersController: RouteCollection {
             guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
                 return req.fail(Exception.missingUserUpdate)
             }
-            return User.find(loggedInUser.id, on: req.db).flatMap { user in
+            guard let userId = req.parameters.get("userId") ?? loggedInUser.id else {
+                return req.fail(Exception.missingUserId)
+            }
+            return User.find(userId, on: req.db).flatMap { user in
                 guard let user = user else {
                     return req.fail(Exception.userDoesNotExist)
                 }
                 if let firstName = userUpdate.firstName { user.firstName = firstName }
                 if let lastName = userUpdate.lastName { user.lastName = lastName }
                 if let username = userUpdate.username { user.username = username }
+                if let isAdmin = userUpdate.isAdmin { user.isAdmin = isAdmin }
                 if let email = userUpdate.email {
                     return User.query(on: req.db).filter(\.$email == email).first().flatMap { existingUser in
                         if existingUser != nil {

@@ -28,8 +28,16 @@ final class Post: Model, Content {
         self.text = text
     }
     
-    func asMyPost() throws -> MyPost {
-        return MyPost(id: try requireID(),
+    struct Public: Content {
+        let id: UUID
+        let userId: UUID?
+        let text: String
+        let createdAt: Date?
+    }
+    
+    func asPublic() throws -> Post.Public {
+        return Public(id: try requireID(),
+                      userId: $user.id,
                       text: text,
                       createdAt: createdAt)
     }

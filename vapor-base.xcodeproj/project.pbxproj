@@ -26,7 +26,6 @@
 		DB163181266EBE7E009B3CD3 /* PostsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB163180266EBE7E009B3CD3 /* PostsController.swift */; };
 		DB1631D2266EBEF0009B3CD3 /* CreatePosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1631D1266EBEF0009B3CD3 /* CreatePosts.swift */; };
 		DB163223266EC062009B3CD3 /* NewPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB163222266EC062009B3CD3 /* NewPost.swift */; };
-		DB163274266F2390009B3CD3 /* MyPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB163273266F2390009B3CD3 /* MyPost.swift */; };
 		DB4F697B26390795004A5F70 /* PasswordReset.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F697A26390795004A5F70 /* PasswordReset.swift */; };
 		DB4F69CC263DC352004A5F70 /* UserUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB4F69CB263DC352004A5F70 /* UserUpdate.swift */; };
 		DB55B3DA2652C45600E4D9BC /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB55B3D92652C45600E4D9BC /* SettingsController.swift */; };
@@ -55,7 +54,6 @@
 		OBJ_2412 /* ProfileContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_34 /* ProfileContext.swift */; };
 		OBJ_2413 /* ResetPasswordContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_35 /* ResetPasswordContext.swift */; };
 		OBJ_2414 /* NewAdminStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_36 /* NewAdminStatus.swift */; };
-		OBJ_2415 /* NewFollowingStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_37 /* NewFollowingStatus.swift */; };
 		OBJ_2416 /* NewPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_38 /* NewPassword.swift */; };
 		OBJ_2417 /* UserBasicAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_42 /* UserBasicAuthenticator.swift */; };
 		OBJ_2418 /* UserBearerAuthenticator.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_43 /* UserBearerAuthenticator.swift */; };
@@ -6422,7 +6420,6 @@
 		DB163180266EBE7E009B3CD3 /* PostsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsController.swift; sourceTree = "<group>"; };
 		DB1631D1266EBEF0009B3CD3 /* CreatePosts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreatePosts.swift; sourceTree = "<group>"; };
 		DB163222266EC062009B3CD3 /* NewPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPost.swift; sourceTree = "<group>"; };
-		DB163273266F2390009B3CD3 /* MyPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPost.swift; sourceTree = "<group>"; };
 		DB4F697A26390795004A5F70 /* PasswordReset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordReset.swift; sourceTree = "<group>"; };
 		DB4F69CB263DC352004A5F70 /* UserUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserUpdate.swift; sourceTree = "<group>"; };
 		DB55B3D92652C45600E4D9BC /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
@@ -7837,7 +7834,6 @@
 		OBJ_366 /* DatabaseQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseQuery.swift; sourceTree = "<group>"; };
 		OBJ_367 /* QueryHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryHistory.swift; sourceTree = "<group>"; };
 		OBJ_369 /* DatabaseSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseSchema.swift; sourceTree = "<group>"; };
-		OBJ_37 /* NewFollowingStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewFollowingStatus.swift; sourceTree = "<group>"; };
 		OBJ_370 /* SchemaBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaBuilder.swift; sourceTree = "<group>"; };
 		OBJ_372 /* OptionalType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalType.swift; sourceTree = "<group>"; };
 		OBJ_373 /* RandomGeneratable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RandomGeneratable.swift; sourceTree = "<group>"; };
@@ -12351,7 +12347,6 @@
 			children = (
 				OBJ_29 /* Contexts */,
 				OBJ_36 /* NewAdminStatus.swift */,
-				OBJ_37 /* NewFollowingStatus.swift */,
 				OBJ_38 /* NewPassword.swift */,
 				DB029D5925AA3DF300EC1FC7 /* UserStatus.swift */,
 				DB4F697A26390795004A5F70 /* PasswordReset.swift */,
@@ -12359,7 +12354,6 @@
 				DB55B4C82656FEEB00E4D9BC /* ProfilePhoto.swift */,
 				DB55B519265830FE00E4D9BC /* ProfilePhotoUploadResponse.swift */,
 				DB163222266EC062009B3CD3 /* NewPost.swift */,
-				DB163273266F2390009B3CD3 /* MyPost.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -16459,7 +16453,6 @@
 				OBJ_2412 /* ProfileContext.swift in Sources */,
 				OBJ_2413 /* ResetPasswordContext.swift in Sources */,
 				OBJ_2414 /* NewAdminStatus.swift in Sources */,
-				OBJ_2415 /* NewFollowingStatus.swift in Sources */,
 				DB163130266EBD1E009B3CD3 /* Post.swift in Sources */,
 				OBJ_2416 /* NewPassword.swift in Sources */,
 				DB55B3DA2652C45600E4D9BC /* SettingsController.swift in Sources */,
@@ -16467,7 +16460,6 @@
 				OBJ_2418 /* UserBearerAuthenticator.swift in Sources */,
 				DB55B4C92656FEEB00E4D9BC /* ProfilePhoto.swift in Sources */,
 				OBJ_2419 /* NewSession.swift in Sources */,
-				DB163274266F2390009B3CD3 /* MyPost.swift in Sources */,
 				OBJ_2420 /* Token.swift in Sources */,
 				OBJ_2421 /* User.swift in Sources */,
 				DB1631D2266EBEF0009B3CD3 /* CreatePosts.swift in Sources */,

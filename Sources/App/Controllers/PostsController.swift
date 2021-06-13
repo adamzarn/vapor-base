@@ -35,7 +35,7 @@ class PostsController: RouteCollection {
         }
     }
     
-    func getMyPosts(req: Request) throws -> EventLoopFuture<[MyPost]> {
+    func getMyPosts(req: Request) throws -> EventLoopFuture<[Post.Public]> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userId = loggedInUser.id else {
@@ -47,14 +47,14 @@ class PostsController: RouteCollection {
                 .range(start..<end)
                 .all()
                 .flatMapThrowing { posts in
-                    return try posts.compactMap { try $0.asMyPost() }
+                    return try posts.compactMap { try $0.asPublic() }
                 }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }
     }
     
-    func getFeed(req: Request) throws -> EventLoopFuture<[Post]> {
+    func getFeed(req: Request) throws -> EventLoopFuture<[Post.Public]> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             return loggedInUser.$following.query(on: req.db).all().flatMap { users in
@@ -64,7 +64,9 @@ class PostsController: RouteCollection {
                         .filter(\.$user.$id ~~ userIdsOfFollowing)
                         .range(start..<end)
                         .sort(\.$createdAt, .descending)
-                        .all()
+                        .all().flatMapThrowing { posts in
+                            return try posts.compactMap { try $0.asPublic() }
+                        }
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
