@@ -25,7 +25,8 @@ class PostsController: RouteCollection {
     func createPost(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
-            guard let postData = try? req.content.decode(NewPost.self) else {
+            guard let postData = try? req.content.decode(NewPost.self),
+                  postData.text.isEmpty == false else {
                 return req.fail(Exception.invalidPost)
             }
             let post = try loggedInUser.createPost(from: postData)
@@ -58,11 +59,14 @@ class PostsController: RouteCollection {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             return loggedInUser.$following.query(on: req.db).all().flatMap { users in
-                let userIdsOfFollowing = users.compactMap { $0.id }
+                var userIds = users.compactMap { $0.id }
+                if let loggedInUserId = loggedInUser.id {
+                    userIds.append(loggedInUserId)
+                }
                 let (start, end) = req.searchRange
                 return Post.query(on: req.db)
                     .with(\.$user)
-                    .filter(\.$user.$id ~~ userIdsOfFollowing)
+                    .filter(\.$user.$id ~~ userIds)
                     .range(start..<end)
                     .sort(\.$createdAt, .descending)
                     .all().flatMapThrowing { posts in

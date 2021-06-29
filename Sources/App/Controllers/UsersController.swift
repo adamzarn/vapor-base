@@ -82,7 +82,9 @@ class UsersController: RouteCollection {
                         .filter(\.$username, .caseInsensitiveContains, "%\(query)%")
                         .filter(\.$email, .caseInsensitiveContains, "%\(query)%")
                 }
-                futureUsers = futureUsers.filter(\.$id != user.id ?? UUID())
+                if let excludeMe = req.query[String.self, at: "excludeMe"], excludeMe == "yes" {
+                    futureUsers = futureUsers.filter(\.$id != user.id ?? UUID())
+                }
                 futureUsers = self.addAdminFilter(to: futureUsers, req: req)
                 futureUsers = self.addFollowsFilter(to: futureUsers, user: user, req: req)
                 let (start, end) = req.searchRange
