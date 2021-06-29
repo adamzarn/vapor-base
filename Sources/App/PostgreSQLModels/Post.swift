@@ -30,14 +30,14 @@ final class Post: Model, Content {
     
     struct Public: Content {
         let id: UUID
-        let userId: UUID?
+        let user: User.Public?
         let text: String
         let createdAt: Date?
     }
     
     func asPublic() throws -> Post.Public {
         return Public(id: try requireID(),
-                      userId: $user.id,
+                      user: try user.asPublic(),
                       text: text,
                       createdAt: createdAt)
     }

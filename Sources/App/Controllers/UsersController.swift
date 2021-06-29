@@ -29,7 +29,6 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.put(":userId", use: updateUser)
         tokenProtectedUsersRoute.post("profilePhoto", use: uploadProfilePhoto)
         tokenProtectedUsersRoute.delete("profilePhoto", use: deleteProfilePhoto)
-        
     }
     
     // MARK: Get User
@@ -38,7 +37,7 @@ class UsersController: RouteCollection {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
-                return req.fail(Exception.missingUserId)
+                return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMapThrowing { user in
                 guard let user = user else { throw Exception.userDoesNotExist }
@@ -67,33 +66,65 @@ class UsersController: RouteCollection {
     
     func searchUsers(req: Request) throws -> EventLoopFuture<[User.Public]> {
         do {
-            let _ = try AuthUtility.getAuthorizedUser(req: req)
-            let query = req.query[String.self, at: "query"] ?? ""
-            let (start, end) = req.searchRange
-            let queryBuilder = User.query(on: req.db).group(.or) { group in
-                group.filter(\.$firstName, .caseInsensitiveContains, "%\(query)%")
-                    .filter(\.$lastName, .caseInsensitiveContains, "%\(query)%")
-                    .filter(\.$username, .caseInsensitiveContains, "%\(query)%")
-                    .filter(\.$email, .caseInsensitiveContains, "%\(query)%")
-            }
-            let futureUsers = addAdminFilter(to: queryBuilder, req: req, start: start, end: end)
-            return futureUsers.flatMapThrowing { users in
-                return try users.compactMap { try $0.asPublic() }
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
+            return User.query(on: req.db)
+                .filter(\.$id == loggedInUser.id ?? UUID())
+                .with(\.$followers)
+                .with(\.$following).first().flatMap { user in
+                guard let user = user else {
+                    return req.fail(Exception.userDoesNotExist)
+                }
+                let query = req.query[String.self, at: "query"] ?? ""
+                var futureUsers = User.query(on: req.db)
+                    .group(.or) { group in
+                    group.filter(\.$firstName, .caseInsensitiveContains, "%\(query)%")
+                        .filter(\.$lastName, .caseInsensitiveContains, "%\(query)%")
+                        .filter(\.$username, .caseInsensitiveContains, "%\(query)%")
+                        .filter(\.$email, .caseInsensitiveContains, "%\(query)%")
+                }
+                futureUsers = futureUsers.filter(\.$id != user.id ?? UUID())
+                futureUsers = self.addAdminFilter(to: futureUsers, req: req)
+                futureUsers = self.addFollowsFilter(to: futureUsers, user: user, req: req)
+                let (start, end) = req.searchRange
+                return futureUsers.range(start..<end).all().flatMapThrowing { users in
+                    return try users.compactMap { try $0.asPublic() }
+                }
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }
     }
     
-    private func addAdminFilter(to queryBuilder: QueryBuilder<User>, req: Request, start: Int, end: Int) -> EventLoopFuture<[User]> {
-        if let isAdminString = req.query[String.self, at: "isAdmin"], ["yes", "no"].contains(isAdminString) {
-            let isAdmin = isAdminString == "yes"
-            let queryBuilder = queryBuilder.filter(\.$isAdmin == isAdmin)
-            // Return all results if only retrieving admins
-            return isAdmin ? queryBuilder.all() : queryBuilder.range(start..<end).all()
-        } else {
-            return queryBuilder.range(start..<end).all()
+    private func addAdminFilter(to queryBuilder: QueryBuilder<User>,
+                                req: Request) -> QueryBuilder<User> {
+        guard let isAdminString = req.query[String.self, at: "isAdmin"],
+              ["yes", "no"].contains(isAdminString) else { return queryBuilder }
+        return queryBuilder.filter(\.$isAdmin == (isAdminString == "yes"))
+    }
+    
+    private func addFollowsFilter(to queryBuilder: QueryBuilder<User>,
+                                  user: User,
+                                  req: Request) -> QueryBuilder<User> {
+        var newQueryBuilder = queryBuilder
+        if let isFollower = req.query[String.self, at: "isFollower"],
+           ["yes", "no"].contains(isFollower) {
+            let userIdsOfFollowers = user.followers.compactMap { $0.id }
+            if isFollower == "yes" {
+                newQueryBuilder = queryBuilder.filter(\.$id ~~ userIdsOfFollowers)
+            } else {
+                newQueryBuilder = queryBuilder.filter(\.$id !~ userIdsOfFollowers)
+            }
         }
+        if let isFollowing = req.query[String.self, at: "isFollowing"],
+           ["yes", "no"].contains(isFollowing) {
+            let userIdsOfFollowing = user.following.compactMap { $0.id }
+            if isFollowing == "yes" {
+                newQueryBuilder = queryBuilder.filter(\.$id ~~ userIdsOfFollowing)
+            } else {
+                newQueryBuilder = queryBuilder.filter(\.$id !~ userIdsOfFollowing)
+            }
+        }
+        return newQueryBuilder
     }
     
     // MARK: Set Following Status
@@ -149,7 +180,7 @@ class UsersController: RouteCollection {
         do {
             let loggedInUser = try req.auth.require(User.self)
             guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
-                return req.fail(Exception.missingUserId)
+                return req.fail(Exception.invalidUserId)
             }
             guard let followType = req.parameters.get("followType") else {
                 return req.fail(Exception.missingFollowType)
@@ -190,7 +221,7 @@ class UsersController: RouteCollection {
         do {
             let loggedInUser = try req.auth.require(User.self)
             guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
-                return req.fail(Exception.missingUserId)
+                return req.fail(Exception.invalidUserId)
             }
             let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: userId != loggedInUser.id)
             return User.find(userId, on: req.db).flatMap { user in
@@ -222,14 +253,14 @@ class UsersController: RouteCollection {
     
     // MARK: Update User
     
-    func updateUser(req: Request) throws -> EventLoopFuture<Settings> {
+    func updateUser(req: Request) throws -> EventLoopFuture<UserUpdateResponse> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
                 return req.fail(Exception.missingUserUpdate)
             }
-            guard let userId = req.parameters.get("userId") ?? loggedInUser.id else {
-                return req.fail(Exception.missingUserId)
+            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
+                return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMap { user in
                 guard let user = user else {
@@ -239,6 +270,7 @@ class UsersController: RouteCollection {
                 if let lastName = userUpdate.lastName { user.lastName = lastName }
                 if let username = userUpdate.username { user.username = username }
                 if let isAdmin = userUpdate.isAdmin { user.isAdmin = isAdmin }
+                let response = UserUpdateResponse()
                 if let email = userUpdate.email {
                     return User.query(on: req.db).filter(\.$email == email).first().flatMap { existingUser in
                         if existingUser != nil {
@@ -246,10 +278,10 @@ class UsersController: RouteCollection {
                         }
                         user.email = email
                         user.isEmailVerified = false
-                        return user.save(on: req.db).transform(to: Settings())
+                        return user.save(on: req.db).transform(to: response)
                     }
                 }
-                return user.save(on: req.db).transform(to: Settings())
+                return user.save(on: req.db).transform(to: response)
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)

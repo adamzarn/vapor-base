@@ -11,6 +11,7 @@ import Vapor
 enum Exception: String, AbortError {
     case userAlreadyExists
     case missingUserId
+    case invalidUserId
     case missingTokenId
     case userDoesNotExist
     case missingAdminStatus
@@ -35,6 +36,7 @@ enum Exception: String, AbortError {
         switch self {
         case .userAlreadyExists: description = "A user with same email already exists."
         case .missingUserId: description = "You must provide a user id."
+        case .invalidUserId: description = "You must provide a valid user id."
         case .missingTokenId: description = "You must provide a token id."
         case .userDoesNotExist: description = "A user with the specified id does not exist."
         case .missingAdminStatus: description = "You must provide an admin status."
@@ -61,6 +63,7 @@ enum Exception: String, AbortError {
         switch self {
         case .userAlreadyExists: return .forbidden
         case .missingUserId: return .badRequest
+        case .invalidUserId: return .badRequest
         case .missingTokenId: return .badRequest
         case .userDoesNotExist: return .badRequest
         case .missingAdminStatus: return .badRequest

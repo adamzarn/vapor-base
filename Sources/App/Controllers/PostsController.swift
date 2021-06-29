@@ -58,15 +58,16 @@ class PostsController: RouteCollection {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             return loggedInUser.$following.query(on: req.db).all().flatMap { users in
-                    let userIdsOfFollowing = users.compactMap { $0.id }
-                    let (start, end) = req.searchRange
-                    return Post.query(on: req.db)
-                        .filter(\.$user.$id ~~ userIdsOfFollowing)
-                        .range(start..<end)
-                        .sort(\.$createdAt, .descending)
-                        .all().flatMapThrowing { posts in
-                            return try posts.compactMap { try $0.asPublic() }
-                        }
+                let userIdsOfFollowing = users.compactMap { $0.id }
+                let (start, end) = req.searchRange
+                return Post.query(on: req.db)
+                    .with(\.$user)
+                    .filter(\.$user.$id ~~ userIdsOfFollowing)
+                    .range(start..<end)
+                    .sort(\.$createdAt, .descending)
+                    .all().flatMapThrowing { posts in
+                        return try posts.compactMap { try $0.asPublic() }
+                    }
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)

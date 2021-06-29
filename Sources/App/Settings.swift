@@ -14,3 +14,7 @@ struct Settings: Content {
     var allowedImageTypes: [String] = ["png", "jpeg", "jpg", "gif"]
     var maxBodySizeInBytes: Int = 5*1_048_576
 }
+
+struct UserUpdateResponse: Content {
+    var requireEmailVerification: Bool = Settings().requireEmailVerification
+}
