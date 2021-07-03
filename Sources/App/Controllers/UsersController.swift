@@ -108,25 +108,27 @@ class UsersController: RouteCollection {
                                   user: User,
                                   req: Request) -> QueryBuilder<User> {
         var newQueryBuilder = queryBuilder
-        if let isFollower = req.query[String.self, at: "isFollower"],
-           ["yes", "no"].contains(isFollower) {
-            let userIdsOfFollowers = user.followers.compactMap { $0.id }
-            if isFollower == "yes" {
-                newQueryBuilder = queryBuilder.filter(\.$id ~~ userIdsOfFollowers)
-            } else {
-                newQueryBuilder = queryBuilder.filter(\.$id !~ userIdsOfFollowers)
-            }
-        }
-        if let isFollowing = req.query[String.self, at: "isFollowing"],
-           ["yes", "no"].contains(isFollowing) {
-            let userIdsOfFollowing = user.following.compactMap { $0.id }
-            if isFollowing == "yes" {
-                newQueryBuilder = queryBuilder.filter(\.$id ~~ userIdsOfFollowing)
-            } else {
-                newQueryBuilder = queryBuilder.filter(\.$id !~ userIdsOfFollowing)
-            }
-        }
+        newQueryBuilder = filterFollows("isFollower", user, queryBuilder: newQueryBuilder, req: req)
+        newQueryBuilder = filterFollows("isFollowing", user, queryBuilder: newQueryBuilder, req: req)
         return newQueryBuilder
+    }
+    
+    private func filterFollows(_ queryString: String,
+                               _ user: User,
+                               queryBuilder: QueryBuilder<User>,
+                               req: Request) -> QueryBuilder<User> {
+        let follows = queryString == "isFollower" ? user.followers : user.following
+        let userIds = follows.compactMap { $0.id }
+        guard let isFollow = req.query[String.self, at: queryString], ["yes", "no"].contains(isFollow) else {
+            return queryBuilder
+        }
+        return filterUserIds(userIds, include: isFollow == "yes", queryBuilder: queryBuilder)
+    }
+    
+    private func filterUserIds(_ userIds: [UUID],
+                               include: Bool,
+                               queryBuilder: QueryBuilder<User>) -> QueryBuilder<User> {
+        return include ? queryBuilder.filter(\.$id ~~ userIds) : queryBuilder.filter(\.$id !~ userIds)
     }
     
     // MARK: Set Following Status

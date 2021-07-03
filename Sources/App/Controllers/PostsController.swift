@@ -17,7 +17,8 @@ class PostsController: RouteCollection {
         let tokenProtectedPostsRoute = postsRoute.grouped(UserBearerAuthenticator())
         
         tokenProtectedPostsRoute.post(use: createPost)
-        tokenProtectedPostsRoute.get(use: getMyPosts)
+        tokenProtectedPostsRoute.get(use: getPosts)
+        tokenProtectedPostsRoute.get(":userId", use: getPosts)
         tokenProtectedPostsRoute.get("feed", use: getFeed)
 
     }
@@ -36,18 +37,19 @@ class PostsController: RouteCollection {
         }
     }
     
-    func getMyPosts(req: Request) throws -> EventLoopFuture<[Post.Public]> {
+    func getPosts(req: Request) throws -> EventLoopFuture<[Post.Public]> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
-            guard let userId = loggedInUser.id else {
+            guard let userId = req.parameters.get("userId") ?? loggedInUser.id else {
                 return req.fail(Exception.missingUserId)
             }
             let (start, end) = req.searchRange
             return Post.query(on: req.db)
+                .with(\.$user)
                 .filter(\.$user.$id == userId)
                 .range(start..<end)
-                .all()
-                .flatMapThrowing { posts in
+                .sort(\.$createdAt, .descending)
+                .all().flatMapThrowing { posts in
                     return try posts.compactMap { try $0.asPublic() }
                 }
         } catch let error {
