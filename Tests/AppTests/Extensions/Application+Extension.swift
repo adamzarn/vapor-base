@@ -5,17 +5,18 @@
 //  Created by Adam Zarn on 7/4/21.
 //
 
-import App
+@testable import App
 import XCTVapor
 
 extension Application {
-  static func testable() throws -> Application {
-    let app = Application(.testing)
-    try configure(app)
+    static func testable(requireEmailVerification: Bool = false) throws -> Application {
+        let app = Application(.testing)
+        Configuration.requireEmailVerification = requireEmailVerification
+        try configure(app)
     
-    try app.autoRevert().wait()
-    try app.autoMigrate().wait()
+        try app.autoRevert().wait()
+        try app.autoMigrate().wait()
 
-    return app
-  }
+        return app
+    }
 }

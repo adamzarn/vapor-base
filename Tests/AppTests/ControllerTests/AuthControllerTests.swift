@@ -130,4 +130,26 @@ class AuthControllerTests: XCTestCase {
             XCTAssertEqual(response.status, .ok)
         })
     }
+    
+    func testEmailContext() {
+        let user = User(firstName: "Test",
+                        lastName: "User",
+                        username: "test-user",
+                        email: "test-user@gmail.com",
+                        passwordHash: "hash")
+        
+        let passwordResetContext = EmailContext(user: user, url: "www.google.com", leafTemplate: .passwordResetEmail)
+        XCTAssertEqual(passwordResetContext.name, "Test")
+        XCTAssertEqual(passwordResetContext.subject, "Password Reset")
+        let passwordResetMessage = passwordResetContext.message(from: View(data: ByteBuffer()), to: user)
+        XCTAssertEqual(passwordResetMessage.from, MailSettings.from)
+        XCTAssertEqual(passwordResetMessage.to, user.email)
+                
+        let verifyEmailContext = EmailContext(user: user, url: "www.yahoo.com", leafTemplate: .verifyEmailEmail)
+        XCTAssertEqual(verifyEmailContext.name, "Test")
+        XCTAssertEqual(verifyEmailContext.subject, "Please verify your email")
+        let verifyEmailMessage = passwordResetContext.message(from: View(data: ByteBuffer()), to: user)
+        XCTAssertEqual(verifyEmailMessage.from, MailSettings.from)
+        XCTAssertEqual(verifyEmailMessage.to, user.email)
+    }
 }

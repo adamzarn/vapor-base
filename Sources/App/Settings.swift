@@ -8,13 +8,24 @@
 import Foundation
 import Vapor
 
-struct Settings: Content {
-    var requireEmailVerification: Bool = false
-    var searchResultLimit: Int = 50
-    var allowedImageTypes: [String] = ["png", "jpeg", "jpg", "gif"]
-    var maxBodySizeInBytes: Int = 5*1_048_576
+struct Configuration {
+    static var requireEmailVerification: Bool = false
+    static var searchResultLimit: Int = 50
+    static var allowedImageTypes: [String] = ["png", "jpeg", "jpg", "gif"]
+    static var maxBodySizeInBytes: Int = 5*1_048_576
 }
 
-struct UserUpdateResponse: Content {
-    var requireEmailVerification: Bool = Settings().requireEmailVerification
+struct Settings: Content {
+    var requireEmailVerification: Bool {
+        return Configuration.requireEmailVerification
+    }
+    var searchResultLimit: Int {
+        return Configuration.searchResultLimit
+    }
+    var allowedImageTypes: [String] {
+        return Configuration.allowedImageTypes
+    }
+    var maxBodySizeInBytes: Int {
+        return Configuration.maxBodySizeInBytes
+    }
 }

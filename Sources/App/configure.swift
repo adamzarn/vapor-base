@@ -7,9 +7,6 @@ import Leaf
 /// Called before your application initializes.
 public func configure(_ app: Application) throws {
     
-    if !app.environment.isRelease {
-        // LeafRenderer.Option.caching = .bypass
-    }
     app.views.use(.leaf)
 
     app.mailgun.configuration = .init(apiKey: APIKeys.mailgun)

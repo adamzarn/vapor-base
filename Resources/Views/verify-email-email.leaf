@@ -12,6 +12,6 @@
     #endif
     <p>Please click the link below to verify your email:</p>
     <p></p>
-    <a href="#(verifyEmailUrl)">#(verifyEmailUrl)</a>
+    <a href="#(url)">#(url)</a>
   </body>
 </html>

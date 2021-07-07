@@ -25,6 +25,7 @@
 		DB5DF3DD269250650040C91E /* PostsControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5DF3DC269250650040C91E /* PostsControllerTests.swift */; };
 		DB5DF4832694B0F40040C91E /* User.Public+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5DF4822694B0F40040C91E /* User.Public+Extension.swift */; };
 		DB5DF4D72694B3840040C91E /* Post+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5DF4D62694B3840040C91E /* Post+Extension.swift */; };
+		DB74A134269654EA000B6B63 /* AuthControllerWithEmailVerificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A133269654EA000B6B63 /* AuthControllerWithEmailVerificationTests.swift */; };
 		DB8EF17D2694D06B008F5873 /* SettingsControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF17C2694D06B008F5873 /* SettingsControllerTests.swift */; };
 		DB8EF2782694D0CE008F5873 /* TestSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF2772694D0CE008F5873 /* TestSession.swift */; };
 		DB8EF31E2694D20D008F5873 /* UsersControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF31D2694D20D008F5873 /* UsersControllerTests.swift */; };
@@ -34,7 +35,6 @@
 		OBJ_2526 /* PostsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* PostsController.swift */; };
 		OBJ_2527 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* SettingsController.swift */; };
 		OBJ_2528 /* UsersController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* UsersController.swift */; };
-		OBJ_2529 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_14 /* ViewController.swift */; };
 		OBJ_2530 /* DB.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_16 /* DB.swift */; };
 		OBJ_2531 /* Expiry.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_17 /* Expiry.swift */; };
 		OBJ_2532 /* FieldKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_18 /* FieldKeys.swift */; };
@@ -48,12 +48,7 @@
 		OBJ_2540 /* CreatePosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_29 /* CreatePosts.swift */; };
 		OBJ_2541 /* CreateTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_30 /* CreateTokens.swift */; };
 		OBJ_2542 /* CreateUsers.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_31 /* CreateUsers.swift */; };
-		OBJ_2543 /* EmailVerificationEmailContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_34 /* EmailVerificationEmailContext.swift */; };
-		OBJ_2544 /* EmailVerificationResultContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_35 /* EmailVerificationResultContext.swift */; };
-		OBJ_2545 /* HomeContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_36 /* HomeContext.swift */; };
-		OBJ_2546 /* PasswordResetEmailContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_37 /* PasswordResetEmailContext.swift */; };
-		OBJ_2547 /* ProfileContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_38 /* ProfileContext.swift */; };
-		OBJ_2548 /* ResetPasswordContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_39 /* ResetPasswordContext.swift */; };
+		OBJ_2543 /* EmailContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_34 /* EmailContext.swift */; };
 		OBJ_2549 /* NewAdminStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_40 /* NewAdminStatus.swift */; };
 		OBJ_2550 /* NewPassword.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_41 /* NewPassword.swift */; };
 		OBJ_2551 /* NewPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_42 /* NewPost.swift */; };
@@ -6835,6 +6830,7 @@
 		DB5DF3DC269250650040C91E /* PostsControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostsControllerTests.swift; sourceTree = "<group>"; };
 		DB5DF4822694B0F40040C91E /* User.Public+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User.Public+Extension.swift"; sourceTree = "<group>"; };
 		DB5DF4D62694B3840040C91E /* Post+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Post+Extension.swift"; sourceTree = "<group>"; };
+		DB74A133269654EA000B6B63 /* AuthControllerWithEmailVerificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthControllerWithEmailVerificationTests.swift; sourceTree = "<group>"; };
 		DB8EF17C2694D06B008F5873 /* SettingsControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsControllerTests.swift; sourceTree = "<group>"; };
 		DB8EF2772694D0CE008F5873 /* TestSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSession.swift; sourceTree = "<group>"; };
 		DB8EF31D2694D20D008F5873 /* UsersControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersControllerTests.swift; sourceTree = "<group>"; };
@@ -7222,7 +7218,6 @@
 		OBJ_1397 /* CCryptoBoringSSL_ripemd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCryptoBoringSSL_ripemd.h; sourceTree = "<group>"; };
 		OBJ_1398 /* CCryptoBoringSSL_opensslconf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCryptoBoringSSL_opensslconf.h; sourceTree = "<group>"; };
 		OBJ_1399 /* CCryptoBoringSSL_hkdf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCryptoBoringSSL_hkdf.h; sourceTree = "<group>"; };
-		OBJ_14 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		OBJ_1400 /* CCryptoBoringSSL_dsa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCryptoBoringSSL_dsa.h; sourceTree = "<group>"; };
 		OBJ_1401 /* CCryptoBoringSSL_asn1.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCryptoBoringSSL_asn1.h; sourceTree = "<group>"; };
 		OBJ_1402 /* CCryptoBoringSSL_objects.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CCryptoBoringSSL_objects.h; sourceTree = "<group>"; };
@@ -8322,7 +8317,7 @@
 		OBJ_336 /* Migrations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Migrations.swift; sourceTree = "<group>"; };
 		OBJ_337 /* Migrator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Migrator.swift; sourceTree = "<group>"; };
 		OBJ_339 /* AnyModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyModel.swift; sourceTree = "<group>"; };
-		OBJ_34 /* EmailVerificationEmailContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerificationEmailContext.swift; sourceTree = "<group>"; };
+		OBJ_34 /* EmailContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailContext.swift; sourceTree = "<group>"; };
 		OBJ_340 /* EagerLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EagerLoad.swift; sourceTree = "<group>"; };
 		OBJ_341 /* Fields+Codable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Fields+Codable.swift"; sourceTree = "<group>"; };
 		OBJ_342 /* Fields.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fields.swift; sourceTree = "<group>"; };
@@ -8332,7 +8327,6 @@
 		OBJ_346 /* Schema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Schema.swift; sourceTree = "<group>"; };
 		OBJ_348 /* FieldOperators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldOperators.swift; sourceTree = "<group>"; };
 		OBJ_349 /* Operators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Operators.swift; sourceTree = "<group>"; };
-		OBJ_35 /* EmailVerificationResultContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerificationResultContext.swift; sourceTree = "<group>"; };
 		OBJ_350 /* ValueOperators+Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ValueOperators+Array.swift"; sourceTree = "<group>"; };
 		OBJ_351 /* ValueOperators+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ValueOperators+String.swift"; sourceTree = "<group>"; };
 		OBJ_352 /* ValueOperators.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValueOperators.swift; sourceTree = "<group>"; };
@@ -8342,7 +8336,6 @@
 		OBJ_357 /* Group.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Group.swift; sourceTree = "<group>"; };
 		OBJ_358 /* ID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ID.swift; sourceTree = "<group>"; };
 		OBJ_359 /* OptionalChild.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalChild.swift; sourceTree = "<group>"; };
-		OBJ_36 /* HomeContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContext.swift; sourceTree = "<group>"; };
 		OBJ_360 /* OptionalField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalField.swift; sourceTree = "<group>"; };
 		OBJ_361 /* OptionalParent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionalParent.swift; sourceTree = "<group>"; };
 		OBJ_362 /* Parent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Parent.swift; sourceTree = "<group>"; };
@@ -8351,7 +8344,6 @@
 		OBJ_365 /* Siblings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Siblings.swift; sourceTree = "<group>"; };
 		OBJ_366 /* Timestamp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timestamp.swift; sourceTree = "<group>"; };
 		OBJ_367 /* TimestampFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimestampFormat.swift; sourceTree = "<group>"; };
-		OBJ_37 /* PasswordResetEmailContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PasswordResetEmailContext.swift; sourceTree = "<group>"; };
 		OBJ_370 /* QueryBuilder+Aggregate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QueryBuilder+Aggregate.swift"; sourceTree = "<group>"; };
 		OBJ_371 /* QueryBuilder+EagerLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QueryBuilder+EagerLoad.swift"; sourceTree = "<group>"; };
 		OBJ_372 /* QueryBuilder+Filter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QueryBuilder+Filter.swift"; sourceTree = "<group>"; };
@@ -8362,7 +8354,6 @@
 		OBJ_377 /* QueryBuilder+Set.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QueryBuilder+Set.swift"; sourceTree = "<group>"; };
 		OBJ_378 /* QueryBuilder+Sort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QueryBuilder+Sort.swift"; sourceTree = "<group>"; };
 		OBJ_379 /* QueryBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryBuilder.swift; sourceTree = "<group>"; };
-		OBJ_38 /* ProfileContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileContext.swift; sourceTree = "<group>"; };
 		OBJ_381 /* DatabaseQuery+Action.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseQuery+Action.swift"; sourceTree = "<group>"; };
 		OBJ_382 /* DatabaseQuery+Aggregate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseQuery+Aggregate.swift"; sourceTree = "<group>"; };
 		OBJ_383 /* DatabaseQuery+Field.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseQuery+Field.swift"; sourceTree = "<group>"; };
@@ -8372,7 +8363,6 @@
 		OBJ_387 /* DatabaseQuery+Sort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseQuery+Sort.swift"; sourceTree = "<group>"; };
 		OBJ_388 /* DatabaseQuery+Value.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DatabaseQuery+Value.swift"; sourceTree = "<group>"; };
 		OBJ_389 /* DatabaseQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseQuery.swift; sourceTree = "<group>"; };
-		OBJ_39 /* ResetPasswordContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResetPasswordContext.swift; sourceTree = "<group>"; };
 		OBJ_390 /* QueryHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QueryHistory.swift; sourceTree = "<group>"; };
 		OBJ_392 /* DatabaseSchema.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseSchema.swift; sourceTree = "<group>"; };
 		OBJ_393 /* SchemaBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchemaBuilder.swift; sourceTree = "<group>"; };
@@ -9988,6 +9978,7 @@
 				DB8EF17C2694D06B008F5873 /* SettingsControllerTests.swift */,
 				DB8EF31D2694D20D008F5873 /* UsersControllerTests.swift */,
 				DB8EF46A26953772008F5873 /* AuthControllerTests.swift */,
+				DB74A133269654EA000B6B63 /* AuthControllerWithEmailVerificationTests.swift */,
 			);
 			path = ControllerTests;
 			sourceTree = "<group>";
@@ -13439,7 +13430,7 @@
 		OBJ_32 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				OBJ_33 /* Contexts */,
+				OBJ_34 /* EmailContext.swift */,
 				OBJ_40 /* NewAdminStatus.swift */,
 				OBJ_41 /* NewPassword.swift */,
 				OBJ_42 /* NewPost.swift */,
@@ -13462,19 +13453,6 @@
 				OBJ_327 /* OptionalEnumProperty.swift */,
 			);
 			path = Enum;
-			sourceTree = "<group>";
-		};
-		OBJ_33 /* Contexts */ = {
-			isa = PBXGroup;
-			children = (
-				OBJ_34 /* EmailVerificationEmailContext.swift */,
-				OBJ_35 /* EmailVerificationResultContext.swift */,
-				OBJ_36 /* HomeContext.swift */,
-				OBJ_37 /* PasswordResetEmailContext.swift */,
-				OBJ_38 /* ProfileContext.swift */,
-				OBJ_39 /* ResetPasswordContext.swift */,
-			);
-			path = Contexts;
 			sourceTree = "<group>";
 		};
 		OBJ_330 /* Middleware */ = {
@@ -14862,7 +14840,6 @@
 				OBJ_11 /* PostsController.swift */,
 				OBJ_12 /* SettingsController.swift */,
 				OBJ_13 /* UsersController.swift */,
-				OBJ_14 /* ViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -17258,7 +17235,6 @@
 				OBJ_2526 /* PostsController.swift in Sources */,
 				OBJ_2527 /* SettingsController.swift in Sources */,
 				OBJ_2528 /* UsersController.swift in Sources */,
-				OBJ_2529 /* ViewController.swift in Sources */,
 				OBJ_2530 /* DB.swift in Sources */,
 				OBJ_2531 /* Expiry.swift in Sources */,
 				OBJ_2532 /* FieldKeys.swift in Sources */,
@@ -17272,12 +17248,7 @@
 				OBJ_2540 /* CreatePosts.swift in Sources */,
 				OBJ_2541 /* CreateTokens.swift in Sources */,
 				OBJ_2542 /* CreateUsers.swift in Sources */,
-				OBJ_2543 /* EmailVerificationEmailContext.swift in Sources */,
-				OBJ_2544 /* EmailVerificationResultContext.swift in Sources */,
-				OBJ_2545 /* HomeContext.swift in Sources */,
-				OBJ_2546 /* PasswordResetEmailContext.swift in Sources */,
-				OBJ_2547 /* ProfileContext.swift in Sources */,
-				OBJ_2548 /* ResetPasswordContext.swift in Sources */,
+				OBJ_2543 /* EmailContext.swift in Sources */,
 				OBJ_2549 /* NewAdminStatus.swift in Sources */,
 				OBJ_2550 /* NewPassword.swift in Sources */,
 				OBJ_2551 /* NewPost.swift in Sources */,
@@ -17310,6 +17281,7 @@
 			files = (
 				DB8EF2782694D0CE008F5873 /* TestSession.swift in Sources */,
 				DB5DF337269250250040C91E /* Application+Extension.swift in Sources */,
+				DB74A134269654EA000B6B63 /* AuthControllerWithEmailVerificationTests.swift in Sources */,
 				DB8EF3722694D770008F5873 /* TestUserSessions.swift in Sources */,
 				DB8EF46B26953772008F5873 /* AuthControllerTests.swift in Sources */,
 				DB5DF4D72694B3840040C91E /* Post+Extension.swift in Sources */,

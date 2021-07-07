@@ -11,7 +11,7 @@ import Fluent
 import Mailgun
 
 class AuthController: RouteCollection {
-    
+
     func boot(routes: RoutesBuilder) throws {
         
         let authRoute = routes.grouped("auth")
@@ -66,6 +66,7 @@ class AuthController: RouteCollection {
             }
             // User will be created but cannot login until email is verified
             return user.save(on: req.db).flatMap {
+                guard !req.testing else { return req.fail(Exception.emailIsNotVerified) }
                 let _ = self.sendEmailVerificationEmail(to: user, req: req)
                 return req.fail(Exception.emailIsNotVerified)
             }
@@ -135,21 +136,10 @@ class AuthController: RouteCollection {
                 guard let tokenId = token.id?.uuidString else {
                     return req.fail(Exception.invalidToken)
                 }
-                guard req.application.environment != .testing else { return req.success(tokenId) }
+                guard !req.testing else { return req.success(tokenId) }
                 let verifyEmailUrl = self.getVerifyEmailUrl(req: req, tokenId: tokenId)
-                let context = EmailVerificationEmailContext(name: user.firstName, verifyEmailUrl: verifyEmailUrl)
-                return req.leaf.render(LeafTemplate.verifyEmailEmail.rawValue, context).flatMapThrowing { view in
-                    let html = String(buffer: view.data)
-                    let message = MailgunMessage(from: MailSettings.from,
-                                                 to: user.email,
-                                                 subject: "Please verify your email",
-                                                 text: "",
-                                                 html: html)
-                    _ = req.mailgun().send(message).always { response in
-                        print(response)
-                    }
-                    return tokenId
-                }
+                let context = EmailContext(user: user, url: verifyEmailUrl, leafTemplate: .verifyEmailEmail)
+                return req.sendEmail(to: user, tokenId: tokenId, context: context)
             }
         }
     }
@@ -179,12 +169,15 @@ class AuthController: RouteCollection {
                     return req.fail(Exception.userDoesNotExist)
                 }
                 user.isEmailVerified = true
-                if token.source == .emailVerification {
-                    return user.save(on: req.db).flatMap {
-                        return token.delete(on: req.db).transform(to: HTTPStatus.ok)
+                return user.save(on: req.db).flatMap {
+                    guard token.source == .emailVerification else {
+                        return req.success(HTTPStatus.ok)
                     }
-                } else {
-                    return user.save(on: req.db).transform(to: HTTPStatus.ok)
+                    // Delete all email verification tokens for this user
+                    return Token.query(on: req.db)
+                        .filter(\.$user.$id == user.id ?? UUID())
+                        .filter(\.$source == SessionSource.emailVerification)
+                        .delete().transform(to: HTTPStatus.ok)
                 }
             }
         }
@@ -208,22 +201,11 @@ class AuthController: RouteCollection {
                 guard let tokenId = token.id?.uuidString else {
                     return req.fail(Exception.invalidToken)
                 }
-                guard req.application.environment != .testing else { return req.success(tokenId) }
-                let passwordResetBaseUrl = passwordReset?.url ?? "\(req.baseUrl)/view/passwordReset/"
-                let passwordResetUrl = "\(passwordResetBaseUrl)\(tokenId)"
-                let context = PasswordResetEmailContext(name: user.firstName, passwordResetUrl: passwordResetUrl)
-                return req.leaf.render(LeafTemplate.passwordResetEmail.rawValue, context).flatMapThrowing { view in
-                    let html = String(buffer: view.data)
-                    let message = MailgunMessage(from: MailSettings.from,
-                                                 to: user.email,
-                                                 subject: "Password Reset",
-                                                 text: "",
-                                                 html: html)
-                    _ = req.mailgun().send(message).always { response in
-                        print(response)
-                    }
-                    return tokenId
-                }
+                guard !req.testing else { return req.success(tokenId) }
+                let passwordResetBaseUrl = passwordReset?.url ?? "\(req.baseUrl)/view/passwordReset"
+                let passwordResetUrl = "\(passwordResetBaseUrl)/\(tokenId)"
+                let context = EmailContext(user: user, url: passwordResetUrl, leafTemplate: .passwordResetEmail)
+                return req.sendEmail(to: user, tokenId: tokenId, context: context)
             }
         }
     }
@@ -250,12 +232,15 @@ class AuthController: RouteCollection {
                     return req.fail(Exception.couldNotCreatePasswordHash)
                 }
                 user.passwordHash = passwordHash
-                if token.source == .passwordReset {
-                    return user.save(on: req.db).flatMap {
-                        return token.delete(on: req.db).transform(to: HTTPStatus.ok)
+                return user.save(on: req.db).flatMap {
+                    guard token.source == .passwordReset else {
+                        return req.success(HTTPStatus.ok)
                     }
-                } else {
-                    return user.save(on: req.db).transform(to: HTTPStatus.ok)
+                    // Delete all password reset tokens for this user
+                    return Token.query(on: req.db)
+                        .filter(\.$user.$id == user.id ?? UUID())
+                        .filter(\.$source == SessionSource.passwordReset)
+                        .delete().transform(to: HTTPStatus.ok)
                 }
             }
         }

@@ -73,6 +73,7 @@ class UsersControllerTests: XCTestCase {
         try testUserSearch(query: "isAdmin=yes", expectedCount: 1)
         try testUserSearch(query: "excludeMe=yes", expectedCount: 2)
         try testUserSearch(query: "start=0&end=1", expectedCount: 1)
+        try testUserSearch(query: "start=1", expectedCount: 2)
         
         try testUserSearch(query: "isFollowing=yes", expectedCount: 0)
         if let scottiePippenId = testUserSessions.scottiePippen.user?.id.uuidString {
