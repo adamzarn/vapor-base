@@ -30,7 +30,9 @@ struct ProfilePhotoInfo {
     
     // MARK: New and Existing
     
-    let folder = "images/profile-photos"
+    var folder: String {
+        return "\(req.application.environment.name)/images/profile-photos"
+    }
     
     var directoryPath: String {
         return "\(req.application.directory.publicDirectory)\(folder)"
@@ -61,5 +63,4 @@ struct ProfilePhotoInfo {
         guard let filename = existingFilename else { return nil }
         return "\(directoryPath)/\(filename)"
     }
-    
 }

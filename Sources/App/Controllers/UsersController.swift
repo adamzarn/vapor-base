@@ -254,6 +254,10 @@ class UsersController: RouteCollection {
                 // Delete all tokens for this user
                 return Token.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
                     // Delete user
+                    let profilePhotoInfo = ProfilePhotoInfo(req, userId, existingUrl: user.profilePhotoUrl)
+                    if let existingFilePath = profilePhotoInfo.existingFilePath {
+                        try? FileManager.default.removeItem(atPath: existingFilePath)
+                    }
                     return user.delete(on: req.db).transform(to: HTTPStatus.ok)
                 }
             }

@@ -93,4 +93,4 @@ iOSInjectionProject/
 *.key.pub
 
 Private/
-Public/images
+Public/*/images
