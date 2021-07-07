@@ -24,11 +24,11 @@ class SettingsControllerTests: XCTestCase {
     }
     
     func testGetSettings() throws {
-        try app.test(.GET, "settings", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
-            XCTAssertEqual(response.status, .ok)
-        })
         try app.test(.GET, "settings", afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
+        })
+        try app.test(.GET, "settings", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            XCTAssertEqual(response.status, .ok)
         })
     }
 }

@@ -38,7 +38,7 @@ class UsersController: RouteCollection {
     func getUser(req: Request) throws -> EventLoopFuture<User.Public> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
-            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
+            guard let userId = req.userId(loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMapThrowing { user in
@@ -185,7 +185,7 @@ class UsersController: RouteCollection {
     func getFollows(req: Request) throws -> EventLoopFuture<[User.Public]> {
         do {
             let loggedInUser = try req.auth.require(User.self)
-            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
+            guard let userId = req.userId(loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             guard let followType = req.parameters.get("followType") else {
@@ -226,7 +226,7 @@ class UsersController: RouteCollection {
     func deleteUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
             let loggedInUser = try req.auth.require(User.self)
-            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
+            guard let userId = req.userId(loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: userId != loggedInUser.id)
@@ -272,7 +272,7 @@ class UsersController: RouteCollection {
             guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
                 return req.fail(Exception.missingUserUpdate)
             }
-            guard let userId = getUserId(loggedInUser: loggedInUser, req: req) else {
+            guard let userId = req.userId(loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMap { user in
@@ -386,13 +386,4 @@ class UsersController: RouteCollection {
             return user.save(on: req.db).transform(to: nil)
         }
     }
-    
-    // MARK: Helper Functions
-    
-    func getUserId(loggedInUser: User, req: Request) -> UUID? {
-        var userId = req.parameters.get("userId") ?? "me"
-        if userId == "me" { userId = loggedInUser.id?.uuidString ?? "" }
-        return UUID(userId)
-    }
-    
 }

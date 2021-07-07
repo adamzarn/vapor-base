@@ -32,6 +32,13 @@ class UsersControllerTests: XCTestCase {
             let user = try response.content.decode(User.Public.self)
             XCTAssertEqual(user.id, testUserSessions.michaelJordan.user?.id)
         })
+        try app.test(.GET, "users/me", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            let user = try response.content.decode(User.Public.self)
+            XCTAssertEqual(user.id, testUserSessions.michaelJordan.user?.id)
+        })
+        try app.test(.GET, "users/myself", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            XCTAssertEqual(response.status, .badRequest)
+        })
         if let scottiePippenId = testUserSessions.scottiePippen.user?.id.uuidString {
             try app.test(.GET, "users/\(scottiePippenId)", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
                 let user = try response.content.decode(User.Public.self)
@@ -55,6 +62,9 @@ class UsersControllerTests: XCTestCase {
     }
     
     func testUserSearch() throws {
+        try app.test(.GET, "users/search", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try testUserSearch(query: "", expectedCount: 3)
         try testUserSearch(query: "query=a", expectedCount: 3)
         try testUserSearch(query: "query=an", expectedCount: 2)
@@ -87,6 +97,9 @@ class UsersControllerTests: XCTestCase {
     func testFollowUnfollowFollowersFollowing() throws {
         guard let michaelJordanId = testUserSessions.michaelJordan.user?.id.uuidString,
             let scottiePippenId = testUserSessions.scottiePippen.user?.id.uuidString else { return }
+        try app.test(.POST, "users/\(michaelJordanId)/follow", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.POST, "users/\(michaelJordanId)/follow", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             XCTAssertEqual(response.status, .badRequest)
         })
@@ -94,15 +107,24 @@ class UsersControllerTests: XCTestCase {
             XCTAssertEqual(response.status, .badRequest)
         })
         try app.test(.POST, "users/\(scottiePippenId)/follow", headers: testUserSessions.michaelJordan.bearerHeaders)
+        try app.test(.GET, "users/\(scottiePippenId)/followers", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.GET, "users/\(scottiePippenId)/followers", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             let users = try response.content.decode([User.Public].self)
             XCTAssertEqual(users.count, 1)
             XCTAssertEqual(users[0].id, testUserSessions.michaelJordan.user?.id)
         })
+        try app.test(.GET, "users/\(michaelJordanId)/following", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.GET, "users/\(michaelJordanId)/following", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             let users = try response.content.decode([User.Public].self)
             XCTAssertEqual(users.count, 1)
             XCTAssertEqual(users[0].id, testUserSessions.scottiePippen.user?.id)
+        })
+        try app.test(.DELETE, "users/\(scottiePippenId)/unfollow", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.DELETE, "users/\(scottiePippenId)/unfollow", headers: testUserSessions.michaelJordan.bearerHeaders)
         try app.test(.GET, "users/\(scottiePippenId)/followers", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
@@ -116,6 +138,9 @@ class UsersControllerTests: XCTestCase {
     }
     
     func testDeleteSelf() throws {
+        try app.test(.DELETE, "users", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.DELETE, "users", headers: testUserSessions.scottiePippen.bearerHeaders, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
         })
@@ -127,6 +152,9 @@ class UsersControllerTests: XCTestCase {
     
     func testDeleteOtherAsAdmin() throws {
         guard let scottiePippenId = testUserSessions.scottiePippen.user?.id.uuidString else { return }
+        try app.test(.DELETE, "users/\(scottiePippenId)", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.DELETE, "users/\(scottiePippenId)", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
         })
@@ -136,8 +164,14 @@ class UsersControllerTests: XCTestCase {
     func testDeleteFollowPostToken() throws {
         guard let michaelJordanId = testUserSessions.michaelJordan.user?.id.uuidString,
             let scottiePippenId = testUserSessions.scottiePippen.user?.id.uuidString else { return }
+        try app.test(.POST, "posts", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.POST, "posts", headers: testUserSessions.scottiePippen.bearerHeaders, beforeRequest: { request in
             try request.content.encode(NewPost(text: "Hello"))
+        })
+        try app.test(.GET, "posts", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.GET, "posts", headers: testUserSessions.scottiePippen.bearerHeaders, afterResponse: { response in
             let posts = try response.content.decode([Post.Public].self)
@@ -154,6 +188,9 @@ class UsersControllerTests: XCTestCase {
             let users = try response.content.decode([User.Public].self)
             XCTAssertEqual(users.count, 1)
             XCTAssertEqual(users[0].id, testUserSessions.scottiePippen.user?.id)
+        })
+        try app.test(.DELETE, "users/\(scottiePippenId)", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.DELETE, "users/\(scottiePippenId)", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
@@ -172,6 +209,9 @@ class UsersControllerTests: XCTestCase {
     
     func testDeleteOtherAsUser() throws {
         guard let scottiePippenId = testUserSessions.scottiePippen.user?.id.uuidString else { return }
+        try app.test(.DELETE, "users/\(scottiePippenId)", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.DELETE, "users/\(scottiePippenId)", headers: testUserSessions.dennisRodman.bearerHeaders, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
         })
@@ -179,8 +219,18 @@ class UsersControllerTests: XCTestCase {
     }
     
     func testUpdateSelfAsUser() throws {
+        let userUpdate = UserUpdate(firstName: "Scott",
+                                    lastName: "Pip",
+                                    username: "Robin",
+                                    email: "scott-pip@gmail.com",
+                                    isAdmin: true)
+        try app.test(.PUT, "users", beforeRequest: { request in
+            try request.content.encode(userUpdate)
+        }, afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.PUT, "users", headers: testUserSessions.scottiePippen.bearerHeaders, beforeRequest: { request in
-            try request.content.encode(UserUpdate(firstName: "Scott", lastName: "Pip", username: "Robin", email: "scott-pip@gmail.com", isAdmin: true))
+            try request.content.encode(userUpdate)
         }, afterResponse: { response in
             let updatedUser = try response.content.decode(User.Public.self)
             XCTAssertEqual(updatedUser.firstName, "Scott")
@@ -194,8 +244,18 @@ class UsersControllerTests: XCTestCase {
     
     func testUpdateOtherAsAdmin() throws {
         guard let scottiePippenId = testUserSessions.scottiePippen.user?.id.uuidString else { return }
+        let userUpdate = UserUpdate(firstName: "S",
+                                    lastName: "P",
+                                    username: "Sidekick",
+                                    email: "s-p@gmail.com",
+                                    isAdmin: true)
+        try app.test(.PUT, "users/\(scottiePippenId)", beforeRequest: { request in
+            try request.content.encode(userUpdate)
+        }, afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.PUT, "users/\(scottiePippenId)", headers: testUserSessions.michaelJordan.bearerHeaders, beforeRequest: { request in
-            try request.content.encode(UserUpdate(firstName: "S", lastName: "P", username: "Sidekick", email: "s-p@gmail.com", isAdmin: true))
+            try request.content.encode(userUpdate)
         }, afterResponse: { response in
             let updatedUser = try response.content.decode(User.Public.self)
             XCTAssertEqual(updatedUser.firstName, "S")
@@ -204,6 +264,49 @@ class UsersControllerTests: XCTestCase {
             XCTAssertEqual(updatedUser.email, "s-p@gmail.com")
             XCTAssertEqual(updatedUser.isEmailVerified, true)
             XCTAssertEqual(updatedUser.isAdmin, true)
+        })
+    }
+    
+    func testUploadAndDeleteProfilePhoto() throws {
+        try app.test(.POST, "users/profilePhoto", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
+        try app.test(.POST, "users/profilePhoto", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            XCTAssertEqual(response.status, .unsupportedMediaType)
+        })
+        guard let userId = testUserSessions.michaelJordan.user?.id.uuidString else { fatalError() }
+        try app.test(.POST, "users/profilePhoto", headers: testUserSessions.michaelJordan.bearerHeaders, beforeRequest: { request in
+            let file = File(data: "image", filename: "test_image.txt")
+            try request.content.encode(ProfilePhoto(file: file))
+        }, afterResponse: { response in
+            XCTAssertEqual(response.status, .badRequest)
+        })
+        try app.test(.POST, "users/profilePhoto", headers: testUserSessions.michaelJordan.bearerHeaders, beforeRequest: { request in
+            let file = File(data: "image", filename: "test_image.png")
+            try request.content.encode(ProfilePhoto(file: file))
+        }, afterResponse: { response in
+            let uploadResponse = try response.content.decode(ProfilePhotoUploadResponse.self)
+            XCTAssertEqual(uploadResponse.url, "http://127.0.0.1:8080/testing/images/profile-photos/\(userId).png")
+        })
+        try app.test(.GET, "users", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            let user = try response.content.decode(User.Public.self)
+            XCTAssertEqual(user.profilePhotoUrl, "http://127.0.0.1:8080/testing/images/profile-photos/\(userId).png")
+        })
+        try app.test(.GET, "testing/images/profile-photos/\(userId).png", afterResponse: { response in
+            XCTAssertEqual(response.status, .ok)
+        })
+        try app.test(.DELETE, "users/profilePhoto", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
+        try app.test(.DELETE, "users/profilePhoto", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            XCTAssertEqual(response.status, .ok)
+        })
+        try app.test(.GET, "testing/images/profile-photos/\(userId).png", afterResponse: { response in
+            XCTAssertEqual(response.status, .notFound)
+        })
+        try app.test(.GET, "users", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            let user = try response.content.decode(User.Public.self)
+            XCTAssertNil(user.profilePhotoUrl)
         })
     }
 }

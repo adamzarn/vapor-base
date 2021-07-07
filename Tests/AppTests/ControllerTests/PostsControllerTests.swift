@@ -24,6 +24,11 @@ class PostsControllerTests: XCTestCase {
     }
     
     func testCreatePost() throws {
+        try app.test(.POST, "posts", beforeRequest: { req in
+            try req.content.encode(NewPost(text: "New"))
+        }, afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.POST, "posts", headers: testUserSessions.michaelJordan.bearerHeaders, beforeRequest: { req in
             try req.content.encode(NewPost(text: "New"))
         }, afterResponse: { response in
@@ -38,7 +43,15 @@ class PostsControllerTests: XCTestCase {
     
     func testGetPosts() throws {
         try saveTestPosts()
+        try app.test(.GET, "posts", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.GET, "posts", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            let posts = try response.content.decode([Post].self)
+            XCTAssertEqual(posts.count, 1)
+            XCTAssert(posts.map { $0.text }.contains("Hello"))
+        })
+        try app.test(.GET, "posts/me", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             let posts = try response.content.decode([Post].self)
             XCTAssertEqual(posts.count, 1)
             XCTAssert(posts.map { $0.text }.contains("Hello"))
@@ -48,15 +61,23 @@ class PostsControllerTests: XCTestCase {
             XCTAssertEqual(posts.count, 1)
             XCTAssert(posts.map { $0.text }.contains("Goodbye"))
         })
-        try app.test(.GET, "posts", headers: testUserSessions.dennisRodman.bearerHeaders, afterResponse: { response in
-            let posts = try response.content.decode([Post].self)
-            XCTAssertEqual(posts.count, 1)
-            XCTAssert(posts.map { $0.text }.contains("Test"))
+        if let dennisRodmanUserId = testUserSessions.dennisRodman.user?.id.uuidString {
+            try app.test(.GET, "posts/\(dennisRodmanUserId)", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+                let posts = try response.content.decode([Post].self)
+                XCTAssertEqual(posts.count, 1)
+                XCTAssert(posts.map { $0.text }.contains("Test"))
+            })
+        }
+        try app.test(.GET, "posts/abc", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
+            XCTAssertEqual(response.status, .badRequest)
         })
     }
     
     func testGetFeed() throws {
         try saveTestPosts()
+        try app.test(.GET, "posts/feed", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.GET, "posts/feed", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             let posts = try response.content.decode([Post.Public].self)
             XCTAssertEqual(posts.count, 1)

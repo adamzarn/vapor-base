@@ -35,4 +35,11 @@ extension Request {
         }
         return (start, end)
     }
+    
+    func userId(_ loggedInUser: User) -> UUID? {
+        var uuidString = parameters.get("userId") ?? loggedInUser.id?.uuidString
+        if uuidString == "me" { uuidString = loggedInUser.id?.uuidString }
+        guard let userId = uuidString else { return nil }
+        return UUID(userId)
+    }
 }

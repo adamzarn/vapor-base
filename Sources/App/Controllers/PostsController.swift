@@ -40,8 +40,8 @@ class PostsController: RouteCollection {
     func getPosts(req: Request) throws -> EventLoopFuture<[Post.Public]> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
-            guard let userId = req.parameters.get("userId") ?? loggedInUser.id else {
-                return req.fail(Exception.missingUserId)
+            guard let userId = req.userId(loggedInUser) else {
+                return req.fail(Exception.invalidUserId)
             }
             let (start, end) = req.searchRange
             return User.find(userId, on: req.db).flatMap { user in

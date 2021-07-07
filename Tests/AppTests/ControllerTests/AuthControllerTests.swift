@@ -61,8 +61,14 @@ class AuthControllerTests: XCTestCase {
             registrationSession = session
             XCTAssertEqual(session.user?.firstName, validUser.firstName)
         })
+        try app.test(.DELETE, "auth/logout", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.DELETE, "auth/logout", headers: registrationSession.bearerHeaders, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
+        })
+        try app.test(.POST, "auth/login", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.POST, "auth/login", headers: invalidEmailHeaders, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
@@ -81,6 +87,9 @@ class AuthControllerTests: XCTestCase {
     
     func testEmailVerification() throws {
         var emailVerificationTokenId: String?
+        try app.test(.POST, "auth/sendEmailVerificationEmail", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.POST, "auth/sendEmailVerificationEmail", headers: NewSession.basicHeaders(email: "michael-jordan@gmail.com", password: "123456"), afterResponse: { response in
             emailVerificationTokenId = try response.content.decode(String.self)
             XCTAssertEqual(response.status, .ok)
@@ -98,6 +107,9 @@ class AuthControllerTests: XCTestCase {
     }
     
     func testPasswordReset() throws {
+        try app.test(.POST, "auth/login", afterResponse: { response in
+            XCTAssertEqual(response.status, .unauthorized)
+        })
         try app.test(.POST, "auth/login", headers: NewSession.basicHeaders(email: "michael-jordan@gmail.com", password: "123456"), afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
         })
