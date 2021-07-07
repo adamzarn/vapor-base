@@ -18,12 +18,14 @@ class UsersController: RouteCollection {
         let usersRoute = routes.grouped(User.pathComponent)
         let tokenProtectedUsersRoute = usersRoute.grouped(UserBearerAuthenticator())
         
+        tokenProtectedUsersRoute.get(use: getUser)
         tokenProtectedUsersRoute.get(":userId", use: getUser)
         usersRoute.get("status", use: getUserStatusWithEmail)
         tokenProtectedUsersRoute.get("search", use: searchUsers)
         tokenProtectedUsersRoute.post(":userId", "follow", use: follow)
         tokenProtectedUsersRoute.delete(":userId", "unfollow", use: unfollow)
         tokenProtectedUsersRoute.get(":userId", ":followType", use: getFollows)
+        tokenProtectedUsersRoute.delete(use: deleteUser)
         tokenProtectedUsersRoute.delete(":userId", use: deleteUser)
         tokenProtectedUsersRoute.put(use: updateUser)
         tokenProtectedUsersRoute.put(":userId", use: updateUser)
@@ -247,17 +249,20 @@ class UsersController: RouteCollection {
         return FollowingFollower.query(on: req.db).group(.or) { group in
             group.filter(\.$follower.$id == userId).filter(\.$following.$id == userId)
         }.delete().flatMap {
-            // Delete all tokens for this user
-            return Token.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
-                // Delete user
-                return user.delete(on: req.db).transform(to: HTTPStatus.ok)
+            // Delete all posts for this user
+            return Post.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
+                // Delete all tokens for this user
+                return Token.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
+                    // Delete user
+                    return user.delete(on: req.db).transform(to: HTTPStatus.ok)
+                }
             }
         }
     }
     
     // MARK: Update User
     
-    func updateUser(req: Request) throws -> EventLoopFuture<UserUpdateResponse> {
+    func updateUser(req: Request) throws -> EventLoopFuture<User.Public> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
@@ -273,19 +278,26 @@ class UsersController: RouteCollection {
                 if let firstName = userUpdate.firstName { user.firstName = firstName }
                 if let lastName = userUpdate.lastName { user.lastName = lastName }
                 if let username = userUpdate.username { user.username = username }
-                if let isAdmin = userUpdate.isAdmin { user.isAdmin = isAdmin }
-                let response = UserUpdateResponse()
+                if loggedInUser.isAdmin == true {
+                    if let isAdmin = userUpdate.isAdmin { user.isAdmin = isAdmin }
+                }
                 if let email = userUpdate.email {
                     return User.query(on: req.db).filter(\.$email == email).first().flatMap { existingUser in
                         if existingUser != nil {
                             return req.fail(Exception.userAlreadyExists)
                         }
                         user.email = email
-                        user.isEmailVerified = false
-                        return user.save(on: req.db).transform(to: response)
+                        user.isEmailVerified = Settings().requireEmailVerification ? false : true
+                        guard let publicUser = try? user.asPublic() else {
+                            return req.fail(Exception.unknown)
+                        }
+                        return user.save(on: req.db).transform(to: publicUser)
                     }
                 }
-                return user.save(on: req.db).transform(to: response)
+                guard let publicUser = try? user.asPublic() else {
+                    return req.fail(Exception.unknown)
+                }
+                return user.save(on: req.db).transform(to: publicUser)
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)

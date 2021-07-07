@@ -44,14 +44,18 @@ class PostsController: RouteCollection {
                 return req.fail(Exception.missingUserId)
             }
             let (start, end) = req.searchRange
-            return Post.query(on: req.db)
-                .with(\.$user)
-                .filter(\.$user.$id == userId)
-                .range(start..<end)
-                .sort(\.$createdAt, .descending)
-                .all().flatMapThrowing { posts in
-                    return try posts.compactMap { try $0.asPublic() }
+            return User.find(userId, on: req.db).flatMap { user in
+                guard let user = user else {
+                    return req.fail(Exception.userDoesNotExist)
                 }
+                return user.$posts.query(on: req.db)
+                    .with(\.$user)
+                    .range(start..<end)
+                    .sort(\.$createdAt, .descending)
+                    .all().flatMapThrowing { posts in
+                        return try posts.compactMap { try $0.asPublic() }
+                    }
+            }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }

@@ -111,7 +111,7 @@ class AuthController: RouteCollection {
     
     // MARK: Send Email Verification Email
     
-    func sendEmailVerificationEmail(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+    func sendEmailVerificationEmail(req: Request) throws -> EventLoopFuture<String> {
         do {
             let loggedInUser = try req.auth.require(User.self)
             return self.sendEmailVerificationEmail(to: loggedInUser, req: req)
@@ -120,7 +120,7 @@ class AuthController: RouteCollection {
         }
     }
     
-    func sendEmailVerificationEmail(to user: User?, req: Request) -> EventLoopFuture<HTTPStatus> {
+    func sendEmailVerificationEmail(to user: User?, req: Request) -> EventLoopFuture<String> {
         guard let user = user else {
             return req.fail(Exception.userDoesNotExist)
         }
@@ -135,6 +135,7 @@ class AuthController: RouteCollection {
                 guard let tokenId = token.id?.uuidString else {
                     return req.fail(Exception.invalidToken)
                 }
+                guard req.application.environment != .testing else { return req.success(tokenId) }
                 let verifyEmailUrl = self.getVerifyEmailUrl(req: req, tokenId: tokenId)
                 let context = EmailVerificationEmailContext(name: user.firstName, verifyEmailUrl: verifyEmailUrl)
                 return req.leaf.render(LeafTemplate.verifyEmailEmail.rawValue, context).flatMapThrowing { view in
@@ -147,7 +148,7 @@ class AuthController: RouteCollection {
                     _ = req.mailgun().send(message).always { response in
                         print(response)
                     }
-                    return HTTPStatus.ok
+                    return tokenId
                 }
             }
         }
@@ -191,7 +192,7 @@ class AuthController: RouteCollection {
     
     // MARK: Send Password Reset Email
     
-    func sendPasswordResetEmail(req: Request) -> EventLoopFuture<HTTPStatus> {
+    func sendPasswordResetEmail(req: Request) -> EventLoopFuture<String> {
         let passwordReset = try? req.content.decode(PasswordReset.self)
         guard let email = passwordReset?.email else {
             return req.fail(Exception.missingEmail)
@@ -207,6 +208,7 @@ class AuthController: RouteCollection {
                 guard let tokenId = token.id?.uuidString else {
                     return req.fail(Exception.invalidToken)
                 }
+                guard req.application.environment != .testing else { return req.success(tokenId) }
                 let passwordResetBaseUrl = passwordReset?.url ?? "\(req.baseUrl)/view/passwordReset/"
                 let passwordResetUrl = "\(passwordResetBaseUrl)\(tokenId)"
                 let context = PasswordResetEmailContext(name: user.firstName, passwordResetUrl: passwordResetUrl)
@@ -220,7 +222,7 @@ class AuthController: RouteCollection {
                     _ = req.mailgun().send(message).always { response in
                         print(response)
                     }
-                    return HTTPStatus.ok
+                    return tokenId
                 }
             }
         }
@@ -258,5 +260,4 @@ class AuthController: RouteCollection {
             }
         }
     }
-    
 }

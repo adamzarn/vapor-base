@@ -9,11 +9,13 @@ import Foundation
 enum DB {
     case prod
     case dev
+    case test
     
     var username: String {
         switch self {
         case .dev: return "adamzarn"
         case .prod: return ""
+        case .test: return "adamzarn"
         }
     }
     
@@ -21,6 +23,7 @@ enum DB {
         switch self {
         case .dev: return ""
         case .prod: return ""
+        case .test: return ""
         }
     }
     
@@ -28,17 +31,23 @@ enum DB {
         switch self {
         case .dev: return "localhost"
         case .prod: return ""
+        case .test: return "localhost"
         }
     }
     
     var port: String {
-        return "5432"
+        switch self {
+        case .dev: return "5432"
+        case .prod: return ""
+        case .test: return "5433"
+        }
     }
     
     var database: String {
         switch self {
-        case .dev: return ""
-        case .prod: return ""
+        case .dev: return "vapor_base_dev"
+        case .prod: return "vapor_base_prod"
+        case .test: return "vapor_base_test"
         }
     }
     

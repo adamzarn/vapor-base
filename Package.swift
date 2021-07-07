@@ -12,7 +12,7 @@ let package = Package(
         .package(url: "https://github.com/vapor/fluent.git", from: "4.0.0-rc"),
         .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.0.0-rc"),
         .package(url: "https://github.com/vapor-community/mailgun.git", from: "5.0.0"),
-        .package(url: "https://github.com/tib/leaf.git", from: "4.0.0-rc"),
+        .package(url: "https://github.com/vapor/leaf.git", from: "4.1.2"),
     ],
     targets: [
         .target(name: "App", dependencies: [
@@ -27,6 +27,7 @@ let package = Package(
         ]),
         .testTarget(name: "AppTests", dependencies: [
             .target(name: "App"),
+            .product(name: "XCTVapor", package: "vapor")
         ])
     ]
 )

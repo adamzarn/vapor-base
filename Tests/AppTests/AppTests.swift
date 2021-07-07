@@ -1,5 +1,12 @@
+//
+//  AppTests.swift
+//  App
+//
+//  Created by Adam Zarn on 7/4/21.
+//
+
 import App
-import XCTest
+import XCTVapor
 
 final class AppTests: XCTestCase {
     func testNothing() throws {

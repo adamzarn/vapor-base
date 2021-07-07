@@ -101,7 +101,6 @@ final class User: Model, Content {
                       isEmailVerified: isEmailVerified,
                       profilePhotoUrl: profilePhotoUrl)
     }
-    
 }
 
 struct UserData: Content, Validatable {
@@ -112,6 +111,20 @@ struct UserData: Content, Validatable {
     let password: String
     let frontendBaseUrl: String?
     
+    init(firstName: String? = nil,
+         lastName: String? = nil,
+         username: String? = nil,
+         email: String,
+         password: String,
+         frontendBaseUrl: String? = nil) {
+        self.firstName = firstName
+        self.lastName = lastName
+        self.username = username
+        self.email = email
+        self.password = password
+        self.frontendBaseUrl = frontendBaseUrl
+    }
+    
     static func validations(_ validations: inout Validations) {
         validations.add("firstName", as: String.self, is: !.empty)
         validations.add("lastName", as: String.self, is: !.empty)
@@ -119,11 +132,9 @@ struct UserData: Content, Validatable {
         validations.add("email", as: String.self, is: .email)
         validations.add("password", as: String.self, is: .count(6...))
     }
-    
 }
 
 extension User: ModelAuthenticatable {
-
     static var usernameKey: KeyPath<User, Field<String>> {
         return \User.$email
     }
@@ -135,5 +146,4 @@ extension User: ModelAuthenticatable {
     func verify(password: String) throws -> Bool {
         return try Bcrypt.verify(password, created: self.passwordHash)
     }
-
 }

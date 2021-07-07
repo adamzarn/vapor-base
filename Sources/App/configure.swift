@@ -8,7 +8,7 @@ import Leaf
 public func configure(_ app: Application) throws {
     
     if !app.environment.isRelease {
-        LeafRenderer.Option.caching = .bypass
+        // LeafRenderer.Option.caching = .bypass
     }
     app.views.use(.leaf)
 
@@ -34,6 +34,8 @@ public func configure(_ app: Application) throws {
     // Connect to Database
     if let databaseURL = Environment.get("DATABASE_URL") {
         app.databases.use(try .postgres(url: databaseURL), as: .psql)
+    } else if app.environment == .testing {
+        app.databases.use(try .postgres(url: DB.test.url), as: .psql)
     } else {
         app.databases.use(try .postgres(url: DB.dev.url), as: .psql)
     }
