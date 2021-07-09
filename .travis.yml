@@ -1,8 +1,6 @@
 
 language: swift
 osx_image: xcode12.4
-services:
-    - postgresql
 before_install:
     - swift package update
     - swift package generate-xcodeproj
@@ -10,6 +8,7 @@ env:
     global:
         - PGPORT=5433
 before_script:
+    - sudo service postgresql start
     - psql -c 'create database vapor_base_test;' -U adamzarn
 script:
     - xcodebuild -project vapor-base.xcodeproj -scheme vapor-base-Package -destination 'platform=OS X' clean test
