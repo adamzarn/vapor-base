@@ -1,0 +1,7 @@
+
+language: swift
+osx_image: xcode12
+script:
+  - xcodebuild -project vapor-base.xcodeproj -scheme vapor-base-Package -destination 'platform=OS X' clean test
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
