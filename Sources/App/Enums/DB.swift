@@ -13,7 +13,7 @@ enum DB {
     var username: String {
         switch self {
         case .dev: return "adamzarn"
-        case .test: return "adamzarn"
+        case .test: return "postgres"
         }
     }
     
