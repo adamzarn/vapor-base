@@ -94,3 +94,4 @@ iOSInjectionProject/
 
 Private/
 Public/*/images
+*.coverage.txt
