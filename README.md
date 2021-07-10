@@ -9,7 +9,7 @@
 * Sending emails using [Mailgun](https://www.mailgun.com/)
 * Creating email templates using [Leaf](https://github.com/vapor/leaf)
 
-There is a companion frontend proeject [**vue-base**](https://github.com/adamzarn/vue-base), built with [Vue.js](https://github.com/vuejs/vue). It consumes the **vapor-base** API and is a great tool to quickly understand everything that **vapor-base** does, and it should also help you to visualize how you could build on top of it.
+There is a companion frontend project [**vue-base**](https://github.com/adamzarn/vue-base), built with [Vue.js](https://github.com/vuejs/vue). It consumes the **vapor-base** API and is a great tool to quickly understand everything that **vapor-base** does, and it should also help you to visualize how you could build on top of it.
 
 ## Endpoints
 
