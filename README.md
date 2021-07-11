@@ -13,7 +13,7 @@ There is a companion frontend project [**vue-base**](https://github.com/adamzarn
 
 ## Setup
 
-After you've cloned the template, there's a few things you need to do:
+After you've cloned the template, there are a few things you need to do:
 
 ### Download Dependencies
 
@@ -39,15 +39,13 @@ When you open **Postgres.app** for the first time, you should see something like
 
 <img width="773" alt="Screen Shot 2021-07-11 at 2 23 49 PM" src="https://user-images.githubusercontent.com/18072470/125207752-9e3ea280-e253-11eb-80b8-ec550bf3cb10.png">
 
-Before you hit **Initialize** on the default server, let's actually create a new server by clicking the plus sign in the bottom left corner:
+Before you hit **Initialize** on the default server, let's actually create a new server by clicking the plus sign in the bottom left corner. Change the name to **Development**, change the Data Directory folder from **var-xx** to **development**, and select **Create Server**.
 
 <img width="851" alt="Screen Shot 2021-07-11 at 2 50 41 PM" src="https://user-images.githubusercontent.com/18072470/125208355-6174aa80-e257-11eb-8803-f2fd6decbc60.png">
 
-Change the name to **Development**, change the Data Directory folder from **var-xx** to **development**, and select **Create Server**.
+Delete the original server and then select **Start** (or **Initialize**) on the **Development** server.
 
 <img width="851" alt="Screen Shot 2021-07-11 at 2 52 51 PM" src="https://user-images.githubusercontent.com/18072470/125208394-aac4fa00-e257-11eb-8db2-8186061114cf.png">
-
-Delete the original server and then select **Start** (or **Initialize**) on the **Development** server.
 
 ### Create vapor_base Development Database
 
@@ -71,15 +69,13 @@ Close out of the terminal window, and now you should see this:
 
 ### Create Test Server
 
-While we're at it, let's create a test server for unit testing purposes by clicking the plus sign in the bottom left corner again:
+While we're at it, let's create a test server for unit testing purposes by clicking the plus sign in the bottom left corner again. This time change the name to **Test**, change the Data Directory folder from **var-xx** to **test**, change the port to **5433**, and select **Create Server**.
 
 <img width="851" alt="Screen Shot 2021-07-11 at 2 57 10 PM" src="https://user-images.githubusercontent.com/18072470/125208476-46ef0100-e258-11eb-82a1-2cb0c6013ff8.png">
 
-This time change the name to **Test**, change the Data Directory folder from **var-xx** to **test**, change the port to **5433**, and select **Create Server**.
+Now select **Initialize** on the **Test** server.
 
 <img width="851" alt="Screen Shot 2021-07-11 at 2 59 47 PM" src="https://user-images.githubusercontent.com/18072470/125208529-a9480180-e258-11eb-9176-b92c5e875ff7.png">
-
-Now select **Initialize** on the **Test** server.
 
 ### Create vapor_base Test Database
 
@@ -89,7 +85,7 @@ Now your **Test** server should be running with 3 default databases:
 
 Double click on any of those 3 databases, and a terminal window will open like this:
 
-<img width="697" alt="Screen Shot 2021-07-11 at 2 42 14 PM" src="https://user-images.githubusercontent.com/18072470/125208112-3c336c80-e256-11eb-8cad-c1c4f26d8b53.png">
+<img width="697" alt="Screen Shot 2021-07-11 at 3 04 42 PM" src="https://user-images.githubusercontent.com/18072470/125208650-6a667b80-e259-11eb-827d-a35dc1ccc0e9.png">
 
 Use the following command to create the **vapor-base** database:
 
@@ -100,6 +96,29 @@ CREATE DATABASE vapor_base;
 Close out of the terminal window, and now you should see this:
 
 <img width="851" alt="Screen Shot 2021-07-11 at 3 02 43 PM" src="https://user-images.githubusercontent.com/18072470/125208590-0d6ac580-e259-11eb-853d-91e3a63ba95d.png">
+
+Congratulations, you now have a Development server running on port 5432 and a Test server running on port 5433!
+
+### Download Postico
+
+Another app I highly recommend is [Postico](https://eggerapps.at/postico/). While **Postgres.app** is a GUI for PostgreSQL servers, **Postico** provides a GUI for the tables and rows of each individual database on your servers.
+
+When you first open **Postico**, you'll be prompted to add a favorite database. Enter the information for the vapor_base development database like so:
+
+<img width="762" alt="Screen Shot 2021-07-11 at 3 23 21 PM" src="https://user-images.githubusercontent.com/18072470/125209069-faa5c000-e25b-11eb-8228-7a2a21b2a662.png">
+
+Add a new favorite by selecting **New Favorite** in the bottom left corner. Enter the information for the vapor_base test database like so:
+
+<img width="762" alt="Screen Shot 2021-07-11 at 3 20 53 PM" src="https://user-images.githubusercontent.com/18072470/125209003-9682fc00-e25b-11eb-9c8f-337abf745293.png">
+
+More congratulations are in order! Just select **Connect** and you'll be able to view the data stored in your Development and Test databases.
+
+<img width="762" alt="Screen Shot 2021-07-11 at 3 27 19 PM" src="https://user-images.githubusercontent.com/18072470/125209145-7c95e900-e25c-11eb-8782-29c2c2dbd3ee.png">
+
+**Note**: **vapor-base** connects to these databases via a url that is configured in `DB.swift`. Here are the urls for these two databases:
+
+* Development: postgres://postgres:@localhost:5432/vapor_base
+* Test: postgres://postgres:@localhost:5433/vapor_base
 
 ## Endpoints
 
