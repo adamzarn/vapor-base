@@ -67,12 +67,12 @@
 							"basic": [
 								{
 									"key": "password",
-									"value": "password",
+									"value": "",
 									"type": "string"
 								},
 								{
 									"key": "username",
-									"value": "mj@gmail.com",
+									"value": "",
 									"type": "string"
 								}
 							]
@@ -577,7 +577,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "9hcgCTLXvICp6jHVsP5Xbw==",
+									"value": "",
 									"type": "string"
 								}
 							]
