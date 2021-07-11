@@ -11,6 +11,46 @@
 
 There is a companion frontend project [**vue-base**](https://github.com/adamzarn/vue-base), built with [Vue.js](https://github.com/vuejs/vue). It consumes the **vapor-base** API and is a great tool to quickly understand everything that **vapor-base** does, and it should also help you to visualize how you could build on top of it.
 
+## Setup
+
+After you've cloned the template, there's a few things you need to do:
+
+### Download Dependencies
+
+```bash
+cd path/to/vapor-base
+swift package update
+```
+
+### Generate xcodeproj
+
+```bash
+cd path/to/vapor-base
+swift package generate-xcodeproj
+```
+
+### Install PostgreSQL
+
+I would recommend downloading the latest version of [Postgres.app](https://postgresapp.com/downloads.html). Downloading the app automatically installs PostgreSQL, as well as PostGIS, and plv8, and it also provides a nice GUI.
+
+### Create Development Server
+
+When you open **Postgres.app** for the first time, you should see something like this:
+
+<img width="773" alt="Screen Shot 2021-07-11 at 2 23 49 PM" src="https://user-images.githubusercontent.com/18072470/125207752-9e3ea280-e253-11eb-80b8-ec550bf3cb10.png">
+
+Before you hit **Initialize** on the default server, let's select **Server Settings...** and change the server name to **Development**:
+
+<img width="663" alt="Screen Shot 2021-07-11 at 2 28 04 PM" src="https://user-images.githubusercontent.com/18072470/125207815-36d52280-e254-11eb-9e5a-4e7bcd53d639.png">
+
+Once you change the name (and keep the port as the default of **5432**), hit **Initialize**.
+
+### Create vapor_base Database
+
+Now your **Development** server should be running with 3 default databases:
+
+<img width="773" alt="Screen Shot 2021-07-11 at 2 34 40 PM" src="https://user-images.githubusercontent.com/18072470/125207938-22ddf080-e255-11eb-8d1b-f95af7ae079a.png">
+
 ## Endpoints
 
 ### Auth
