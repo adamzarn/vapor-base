@@ -11,24 +11,15 @@ enum DB {
     case test
     
     var username: String {
-        switch self {
-        case .dev: return "adamzarn"
-        case .test: return "postgres"
-        }
+        return "postgres"
     }
     
     var password: String {
-        switch self {
-        case .dev: return ""
-        case .test: return ""
-        }
+        return ""
     }
     
     var host: String {
-        switch self {
-        case .dev: return "localhost"
-        case .test: return "localhost"
-        }
+        return "localhost"
     }
     
     var port: String {

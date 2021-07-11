@@ -9,7 +9,7 @@ import Foundation
 import Vapor
 
 struct Settings {
-    static var requireEmailVerification: Bool = false
+    static var requireEmailVerification: Bool = true
     static var searchResultLimit: Int = 50
     static var allowedImageTypes: [String] = ["png", "jpeg", "jpg", "gif"]
     static var maxBodySizeInBytes: Int = 5*1_048_576
