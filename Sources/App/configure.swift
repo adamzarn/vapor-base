@@ -22,7 +22,7 @@ public func configure(_ app: Application) throws {
     app.middleware.use(cors)
 
     // Serves files from `Public/` directory
-    app.routes.defaultMaxBodySize = ByteCount(integerLiteral: Settings().maxBodySizeInBytes)
+    app.routes.defaultMaxBodySize = ByteCount(integerLiteral: Settings.maxBodySizeInBytes)
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     
     // Catches errors and converts to HTTP response

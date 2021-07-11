@@ -22,6 +22,8 @@ enum Exception: String, AbortError {
     case invalidToken
     case missingEmail
     case missingPassword
+    case missingPasswordResetObject
+    case missingEmailVerificationObject
     case couldNotCreateToken
     case couldNotCreatePasswordHash
     case missingUserUpdate
@@ -32,31 +34,35 @@ enum Exception: String, AbortError {
     case unknown
     
     var reason: String {
-        var description = ""
-        switch self {
-        case .userAlreadyExists: description = "A user with same email already exists."
-        case .missingUserId: description = "You must provide a user id."
-        case .invalidUserId: description = "You must provide a valid user id."
-        case .missingTokenId: description = "You must provide a token id."
-        case .userDoesNotExist: description = "A user with the specified id does not exist."
-        case .missingAdminStatus: description = "You must provide an admin status."
-        case .missingFollowingStatus: description = "You must provide a following status."
-        case .cannotFollowSelf: description = "Users cannot follow/unfollow themselves."
-        case .emailIsNotVerified: description = "Email verification is required."
-        case .userIsNotAdmin: description = "User must be an admin to access or modify this resource."
-        case .invalidToken: description = "The provided token is either expired or it is not associated with any user."
-        case .missingEmail: description = "You must provide an email to reset a user's password."
-        case .missingPassword: description = "You must provide a new password to update a user's password."
-        case .couldNotCreateToken: description = "A token could not be generated."
-        case .couldNotCreatePasswordHash: description = "The password could not be hashed."
-        case .missingUserUpdate: description = "You must provide a valid user update object."
-        case .missingFollowType: description = "You must provide a follow type of followers or following"
-        case .invalidFollowType: description = "You must provide a follow type of followers or following"
-        case .invalidImageType: description = "Images must have one of the following extensions: \(Settings().allowedImageTypes)"
-        case .invalidPost: description = "You must provide a valid post object."
-        case .unknown: description = "An unknown exception occurred."
-        }
         return "\(rawValue): \(description)"
+    }
+    
+    var description: String {
+        switch self {
+        case .userAlreadyExists: return "A user with same email already exists."
+        case .missingUserId: return "You must provide a user id."
+        case .invalidUserId: return "You must provide a valid user id."
+        case .missingTokenId: return "You must provide a token id."
+        case .userDoesNotExist: return "A user with the specified id does not exist."
+        case .missingAdminStatus: return "You must provide an admin status."
+        case .missingFollowingStatus: return "You must provide a following status."
+        case .cannotFollowSelf: return "Users cannot follow/unfollow themselves."
+        case .emailIsNotVerified: return "Email verification is required."
+        case .userIsNotAdmin: return "User must be an admin to access or modify this resource."
+        case .invalidToken: return "The provided token is either expired or it is not associated with any user."
+        case .missingEmail: return "You must provide an email to reset a user's password."
+        case .missingPassword: return "You must provide a new password to update a user's password."
+        case .missingPasswordResetObject: return "You must provide an email and a frontendBaseUrl."
+        case .missingEmailVerificationObject: return "You must provide an email and a frontendBaseUrl."
+        case .couldNotCreateToken: return "A token could not be generated."
+        case .couldNotCreatePasswordHash: return "The password could not be hashed."
+        case .missingUserUpdate: return "You must provide a valid user update object."
+        case .missingFollowType: return "You must provide a follow type of followers or following"
+        case .invalidFollowType: return "You must provide a follow type of followers or following"
+        case .invalidImageType: return "Images must have one of the following extensions: \(Settings.allowedImageTypes)"
+        case .invalidPost: return "You must provide a valid post object."
+        case .unknown: return "An unknown exception occurred."
+        }
     }
     
     var status: HTTPResponseStatus {
@@ -74,6 +80,8 @@ enum Exception: String, AbortError {
         case .invalidToken: return .unauthorized
         case .missingEmail: return .badRequest
         case .missingPassword: return .badRequest
+        case .missingPasswordResetObject: return .badRequest
+        case .missingEmailVerificationObject: return .badRequest
         case .couldNotCreateToken: return .internalServerError
         case .couldNotCreatePasswordHash: return .internalServerError
         case .missingUserUpdate: return .badRequest

@@ -22,10 +22,10 @@ class SettingsController: RouteCollection {
     
     // MARK: Get Settings
     
-    func getSettings(req: Request) throws -> EventLoopFuture<Settings> {
+    func getSettings(req: Request) throws -> EventLoopFuture<CurrentSettings> {
         do {
             _ = try AuthUtility.getAuthorizedUser(req: req)
-            return req.success(Settings())
+            return req.success(Settings.current)
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }

@@ -10,5 +10,5 @@ import Vapor
 
 struct PasswordReset: Content {
     let email: String
-    let url: String?
+    let frontendBaseUrl: String
 }

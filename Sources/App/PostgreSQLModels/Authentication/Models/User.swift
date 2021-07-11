@@ -39,7 +39,7 @@ final class User: Model, Content {
          email: String,
          passwordHash: String,
          isAdmin: Bool = false,
-         isEmailVerified: Bool = Settings().requireEmailVerification ? false : true,
+         isEmailVerified: Bool = Settings.requireEmailVerification ? false : true,
          profilePhotoUrl: String? = nil) {
         self.id = id
         self.firstName = firstName

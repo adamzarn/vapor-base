@@ -26,6 +26,8 @@
 		DB5DF4832694B0F40040C91E /* User.Public+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5DF4822694B0F40040C91E /* User.Public+Extension.swift */; };
 		DB5DF4D72694B3840040C91E /* Post+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB5DF4D62694B3840040C91E /* Post+Extension.swift */; };
 		DB74A134269654EA000B6B63 /* AuthControllerWithEmailVerificationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A133269654EA000B6B63 /* AuthControllerWithEmailVerificationTests.swift */; };
+		DB74A27F269A87FB000B6B63 /* EmailVerification.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A1D9269A8386000B6B63 /* EmailVerification.swift */; };
+		DB74A325269A8989000B6B63 /* ErrorBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB74A324269A8989000B6B63 /* ErrorBody.swift */; };
 		DB8EF17D2694D06B008F5873 /* SettingsControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF17C2694D06B008F5873 /* SettingsControllerTests.swift */; };
 		DB8EF2782694D0CE008F5873 /* TestSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF2772694D0CE008F5873 /* TestSession.swift */; };
 		DB8EF31E2694D20D008F5873 /* UsersControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF31D2694D20D008F5873 /* UsersControllerTests.swift */; };
@@ -6831,6 +6833,8 @@
 		DB5DF4822694B0F40040C91E /* User.Public+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User.Public+Extension.swift"; sourceTree = "<group>"; };
 		DB5DF4D62694B3840040C91E /* Post+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Post+Extension.swift"; sourceTree = "<group>"; };
 		DB74A133269654EA000B6B63 /* AuthControllerWithEmailVerificationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthControllerWithEmailVerificationTests.swift; sourceTree = "<group>"; };
+		DB74A1D9269A8386000B6B63 /* EmailVerification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailVerification.swift; sourceTree = "<group>"; };
+		DB74A324269A8989000B6B63 /* ErrorBody.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorBody.swift; sourceTree = "<group>"; };
 		DB8EF17C2694D06B008F5873 /* SettingsControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsControllerTests.swift; sourceTree = "<group>"; };
 		DB8EF2772694D0CE008F5873 /* TestSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSession.swift; sourceTree = "<group>"; };
 		DB8EF31D2694D20D008F5873 /* UsersControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersControllerTests.swift; sourceTree = "<group>"; };
@@ -9997,6 +10001,7 @@
 			isa = PBXGroup;
 			children = (
 				DB8EF2772694D0CE008F5873 /* TestSession.swift */,
+				DB74A324269A8989000B6B63 /* ErrorBody.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -13435,6 +13440,7 @@
 				OBJ_41 /* NewPassword.swift */,
 				OBJ_42 /* NewPost.swift */,
 				OBJ_43 /* PasswordReset.swift */,
+				DB74A1D9269A8386000B6B63 /* EmailVerification.swift */,
 				OBJ_44 /* ProfilePhoto.swift */,
 				OBJ_45 /* ProfilePhotoUploadResponse.swift */,
 				OBJ_46 /* UserStatus.swift */,
@@ -17244,6 +17250,7 @@
 				OBJ_2536 /* AuthUtility.swift in Sources */,
 				OBJ_2537 /* DatabaseQuery+Filter+Method+Extension.swift in Sources */,
 				OBJ_2538 /* Request+Extensions.swift in Sources */,
+				DB74A27F269A87FB000B6B63 /* EmailVerification.swift in Sources */,
 				OBJ_2539 /* CreateFollowingFollowers.swift in Sources */,
 				OBJ_2540 /* CreatePosts.swift in Sources */,
 				OBJ_2541 /* CreateTokens.swift in Sources */,
@@ -17285,6 +17292,7 @@
 				DB8EF3722694D770008F5873 /* TestUserSessions.swift in Sources */,
 				DB8EF46B26953772008F5873 /* AuthControllerTests.swift in Sources */,
 				DB5DF4D72694B3840040C91E /* Post+Extension.swift in Sources */,
+				DB74A325269A8989000B6B63 /* ErrorBody.swift in Sources */,
 				DB8EF17D2694D06B008F5873 /* SettingsControllerTests.swift in Sources */,
 				OBJ_2731 /* AppTests.swift in Sources */,
 				DB5DF4832694B0F40040C91E /* User.Public+Extension.swift in Sources */,

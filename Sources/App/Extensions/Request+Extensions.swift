@@ -28,10 +28,10 @@ extension Request {
     
     var searchRange: (Int, Int) {
         guard let start = self.query[Int.self, at: "start"] else {
-            return (0, Settings().searchResultLimit)
+            return (0, Settings.searchResultLimit)
         }
         guard let end = self.query[Int.self, at: "end"], end >= start else {
-            return (start, start + Settings().searchResultLimit)
+            return (start, start + Settings.searchResultLimit)
         }
         return (start, end)
     }
@@ -53,7 +53,9 @@ extension Request {
             _ = self.mailgun().send(context.message(from: view, to: user)).always { response in
                 print(response)
             }
-            return tokenId
+            // The tokenId is sent back in the testing environment,
+            // but in production, the tokenId should only be accessible via email.
+            return ""
         }
     }
 }

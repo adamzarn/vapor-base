@@ -21,11 +21,7 @@ class AuthController: RouteCollection {
             .grouped(UserBasicAuthenticator())
             .grouped(UserBearerAuthenticator())
 
-        if Settings().requireEmailVerification {
-            authRoute.post(SessionSource.registration.pathComponent, use: registerWithEmailVerification)
-        } else {
-            authRoute.post(SessionSource.registration.pathComponent, use: registerAndLogin)
-        }
+        authRoute.post(SessionSource.registration.pathComponent, use: register)
         passwordProtectedAuthRoute.post(SessionSource.login.pathComponent, use: login)
         tokenProtectedAuthRoute.delete("logout", use: logout)
         passwordTokenProtectedRoute.post("sendEmailVerificationEmail", use: sendEmailVerificationEmail)
@@ -37,7 +33,7 @@ class AuthController: RouteCollection {
     
     // MARK: Register
     
-    func registerAndLogin(req: Request) throws -> EventLoopFuture<NewSession> {
+    func register(req: Request) throws -> EventLoopFuture<NewSession> {
         try UserData.validate(content: req)
         let user = try User.from(data: try req.content.decode(UserData.self))
         return User.query(on: req.db).filter(\.$email == user.email).first().flatMap { existingUser in
@@ -52,23 +48,8 @@ class AuthController: RouteCollection {
                 token = newToken
                 return token.save(on: req.db)
             }.flatMapThrowing {
+                guard Settings.requireEmailVerification == false else { throw Exception.emailIsNotVerified }
                 return NewSession(id: token.id?.uuidString ?? "", token: token.value, user: try user.asPublic())
-            }
-        }
-    }
-    
-    func registerWithEmailVerification(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        try UserData.validate(content: req)
-        let user = try User.from(data: try req.content.decode(UserData.self))
-        return User.query(on: req.db).filter(\.$email == user.email).first().flatMap { existingUser in
-            guard existingUser == nil else {
-                return req.fail(Exception.userAlreadyExists)
-            }
-            // User will be created but cannot login until email is verified
-            return user.save(on: req.db).flatMap {
-                guard !req.testing else { return req.fail(Exception.emailIsNotVerified) }
-                let _ = self.sendEmailVerificationEmail(to: user, req: req)
-                return req.fail(Exception.emailIsNotVerified)
             }
         }
     }
@@ -113,45 +94,14 @@ class AuthController: RouteCollection {
     // MARK: Send Email Verification Email
     
     func sendEmailVerificationEmail(req: Request) throws -> EventLoopFuture<String> {
-        do {
-            let loggedInUser = try req.auth.require(User.self)
-            return self.sendEmailVerificationEmail(to: loggedInUser, req: req)
-        } catch let error {
-            return AuthUtility.getFailedFuture(for: error, req: req)
+        guard let emailVerification = try? req.content.decode(EmailVerification.self) else {
+            return req.fail(Exception.missingEmailVerificationObject)
         }
-    }
-    
-    func sendEmailVerificationEmail(to user: User?, req: Request) -> EventLoopFuture<String> {
-        guard let user = user else {
-            return req.fail(Exception.userDoesNotExist)
-        }
-        return Token.query(on: req.db)
-            .filter(\.$user.$id == user.id ?? UUID())
-            .filter(\.$source == .emailVerification)
-            .delete().flatMap {
-            guard let token = try? user.createToken(source: .emailVerification) else {
-                return req.fail(Exception.couldNotCreateToken)
-            }
-            return token.save(on: req.db).flatMap {
-                guard let tokenId = token.id?.uuidString else {
-                    return req.fail(Exception.invalidToken)
-                }
-                guard !req.testing else { return req.success(tokenId) }
-                let verifyEmailUrl = self.getVerifyEmailUrl(req: req, tokenId: tokenId)
-                let context = EmailContext(user: user, url: verifyEmailUrl, leafTemplate: .verifyEmailEmail)
-                return req.sendEmail(to: user, tokenId: tokenId, context: context)
-            }
-        }
-    }
-    
-    private func getVerifyEmailUrl(req: Request, tokenId: String) -> String {
-        if let frontendBaseUrl = try? req.content.decode(UserData.self).frontendBaseUrl {
-            return "\(frontendBaseUrl)/\(tokenId)"
-        } else if let frontendBaseUrl = try? req.content.decode(UserUpdate.self).frontendBaseUrl {
-            return "\(frontendBaseUrl)/\(tokenId)"
-        } else {
-            return "\(req.baseUrl)/view/verifyEmail/\(tokenId)"
-        }
+        return sendEmail(req: req,
+                         source: .emailVerification,
+                         leafTemplate: .verifyEmailEmail,
+                         email: emailVerification.email,
+                         url: emailVerification.frontendBaseUrl)
     }
     
     // MARK: Verify Email
@@ -185,29 +135,15 @@ class AuthController: RouteCollection {
     
     // MARK: Send Password Reset Email
     
-    func sendPasswordResetEmail(req: Request) -> EventLoopFuture<String> {
-        let passwordReset = try? req.content.decode(PasswordReset.self)
-        guard let email = passwordReset?.email else {
-            return req.fail(Exception.missingEmail)
+    func sendPasswordResetEmail(req: Request) throws -> EventLoopFuture<String> {
+        guard let passwordReset = try? req.content.decode(PasswordReset.self) else {
+            return req.fail(Exception.missingPasswordResetObject)
         }
-        return User.query(on: req.db).filter(\.$email == email).first().flatMap { user in
-            guard let user = user else {
-                return req.fail(Exception.userDoesNotExist)
-            }
-            guard let token = try? user.createToken(source: .passwordReset) else {
-                return req.fail(Exception.couldNotCreateToken)
-            }
-            return token.save(on: req.db).flatMap {
-                guard let tokenId = token.id?.uuidString else {
-                    return req.fail(Exception.invalidToken)
-                }
-                guard !req.testing else { return req.success(tokenId) }
-                let passwordResetBaseUrl = passwordReset?.url ?? "\(req.baseUrl)/view/passwordReset"
-                let passwordResetUrl = "\(passwordResetBaseUrl)/\(tokenId)"
-                let context = EmailContext(user: user, url: passwordResetUrl, leafTemplate: .passwordResetEmail)
-                return req.sendEmail(to: user, tokenId: tokenId, context: context)
-            }
-        }
+        return sendEmail(req: req,
+                         source: .passwordReset,
+                         leafTemplate: .passwordResetEmail,
+                         email: passwordReset.email,
+                         url: passwordReset.frontendBaseUrl)
     }
     
     // MARK: Reset Password
@@ -242,6 +178,33 @@ class AuthController: RouteCollection {
                         .filter(\.$source == SessionSource.passwordReset)
                         .delete().transform(to: HTTPStatus.ok)
                 }
+            }
+        }
+    }
+    
+    // MARK: Send Email
+    
+    func sendEmail(req: Request,
+                   source: SessionSource,
+                   leafTemplate: LeafTemplate,
+                   email: String,
+                   url: String) -> EventLoopFuture<String> {
+        return User.query(on: req.db).filter(\.$email == email).first().flatMap { user in
+            guard let user = user else {
+                return req.fail(Exception.userDoesNotExist)
+            }
+            guard let token = try? user.createToken(source: source) else {
+                return req.fail(Exception.couldNotCreateToken)
+            }
+            return token.save(on: req.db).flatMap {
+                guard let tokenId = token.id?.uuidString else {
+                    return req.fail(Exception.invalidToken)
+                }
+                guard !req.testing else { return req.success(tokenId) }
+                let context = EmailContext(user: user,
+                                           url: "\(url)/\(tokenId)",
+                                           leafTemplate: leafTemplate)
+                return req.sendEmail(to: user, tokenId: tokenId, context: context)
             }
         }
     }

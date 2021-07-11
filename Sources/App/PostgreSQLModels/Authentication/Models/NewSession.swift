@@ -11,5 +11,6 @@ import Fluent
 struct NewSession: Content {
     let id: String?
     let token: String?
+    var requireEmailVerification = Settings.requireEmailVerification
     let user: User.Public?
 }

@@ -11,12 +11,10 @@ import XCTVapor
 extension Application {
     static func testable(requireEmailVerification: Bool = false) throws -> Application {
         let app = Application(.testing)
-        Configuration.requireEmailVerification = requireEmailVerification
+        Settings.requireEmailVerification = requireEmailVerification
         try configure(app)
-    
         try app.autoRevert().wait()
         try app.autoMigrate().wait()
-
         return app
     }
 }

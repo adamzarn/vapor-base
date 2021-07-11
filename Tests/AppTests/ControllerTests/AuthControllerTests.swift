@@ -85,27 +85,6 @@ class AuthControllerTests: XCTestCase {
         })
     }
     
-    func testEmailVerification() throws {
-        var emailVerificationTokenId: String?
-        try app.test(.POST, "auth/sendEmailVerificationEmail", afterResponse: { response in
-            XCTAssertEqual(response.status, .unauthorized)
-        })
-        try app.test(.POST, "auth/sendEmailVerificationEmail", headers: NewSession.basicHeaders(email: "michael-jordan@gmail.com", password: "123456"), afterResponse: { response in
-            emailVerificationTokenId = try response.content.decode(String.self)
-            XCTAssertEqual(response.status, .ok)
-        })
-        try app.test(.GET, "users", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
-            let user = try response.content.decode(User.Public.self)
-            XCTAssertFalse(user.isEmailVerified)
-        })
-        guard let tokenId = emailVerificationTokenId else { fatalError() }
-        try app.test(.PUT, "auth/verifyEmail/\(tokenId)")
-        try app.test(.GET, "users", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
-            let user = try response.content.decode(User.Public.self)
-            XCTAssertTrue(user.isEmailVerified)
-        })
-    }
-    
     func testPasswordReset() throws {
         try app.test(.POST, "auth/login", afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
@@ -116,7 +95,7 @@ class AuthControllerTests: XCTestCase {
         var passwordResetTokenId: String?
         let newPassword = "1234567"
         try app.test(.POST, "auth/sendPasswordResetEmail", beforeRequest: { request in
-            try request.content.encode(PasswordReset(email: "michael-jordan@gmail.com", url: nil))
+            try request.content.encode(PasswordReset(email: "michael-jordan@gmail.com", frontendBaseUrl: "url"))
         }, afterResponse: { response in
             passwordResetTokenId = try response.content.decode(String.self)
         })

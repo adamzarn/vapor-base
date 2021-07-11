@@ -147,36 +147,43 @@ class UsersController: RouteCollection {
         do {
             let loggedInUser = try req.auth.require(User.self)
             guard let userId = loggedInUser.id,
-                  let otherUserId = req.parameters.get("userId") else {
+                  let otherUserId = req.userId(loggedInUser) else {
                 return req.fail(Exception.missingUserId)
             }
             return User.find(userId, on: req.db).flatMap { user in
-                return User.find(UUID(otherUserId), on: req.db).flatMap { otherUser in
+                return User.find(otherUserId, on: req.db).flatMap { otherUser in
                     guard let user = user, let otherUser = otherUser else {
                         return req.fail(Exception.userDoesNotExist)
                     }
-                    // Check if user is already following other user
-                    return FollowingFollower.query(on: req.db)
-                        .filter(\.$follower.$id == user.id ?? UUID())
-                        .filter(\.$following.$id == otherUser.id ?? UUID())
-                        .first()
-                        .flatMap { existingConnection in
-                        if newFollowingStatus == true {
-                            guard existingConnection == nil else {
-                                return req.success(HTTPStatus.ok)
-                            }
-                            guard user.id != otherUser.id else {
-                                return req.fail(Exception.cannotFollowSelf)
-                            }
-                            return user.$following.attach(otherUser, on: req.db).transform(to: HTTPStatus.ok)
-                        } else {
-                            return user.$following.detach(otherUser, on: req.db).transform(to: HTTPStatus.ok)
-                        }
+                    guard user.id != otherUser.id else {
+                        return req.fail(Exception.cannotFollowSelf)
                     }
+                    return self.updateFollowingStatus(req: req,
+                                                      user: user,
+                                                      otherUser: otherUser,
+                                                      newFollowingStatus: newFollowingStatus)
                 }
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
+        }
+    }
+    
+    private func updateFollowingStatus(req: Request,
+                                       user: User,
+                                       otherUser: User,
+                                       newFollowingStatus: Bool) -> EventLoopFuture<HTTPStatus> {
+        return FollowingFollower.query(on: req.db)
+            .filter(\.$follower.$id == user.id ?? UUID())
+            .filter(\.$following.$id == otherUser.id ?? UUID())
+            .first()
+            .flatMap { existingConnection in
+            if newFollowingStatus == true {
+                guard existingConnection == nil else { return req.success(HTTPStatus.ok) }
+                return user.$following.attach(otherUser, on: req.db).transform(to: HTTPStatus.ok)
+            } else {
+                return user.$following.detach(otherUser, on: req.db).transform(to: HTTPStatus.ok)
+            }
         }
     }
     
@@ -192,20 +199,24 @@ class UsersController: RouteCollection {
                 return req.fail(Exception.missingFollowType)
             }
             let _ = try AuthUtility.getAuthorizedUser(req: req)
-            return User.find(userId, on: req.db).flatMap { user in
-                guard let user = user else {
-                    return req.fail(Exception.userDoesNotExist)
-                }
-                if followType == "followers" {
-                    return self.followers(of: user, req: req)
-                } else if followType == "following" {
-                    return self.following(of: user, req: req)
-                } else {
-                    return req.fail(Exception.invalidFollowType)
-                }
-            }
+            return follows(req: req, userId: userId, followType: followType)
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
+        }
+    }
+    
+    private func follows(req: Request, userId: UUID, followType: String) -> EventLoopFuture<[User.Public]> {
+        return User.find(userId, on: req.db).flatMap { user in
+            guard let user = user else {
+                return req.fail(Exception.userDoesNotExist)
+            }
+            if followType == "followers" {
+                return self.followers(of: user, req: req)
+            } else if followType == "following" {
+                return self.following(of: user, req: req)
+            } else {
+                return req.fail(Exception.invalidFollowType)
+            }
         }
     }
     
@@ -272,7 +283,7 @@ class UsersController: RouteCollection {
             guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
                 return req.fail(Exception.missingUserUpdate)
             }
-            guard let userId = req.userId(loggedInUser) else {
+            guard let userId = loggedInUser.id else {
                 return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMap { user in
@@ -285,27 +296,34 @@ class UsersController: RouteCollection {
                 if loggedInUser.isAdmin == true {
                     if let isAdmin = userUpdate.isAdmin { user.isAdmin = isAdmin }
                 }
-                if let email = userUpdate.email {
-                    return User.query(on: req.db).filter(\.$email == email).first().flatMap { existingUser in
-                        if existingUser != nil {
-                            return req.fail(Exception.userAlreadyExists)
-                        }
-                        user.email = email
-                        user.isEmailVerified = Settings().requireEmailVerification ? false : true
-                        guard let publicUser = try? user.asPublic() else {
-                            return req.fail(Exception.unknown)
-                        }
-                        return user.save(on: req.db).transform(to: publicUser)
-                    }
-                }
-                guard let publicUser = try? user.asPublic() else {
-                    return req.fail(Exception.unknown)
-                }
-                return user.save(on: req.db).transform(to: publicUser)
+                guard let email = userUpdate.email else { return self.saveUpdatedUser(user: user, req: req) }
+                return self.saveUpdatedUserWithNewEmail(req: req, user: user, userId: userId, newEmail: email)
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }
+    }
+    
+    private func saveUpdatedUserWithNewEmail(req: Request,
+                                             user: User,
+                                             userId: UUID,
+                                             newEmail: String) -> EventLoopFuture<User.Public> {
+        return User.query(on: req.db).filter(\.$email == newEmail).first().flatMap { existingUser in
+            if let existingUser = existingUser, existingUser.id != userId {
+                return req.fail(Exception.userAlreadyExists)
+            }
+            guard user.email != newEmail else { return self.saveUpdatedUser(user: user, req: req) }
+            user.email = newEmail
+            user.isEmailVerified = Settings.requireEmailVerification ? false : true
+            return self.saveUpdatedUser(user: user, req: req)
+        }
+    }
+    
+    private func saveUpdatedUser(user: User, req: Request) -> EventLoopFuture<User.Public> {
+        guard let publicUser = try? user.asPublic() else {
+            return req.fail(Exception.unknown)
+        }
+        return user.save(on: req.db).transform(to: publicUser)
     }
     
     // MARK: Upload Profile Photo
@@ -318,7 +336,7 @@ class UsersController: RouteCollection {
             }
             let photo = try req.content.decode(ProfilePhoto.self)
             guard let ext = photo.file.extension?.lowercased(),
-                  Settings().allowedImageTypes.contains(ext) else {
+                  Settings.allowedImageTypes.contains(ext) else {
                 return req.fail(Exception.invalidImageType)
             }
             
