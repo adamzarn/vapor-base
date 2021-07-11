@@ -30,10 +30,7 @@ enum DB {
     }
     
     var database: String {
-        switch self {
-        case .dev: return "vapor_base_dev"
-        case .test: return "vapor_base_test"
-        }
+        return "vapor_base"
     }
     
     var url: URL {
