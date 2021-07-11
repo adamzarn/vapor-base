@@ -21,27 +21,27 @@
 							"formdata": [
 								{
 									"key": "firstName",
-									"value": "Michael",
+									"value": "firstName",
 									"type": "text"
 								},
 								{
 									"key": "lastName",
-									"value": "Jordan",
+									"value": "lastName",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "username",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "mj@gmail.com",
+									"value": "email",
 									"type": "text"
 								},
 								{
 									"key": "password",
 									"value": "password",
-									"type": "text"
-								},
-								{
-									"key": "username",
-									"value": "Air Jordan",
 									"type": "text"
 								}
 							]
@@ -128,22 +128,25 @@
 					"name": "Send Email Verification Email",
 					"request": {
 						"auth": {
-							"type": "basic",
-							"basic": [
-								{
-									"key": "password",
-									"value": "password",
-									"type": "string"
-								},
-								{
-									"key": "username",
-									"value": "mj@gmail.com",
-									"type": "string"
-								}
-							]
+							"type": "noauth"
 						},
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "email",
+									"type": "text"
+								},
+								{
+									"key": "frontendBaseUrl",
+									"value": "frontendBaseUrl",
+									"type": "text"
+								}
+							]
+						},
 						"url": {
 							"raw": "{{baseUrl}}/auth/sendEmailVerificationEmail",
 							"host": [
@@ -194,8 +197,19 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"email\": \"mj@gmail.com\",\n    \"url\": \"url\"\n}",
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "email",
+									"type": "text"
+								},
+								{
+									"key": "frontendBaseUrl",
+									"value": "frontendBaseUrl",
+									"type": "text"
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -294,10 +308,13 @@
 				{
 					"name": "Get User Status",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/users/status?email=mj@gmail.com",
+							"raw": "{{baseUrl}}/users/status?email=email",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -308,7 +325,7 @@
 							"query": [
 								{
 									"key": "email",
-									"value": "mj@gmail.com"
+									"value": "email"
 								}
 							]
 						}
@@ -560,7 +577,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "",
+									"value": "9hcgCTLXvICp6jHVsP5Xbw==",
 									"type": "string"
 								}
 							]
@@ -568,8 +585,39 @@
 						"method": "PUT",
 						"header": [],
 						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"firstName\": \"firstName\",\n    \"lastName\": \"lastName\",\n    \"username\": \"username\",\n    \"email\": \"email\",\n    \"isAdmin\": true,\n    \"frontendBaseUrl\": \"frontendBaseUrl\"\n}",
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "firstName",
+									"value": "firstName",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "lastName",
+									"value": "lastName",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "username",
+									"value": "username",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "email",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "isAdmin",
+									"value": "true",
+									"type": "text",
+									"disabled": true
+								}
+							],
 							"options": {
 								"raw": {
 									"language": "json"
@@ -665,38 +713,6 @@
 			]
 		},
 		{
-			"name": "Settings",
-			"item": [
-				{
-					"name": "Get Settings",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseUrl}}/settings",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"settings"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
 			"name": "Posts",
 			"item": [
 				{
@@ -716,7 +732,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"text\": \"text\"\n}",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -792,6 +808,38 @@
 							"path": [
 								"posts",
 								"feed"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Settings",
+			"item": [
+				{
+					"name": "Get Settings",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/settings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"settings"
 							]
 						}
 					},
