@@ -121,14 +121,14 @@ class AuthControllerTests: XCTestCase {
         XCTAssertEqual(passwordResetContext.name, "Test")
         XCTAssertEqual(passwordResetContext.subject, "Password Reset")
         let passwordResetMessage = passwordResetContext.message(from: View(data: ByteBuffer()), to: user)
-        XCTAssertEqual(passwordResetMessage.from, MailSettings.from)
+        XCTAssertEqual(passwordResetMessage.from, Environment.mailgunFrom)
         XCTAssertEqual(passwordResetMessage.to, user.email)
                 
         let verifyEmailContext = EmailContext(user: user, url: "www.yahoo.com", leafTemplate: .verifyEmailEmail)
         XCTAssertEqual(verifyEmailContext.name, "Test")
         XCTAssertEqual(verifyEmailContext.subject, "Please verify your email")
         let verifyEmailMessage = passwordResetContext.message(from: View(data: ByteBuffer()), to: user)
-        XCTAssertEqual(verifyEmailMessage.from, MailSettings.from)
+        XCTAssertEqual(verifyEmailMessage.from, Environment.mailgunFrom)
         XCTAssertEqual(verifyEmailMessage.to, user.email)
     }
 }
