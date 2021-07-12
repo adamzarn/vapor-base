@@ -13,11 +13,7 @@ There is a companion frontend project [**vue-base**](https://github.com/adamzarn
 
 ## Setup
 
-After you've cloned the template, there are a few things you need to do:
-
-### Download Dependencies
-
-All you have to do to download the Swift package dependencies is open the **Package.swift** file using Xcode. The packages will be fetched automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons.
+After you've cloned the template, open the project in Xcode by double clicking the **Package.swift** file. Once you open the project, the Swift package dependency fetch will start automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons.
 
 ### Install PostgreSQL
 
@@ -109,6 +105,42 @@ More congratulations are in order! Just select **Connect** and you'll be able to
 
 * Development: postgres://postgres:@localhost:5432/vapor_base
 * Test: postgres://postgres:@localhost:5433/vapor_base
+
+### Mailgun
+
+Before creating a **mailgun** account, create a `.env` file and place it in the root of the **vapor-base** project. This is where you should store any personal or secret keys, including all of the information related to **mailgun**. Here are the keys you should add right now (you can fill in the values once you know them):
+
+```bash
+MAILGUN_API_KEY=
+MAILGUN_SANDBOX_DOMAIN=
+MAILGUN_DEFAULT_DOMAIN=
+MAILGUN_FROM=
+```
+
+Now create a [**mailgun**](https://www.mailgun.com/) account.
+
+Once you create your account and verify your email, you should be able to fill in the `MAILGUN_API_KEY` and the `MAILGUN_SANDBOX_DOMAIN`.
+
+You can access the API Key from **Settings** -> **API Keys** -> **Private API key**, and the sandbox sending domain is in the **Dashboard** and should have this format: **sandbox{uuid}.mailgun.org**
+
+If you want to be able to test with the sandbox domain, select it and add an email you have access to in the **Authorized Recipients** list:
+
+<img width="1181" alt="Screen Shot 2021-07-12 at 4 01 05 PM" src="https://user-images.githubusercontent.com/18072470/125355438-ac132700-e32a-11eb-8f45-13d81798f034.png">
+
+To add a custom domain, go to the **Sending** -> **Add New Domain**. Follow the instructions on how to format the domain name (be sure to use a domain that you actually own 😂) and use it as the value for `MAILGUN_DEFAULT_DOMAIN`.
+
+Once you do that you'll need to select your new domain from the **Dashboard**, select **DNS records**, and add those records wherever you manage your domain. You should be adding 2 `TXT` records, 2 `MX` records, and 1 `CNAME` record. I personally use HostGator as my hosting provider, and to update this, I logged into HostGator's **cPanel**, went to **Domains** -> **Zone Editor**. Then I selected **Manage** on the domain, and from there I could add the `TXT`, `MX`, and `CNAME` records.
+
+In `configure.swift`, you can select which domain to use with this line:
+
+```swift
+/// To use the sandbox domain
+app.mailgun.defaultDomain = .sandboxDomain
+/// To use your custom domain
+app.mailgun.defaultDomain = .defaultDomain
+```
+
+Finally, fill in `MAILGUN_FROM` with what you want the from line of the emails to be. My custom domain is `zarndev.com`, so I set this value to `Adam Zarn <adam@zarndev.com>`. This can literally be anything, but if you want someone to be able to reply, it should be formatted correctly as an actual email address.
 
 ## Endpoints
 
