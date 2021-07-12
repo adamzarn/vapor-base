@@ -11,15 +11,36 @@
 
 There is a companion frontend project [**vue-base**](https://github.com/adamzarn/vue-base), built with [Vue.js](https://github.com/vuejs/vue). It consumes the **vapor-base** API and is a great tool to quickly understand everything that **vapor-base** does, and it should also help you to visualize how you could build on top of it.
 
+## Table of Contents  
+* [Setup](#setup)  
+  * [PostgreSQL](#postgresql)
+    * [Create Development Server](#create-development-server)
+    * [Create Development Database](#create-development-database)    
+    * [Create Test Server](#create-test-server)
+    * [Create Test Database](#create-test-database)
+  * [Postico](#postico)
+  * [Mailgun](#mailgun)
+  * [Run](#run)
+* [Reference](#reference)
+  * [Endpoints](#endpoints) 
+    * [Auth](#auth)
+    * [Users](#users)    
+    * [Posts](#posts)
+    * [Settings](#settings)
+
+<a name="setup"/>
+
 ## Setup
 
-After you've cloned the template, open the project in Xcode by double clicking the **Package.swift** file. Once you open the project, the Swift package dependency fetch will start automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons.
+<a name="postgresql"/>
 
-### Install PostgreSQL
+### PostgreSQL
 
 I would recommend downloading the latest version of [Postgres.app](https://postgresapp.com/downloads.html). Downloading the app automatically installs PostgreSQL, as well as PostGIS, and plv8, and it also provides a nice GUI.
 
-### Create Development Server
+<a name="create-development-server"/>
+
+#### Create Development Server
 
 When you open **Postgres.app** for the first time, you should see something like this:
 
@@ -33,7 +54,9 @@ Delete the original server and then select **Start** (or **Initialize**) on the 
 
 <img width="851" alt="Screen Shot 2021-07-11 at 2 52 51 PM" src="https://user-images.githubusercontent.com/18072470/125208394-aac4fa00-e257-11eb-8db2-8186061114cf.png">
 
-### Create vapor_base Development Database
+<a name="create-development-database"/>
+
+#### Create vapor_base Development Database
 
 Now your **Development** server should be running with 3 default databases:
 
@@ -53,7 +76,9 @@ Close out of the terminal window, and now you should see this:
 
 <img width="851" alt="Screen Shot 2021-07-11 at 2 44 24 PM" src="https://user-images.githubusercontent.com/18072470/125208165-7e5cae00-e256-11eb-8871-0023d3752a84.png">
 
-### Create Test Server
+<a name="create-test-server"/>
+
+#### Create Test Server
 
 While we're at it, let's create a test server for unit testing purposes by clicking the plus sign in the bottom left corner again. This time change the name to **Test**, change the Data Directory folder from **var-xx** to **test**, change the port to **5433**, and select **Create Server**.
 
@@ -63,7 +88,9 @@ Now select **Initialize** on the **Test** server.
 
 <img width="851" alt="Screen Shot 2021-07-11 at 2 59 47 PM" src="https://user-images.githubusercontent.com/18072470/125208529-a9480180-e258-11eb-9176-b92c5e875ff7.png">
 
-### Create vapor_base Test Database
+<a name="create-test-database"/>
+
+#### Create vapor_base Test Database
 
 Now your **Test** server should be running with 3 default databases:
 
@@ -85,7 +112,9 @@ Close out of the terminal window, and now you should see this:
 
 Congratulations, you now have a Development server running on port 5432 and a Test server running on port 5433!
 
-### Download Postico
+<a name="postico"/>
+
+### Postico
 
 Another app I highly recommend is [Postico](https://eggerapps.at/postico/). While **Postgres.app** is a GUI for PostgreSQL servers, **Postico** provides a GUI for the tables and rows of each individual database on your servers.
 
@@ -105,6 +134,8 @@ More congratulations are in order! Just select **Connect** and you'll be able to
 
 * Development: postgres://postgres:@localhost:5432/vapor_base
 * Test: postgres://postgres:@localhost:5433/vapor_base
+
+<a name="mailgun"/>
 
 ### Mailgun
 
@@ -142,9 +173,23 @@ app.mailgun.defaultDomain = .defaultDomain
 
 Finally, fill in `MAILGUN_FROM` with what you want the from line of the emails to be. My custom domain is `zarndev.com`, so I set this value to `Adam Zarn <adam@zarndev.com>`. This can literally be anything, but if you want someone to be able to reply, it should be formatted correctly as an actual email address.
 
-## Endpoints
+<a name="run"/>
 
-### Auth
+#### Run
+
+After you've cloned the template, open the project in Xcode by double clicking the **Package.swift** file. Once you open the project, the Swift package dependency fetch will start automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons.
+
+<a name="reference"/>
+
+## Reference
+
+<a name="endpoints"/>
+
+### Endpoints
+
+<a name="auth"/>
+
+#### Auth
 | Name                          | Method      | Path                              | Authorization | Body    | Response        |
 | ----------------------------- | ----------- | --------------------------------- | ------------- | ------- | --------------- |
 | Register                      | **POST**    | /auth/register                    | No Auth       | User    | Token and User  |
@@ -155,7 +200,9 @@ Finally, fill in `MAILGUN_FROM` with what you want the from line of the emails t
 | Send Password Reset Email     | **POST**    | /auth/sendPasswordResetEmail      | No Auth       | No Body | No Response     |
 | Reset Password                | **PUT**     | /auth/resetPassword/:tokenId      | No Auth       | No Body | No Response     |
 
-### Users
+<a name="users"/>
+
+#### Users
 | Name                  | Method      | Path                      | Authorization | Body        | Response    |
 | --------------------- | ----------- | ------------------------- | ------------- | ----------- | ----------- |
 | Get User              | **GET**     | /users/:userId            | Bearer Token  | No Body     | User        |
@@ -170,14 +217,18 @@ Finally, fill in `MAILGUN_FROM` with what you want the from line of the emails t
 | Upload Profile Photo  | **POST**    | /users/profilePhoto       | Bearer Token  | File        | No Response |
 | Delete Profile Photo  | **DELETE**  | /users/profilePhoto       | Bearer Token  | No Body     | No Response |
 
-### Posts
+<a name="posts"/>
+
+#### Posts
 | Name        | Method   | Path           | Authorization | Body    | Response    |
 | ----------- | ---------| -------------- | ------------- | ------- | ----------- |
 | Create Post | **POST** | /posts         | Bearer Token  | Post    | No Response |
 | Get Posts   | **GET**  | /posts/:userId | Bearer Token  | No Body | [Post]      |
 | Get Feed    | **GET**  | /posts/feed    | Bearer Token  | No Body | [Post]      |
 
-### Settings
+<a name="settings"/>
+
+#### Settings
 | Name         | Method  | Path      | Authorization | Body    | Response |
 | ------------ | ------- | --------- | ------------- | ------- | -------- |
 | Get Settings | **GET** | /settings | Bearer Token  | No Body | Settings |
