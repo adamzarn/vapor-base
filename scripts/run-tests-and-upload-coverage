@@ -1,5 +1,15 @@
 #!/bin/bash
 
+if [[ $# -eq 0 ]] ; then
+    echo 'You must provide a CODECOV_TOKEN'
+    exit 0
+fi
+
+SCRIPTS_DIRECTORY=`dirname "$0"`
+ROOT_DIRECTORY=$SCRIPTS_DIRECTORY/..
+
+cd $ROOT_DIRECTORY
+
 CODECOV_TOKEN=$1
 
 swift test --enable-code-coverage
