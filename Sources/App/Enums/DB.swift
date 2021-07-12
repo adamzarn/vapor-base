@@ -39,12 +39,14 @@ enum DB {
         return "postgres://\(username):\(password)@\(host):\(port)/\(database)"
     }
     
-    static func url(for env: Environment) -> String? {
+    static func url(for env: Environment) -> String {
         switch env {
         case .production: return Environment.databaseUrl
         case .testing: return DB.test.url
         case .development: return DB.dev.url
-        default: return nil
+        default:
+            print("Invalid Environment")
+            fatalError()
         }
     }
 }

@@ -7,18 +7,20 @@ import Leaf
 /// Called before your application initializes.
 public func configure(_ app: Application) throws {
     
+    // Leaf
     app.views.use(.leaf)
 
+    // Mailgun
     app.mailgun.configuration = .init(apiKey: Environment.mailgunApiKey)
     app.mailgun.defaultDomain = .defaultDomain
     
+    // CORS
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .all,
         allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
         allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin, .accessControlAllowHeaders, .accessControlAllowCredentials]
     )
     let cors = CORSMiddleware(configuration: corsConfiguration)
-    
     app.middleware.use(cors)
 
     // Serves files from `Public/` directory
@@ -29,11 +31,7 @@ public func configure(_ app: Application) throws {
     app.middleware.use(ErrorMiddleware.default(environment: app.environment))
     
     // Connect to Database
-    guard let dbUrl = DB.url(for: app.environment) else {
-        print("Invalid database url")
-        fatalError()
-    }
-    app.databases.use(try .postgres(url: dbUrl), as: .psql)
+    app.databases.use(try .postgres(url: DB.url(for: app.environment)), as: .psql)
 
     // Configure migrations
     app.migrations.add(CreateUsers(), to: .psql)
