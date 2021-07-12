@@ -20,7 +20,12 @@ There is a companion frontend project [**vue-base**](https://github.com/adamzarn
     * [Create Test Database](#create-test-database)
   * [Postico](#postico)
   * [Mailgun](#mailgun)
+    * [.env](#env)
+    * [Sandbox Domain](#sandbox-domain)
+    * [Custom Domain](#custom-domain) 
   * [Run](#run)
+
+
 * [Reference](#reference)
   * [Endpoints](#endpoints) 
     * [Auth](#auth)
@@ -139,6 +144,10 @@ More congratulations are in order! Just select **Connect** and you'll be able to
 
 ### Mailgun
 
+<a name="env"/>
+
+#### .env
+
 Before creating a **mailgun** account, create a `.env` file and place it in the root of the **vapor-base** project. This is where you should store any personal or secret keys, including all of the information related to **mailgun**. Here are the keys you should add right now (you can fill in the values once you know them):
 
 ```bash
@@ -154,9 +163,17 @@ Once you create your account and verify your email, you should be able to fill i
 
 You can access the API Key from **Settings** -> **API Keys** -> **Private API key**, and the sandbox sending domain is in the **Dashboard** and should have this format: **sandbox{uuid}.mailgun.org**
 
+<a name="sandbox-domain"/>
+
+#### Sandbox Domain
+
 If you want to be able to test with the sandbox domain, select it and add an email you have access to in the **Authorized Recipients** list:
 
 <img width="1181" alt="Screen Shot 2021-07-12 at 4 01 05 PM" src="https://user-images.githubusercontent.com/18072470/125355438-ac132700-e32a-11eb-8f45-13d81798f034.png">
+
+<a name="custom-domain"/>
+
+#### Custom Domain
 
 To add a custom domain, go to the **Sending** -> **Add New Domain**. Follow the instructions on how to format the domain name (be sure to use a domain that you actually own 😂) and use it as the value for `MAILGUN_DEFAULT_DOMAIN`.
 
@@ -175,9 +192,9 @@ Finally, fill in `MAILGUN_FROM` with what you want the from line of the emails t
 
 <a name="run"/>
 
-#### Run
+### Run
 
-After you've cloned the template, open the project in Xcode by double clicking the **Package.swift** file. Once you open the project, the Swift package dependency fetch will start automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons.
+After you've cloned the template, open the project in Xcode by double clicking the **Package.swift** file. Once you open the project, the Swift package dependency fetch will start automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons. Press the play button and your API will be running at http://localhost:8080!
 
 <a name="reference"/>
 
