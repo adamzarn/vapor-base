@@ -25,7 +25,7 @@ struct EmailContext: Codable {
     }
     
     func message(from view: View, to user: User) -> MailgunMessage {
-        return MailgunMessage(from: MailSettings.from,
+        return MailgunMessage(from: Environment.mailgunFrom,
                               to: user.email,
                               subject: subject,
                               text: "",

@@ -33,6 +33,7 @@
 		DB8EF31E2694D20D008F5873 /* UsersControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF31D2694D20D008F5873 /* UsersControllerTests.swift */; };
 		DB8EF3722694D770008F5873 /* TestUserSessions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF3712694D770008F5873 /* TestUserSessions.swift */; };
 		DB8EF46B26953772008F5873 /* AuthControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB8EF46A26953772008F5873 /* AuthControllerTests.swift */; };
+		DBFD9465269BDE2100534F18 /* Environment+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBFD9464269BDE2100534F18 /* Environment+Extension.swift */; };
 		OBJ_2525 /* AuthController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_10 /* AuthController.swift */; };
 		OBJ_2526 /* PostsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* PostsController.swift */; };
 		OBJ_2527 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* SettingsController.swift */; };
@@ -66,10 +67,7 @@
 		OBJ_2561 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_56 /* User.swift */; };
 		OBJ_2562 /* FollowingFollower.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_57 /* FollowingFollower.swift */; };
 		OBJ_2563 /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_58 /* Post.swift */; };
-		OBJ_2564 /* APIKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_60 /* APIKeys.swift */; };
-		OBJ_2565 /* MailSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_61 /* MailSettings.swift */; };
 		OBJ_2566 /* MailgunDomain+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_62 /* MailgunDomain+Extension.swift */; };
-		OBJ_2567 /* SMTPCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_63 /* SMTPCredentials.swift */; };
 		OBJ_2568 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_64 /* Settings.swift */; };
 		OBJ_2569 /* boot.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_65 /* boot.swift */; };
 		OBJ_2570 /* configure.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_66 /* configure.swift */; };
@@ -6840,6 +6838,11 @@
 		DB8EF31D2694D20D008F5873 /* UsersControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersControllerTests.swift; sourceTree = "<group>"; };
 		DB8EF3712694D770008F5873 /* TestUserSessions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestUserSessions.swift; sourceTree = "<group>"; };
 		DB8EF46A26953772008F5873 /* AuthControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthControllerTests.swift; sourceTree = "<group>"; };
+		DBFD9461269BDDE800534F18 /* .env.testing */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .env.testing; sourceTree = "<group>"; };
+		DBFD9462269BDDE800534F18 /* .env.development */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .env.development; sourceTree = "<group>"; };
+		DBFD9463269BDDE800534F18 /* .env.production */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .env.production; sourceTree = "<group>"; };
+		DBFD9464269BDE2100534F18 /* Environment+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Environment+Extension.swift"; sourceTree = "<group>"; };
+		DBFD9652269BE3F000534F18 /* .env */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .env; sourceTree = "<group>"; };
 		OBJ_10 /* AuthController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthController.swift; sourceTree = "<group>"; };
 		OBJ_1001 /* conf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = conf.c; sourceTree = "<group>"; };
 		OBJ_1002 /* cpu-aarch64-fuchsia.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "cpu-aarch64-fuchsia.c"; sourceTree = "<group>"; };
@@ -8561,7 +8564,6 @@
 		OBJ_598 /* HTTPServerResponseEncoder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPServerResponseEncoder.swift; sourceTree = "<group>"; };
 		OBJ_599 /* HTTPServerUpgradeHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HTTPServerUpgradeHandler.swift; sourceTree = "<group>"; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
-		OBJ_60 /* APIKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIKeys.swift; sourceTree = "<group>"; };
 		OBJ_601 /* Logger+Report.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Logger+Report.swift"; sourceTree = "<group>"; };
 		OBJ_602 /* LoggingSystem+Environment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoggingSystem+Environment.swift"; sourceTree = "<group>"; };
 		OBJ_604 /* Application+Middleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Application+Middleware.swift"; sourceTree = "<group>"; };
@@ -8570,7 +8572,6 @@
 		OBJ_607 /* FileMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileMiddleware.swift; sourceTree = "<group>"; };
 		OBJ_608 /* Middleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Middleware.swift; sourceTree = "<group>"; };
 		OBJ_609 /* MiddlewareConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiddlewareConfiguration.swift; sourceTree = "<group>"; };
-		OBJ_61 /* MailSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MailSettings.swift; sourceTree = "<group>"; };
 		OBJ_610 /* RouteLoggingMiddleware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RouteLoggingMiddleware.swift; sourceTree = "<group>"; };
 		OBJ_612 /* AbortError+MultipartError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AbortError+MultipartError.swift"; sourceTree = "<group>"; };
 		OBJ_613 /* File+Multipart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "File+Multipart.swift"; sourceTree = "<group>"; };
@@ -8588,7 +8589,6 @@
 		OBJ_626 /* Request+Body.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request+Body.swift"; sourceTree = "<group>"; };
 		OBJ_627 /* Request+BodyStream.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Request+BodyStream.swift"; sourceTree = "<group>"; };
 		OBJ_628 /* Request.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Request.swift; sourceTree = "<group>"; };
-		OBJ_63 /* SMTPCredentials.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SMTPCredentials.swift; sourceTree = "<group>"; };
 		OBJ_630 /* Application+Responder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Application+Responder.swift"; sourceTree = "<group>"; };
 		OBJ_631 /* DefaultResponder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultResponder.swift; sourceTree = "<group>"; };
 		OBJ_633 /* Response+Body.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Response+Body.swift"; sourceTree = "<group>"; };
@@ -10012,6 +10012,18 @@
 				DB8EF3712694D770008F5873 /* TestUserSessions.swift */,
 			);
 			path = MockData;
+			sourceTree = "<group>";
+		};
+		DBFD945F269BDD2500534F18 /* Environment */ = {
+			isa = PBXGroup;
+			children = (
+				DBFD9652269BE3F000534F18 /* .env */,
+				DBFD9463269BDDE800534F18 /* .env.production */,
+				DBFD9462269BDDE800534F18 /* .env.development */,
+				DBFD9461269BDDE800534F18 /* .env.testing */,
+			);
+			name = Environment;
+			path = ../../Environment;
 			sourceTree = "<group>";
 		};
 		OBJ_100 /* LeafParser */ = {
@@ -12869,6 +12881,8 @@
 				OBJ_24 /* AuthUtility.swift */,
 				OBJ_25 /* DatabaseQuery+Filter+Method+Extension.swift */,
 				OBJ_26 /* Request+Extensions.swift */,
+				DBFD9464269BDE2100534F18 /* Environment+Extension.swift */,
+				OBJ_62 /* MailgunDomain+Extension.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -14068,17 +14082,6 @@
 			path = Headers;
 			sourceTree = "<group>";
 		};
-		OBJ_59 /* Private */ = {
-			isa = PBXGroup;
-			children = (
-				OBJ_60 /* APIKeys.swift */,
-				OBJ_61 /* MailSettings.swift */,
-				OBJ_62 /* MailgunDomain+Extension.swift */,
-				OBJ_63 /* SMTPCredentials.swift */,
-			);
-			path = Private;
-			sourceTree = "<group>";
-		};
 		OBJ_593 /* Server */ = {
 			isa = PBXGroup;
 			children = (
@@ -14609,7 +14612,7 @@
 				OBJ_27 /* Migrations */,
 				OBJ_32 /* Models */,
 				OBJ_48 /* PostgreSQLModels */,
-				OBJ_59 /* Private */,
+				DBFD945F269BDD2500534F18 /* Environment */,
 				OBJ_64 /* Settings.swift */,
 				OBJ_65 /* boot.swift */,
 				OBJ_66 /* configure.swift */,
@@ -17271,13 +17274,11 @@
 				OBJ_2561 /* User.swift in Sources */,
 				OBJ_2562 /* FollowingFollower.swift in Sources */,
 				OBJ_2563 /* Post.swift in Sources */,
-				OBJ_2564 /* APIKeys.swift in Sources */,
-				OBJ_2565 /* MailSettings.swift in Sources */,
 				OBJ_2566 /* MailgunDomain+Extension.swift in Sources */,
-				OBJ_2567 /* SMTPCredentials.swift in Sources */,
 				OBJ_2568 /* Settings.swift in Sources */,
 				OBJ_2569 /* boot.swift in Sources */,
 				OBJ_2570 /* configure.swift in Sources */,
+				DBFD9465269BDE2100534F18 /* Environment+Extension.swift in Sources */,
 				OBJ_2571 /* routes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

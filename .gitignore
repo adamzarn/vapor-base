@@ -92,6 +92,7 @@ iOSInjectionProject/
 *.key
 *.key.pub
 
-Private/
+.env
+.env.*
 Public/*/images
 *.coverage.txt

@@ -4,7 +4,9 @@
 //
 //  Created by Adam Zarn on 6/18/20.
 //
+
 import Foundation
+import Vapor
 
 enum DB {
     case dev
@@ -33,8 +35,16 @@ enum DB {
         return "vapor_base"
     }
     
-    var url: URL {
-        return URL(string: "postgres://\(username):\(password)@\(host):\(port)/\(database)")!
+    var url: String {
+        return "postgres://\(username):\(password)@\(host):\(port)/\(database)"
     }
     
+    static func url(for env: Environment) -> String? {
+        switch env {
+        case .production: return Environment.databaseUrl
+        case .testing: return DB.test.url
+        case .development: return DB.dev.url
+        default: return nil
+        }
+    }
 }

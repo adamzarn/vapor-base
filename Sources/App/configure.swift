@@ -9,7 +9,7 @@ public func configure(_ app: Application) throws {
     
     app.views.use(.leaf)
 
-    app.mailgun.configuration = .init(apiKey: APIKeys.mailgun)
+    app.mailgun.configuration = .init(apiKey: Environment.mailgunApiKey)
     app.mailgun.defaultDomain = .defaultDomain
     
     let corsConfiguration = CORSMiddleware.Configuration(
@@ -29,13 +29,11 @@ public func configure(_ app: Application) throws {
     app.middleware.use(ErrorMiddleware.default(environment: app.environment))
     
     // Connect to Database
-    if let databaseURL = Environment.get("DATABASE_URL") {
-        app.databases.use(try .postgres(url: databaseURL), as: .psql)
-    } else if app.environment == .testing {
-        app.databases.use(try .postgres(url: DB.test.url), as: .psql)
-    } else {
-        app.databases.use(try .postgres(url: DB.dev.url), as: .psql)
+    guard let dbUrl = DB.url(for: app.environment) else {
+        print("Invalid database url")
+        fatalError()
     }
+    app.databases.use(try .postgres(url: dbUrl), as: .psql)
 
     // Configure migrations
     app.migrations.add(CreateUsers(), to: .psql)
