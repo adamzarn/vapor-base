@@ -17,17 +17,7 @@ After you've cloned the template, there are a few things you need to do:
 
 ### Download Dependencies
 
-```bash
-cd path/to/vapor-base
-swift package update
-```
-
-### Generate xcodeproj
-
-```bash
-cd path/to/vapor-base
-swift package generate-xcodeproj
-```
+All you have to do to download the Swift package dependencies is open the **Package.swift** file using Xcode. The packages will be fetched automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons.
 
 ### Install PostgreSQL
 
