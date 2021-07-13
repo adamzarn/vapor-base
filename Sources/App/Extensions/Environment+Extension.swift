@@ -24,6 +24,13 @@ extension Environment {
     static var databaseUrl: String {
         return getValue(for: "DATABASE_URL")
     }
+    static func databaseComponents() -> PostgreSQLDatabaseURLComponents {
+        guard let components = PostgreSQLDatabaseURLComponents(url: databaseUrl) else {
+            print("Could not generate url components from url")
+            fatalError()
+        }
+        return components
+    }
     
     static func getValue(for key: String) -> String {
         guard let value = get(key) else {

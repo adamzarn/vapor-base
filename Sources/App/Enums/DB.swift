@@ -7,46 +7,73 @@
 
 import Foundation
 import Vapor
+import FluentPostgresDriver
 
 enum DB {
-    case dev
-    case test
+    case development
+    case testing
+    case production
     
     var username: String {
-        return "postgres"
+        switch self {
+        case .production: return Environment.databaseComponents().username
+        default: return "postgres"
+        }
     }
     
     var password: String {
-        return ""
-    }
-    
-    var host: String {
-        return "localhost"
-    }
-    
-    var port: String {
         switch self {
-        case .dev: return "5432"
-        case .test: return "5433"
+        case .production: return Environment.databaseComponents().password
+        default: return ""
+        }
+    }
+    
+    var hostname: String {
+        switch self {
+        case .production: return Environment.databaseComponents().hostname
+        default: return "localhost"
+        }
+    }
+    
+    var port: Int {
+        switch self {
+        case .development: return 5432
+        case .testing: return 5433
+        case .production: return Environment.databaseComponents().port
         }
     }
     
     var database: String {
-        return "vapor_base"
+        switch self {
+        case .production: return Environment.databaseComponents().database
+        default: return "vapor_base"
+        }
     }
     
-    var url: String {
-        return "postgres://\(username):\(password)@\(host):\(port)/\(database)"
+    var tlsConfiguration: TLSConfiguration? {
+        switch self {
+        case .production: return .forClient(certificateVerification: .none)
+        default: return nil
+        }
     }
     
-    static func url(for env: Environment) -> String {
-        switch env {
-        case .production: return Environment.databaseUrl
-        case .testing: return DB.test.url
-        case .development: return DB.dev.url
-        default:
-            print("Invalid Environment")
-            fatalError()
+    var configuration: PostgresConfiguration {
+        return PostgresConfiguration(hostname: hostname,
+                                     port: port,
+                                     username: username,
+                                     password: password,
+                                     database: database,
+                                     tlsConfiguration: tlsConfiguration)
+    }
+}
+
+extension Environment {
+    var db: DB {
+        switch self {
+        case .development: return DB.development
+        case .testing: return DB.testing
+        case .production: return DB.production
+        default: fatalError()
         }
     }
 }

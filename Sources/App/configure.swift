@@ -31,7 +31,7 @@ public func configure(_ app: Application) throws {
     app.middleware.use(ErrorMiddleware.default(environment: app.environment))
     
     // Connect to Database
-    app.databases.use(try .postgres(url: DB.url(for: app.environment)), as: .psql)
+    app.databases.use(.postgres(configuration: app.environment.db.configuration), as: .psql)
 
     // Configure migrations
     app.migrations.add(CreateUsers(), to: .psql)
