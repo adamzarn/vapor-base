@@ -31,6 +31,7 @@ enum Exception: String, AbortError {
     case invalidFollowType
     case invalidImageType
     case invalidPost
+    case couldNotCreateProfilePhotoUrl
     case unknown
     
     var reason: String {
@@ -61,6 +62,7 @@ enum Exception: String, AbortError {
         case .invalidFollowType: return "You must provide a follow type of followers or following"
         case .invalidImageType: return "Images must have one of the following extensions: \(Settings.allowedImageTypes)"
         case .invalidPost: return "You must provide a valid post object."
+        case .couldNotCreateProfilePhotoUrl: return "The profile photo url could not be created."
         case .unknown: return "An unknown exception occurred."
         }
     }
@@ -89,6 +91,7 @@ enum Exception: String, AbortError {
         case .invalidFollowType: return .badRequest
         case .invalidImageType: return .badRequest
         case .invalidPost: return .badRequest
+        case .couldNotCreateProfilePhotoUrl: return .internalServerError
         case .unknown: return .internalServerError
         }
     }

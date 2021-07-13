@@ -38,8 +38,9 @@ struct ProfilePhotoInfo {
         return "\(req.application.directory.publicDirectory)\(folder)"
     }
     
-    var url: String {
-        return "\(req.baseUrl)/\(folder)/\(filename)"
+    var url: String? {
+        guard let baseUrl = req.baseUrl else { return nil }
+        return "\(baseUrl)/\(folder)/\(filename)"
     }
     
     // MARK: New

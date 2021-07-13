@@ -287,11 +287,11 @@ class UsersControllerTests: XCTestCase {
             try request.content.encode(ProfilePhoto(file: file))
         }, afterResponse: { response in
             let uploadResponse = try response.content.decode(ProfilePhotoUploadResponse.self)
-            XCTAssertEqual(uploadResponse.url, "http://127.0.0.1:8080/testing/images/profile-photos/\(userId).png")
+            XCTAssertEqual(uploadResponse.url, "http://localhost:8080/testing/images/profile-photos/\(userId).png")
         })
         try app.test(.GET, "users", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             let user = try response.content.decode(User.Public.self)
-            XCTAssertEqual(user.profilePhotoUrl, "http://127.0.0.1:8080/testing/images/profile-photos/\(userId).png")
+            XCTAssertEqual(user.profilePhotoUrl, "http://localhost:8080/testing/images/profile-photos/\(userId).png")
         })
         try app.test(.GET, "testing/images/profile-photos/\(userId).png", afterResponse: { response in
             XCTAssertEqual(response.status, .ok)

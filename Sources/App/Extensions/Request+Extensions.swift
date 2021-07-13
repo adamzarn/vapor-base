@@ -18,12 +18,23 @@ extension Request {
         return eventLoop.makeSucceededFuture(value)
     }
     
-    var baseUrl: String {
-        let configuration = application.http.server.configuration
-        let scheme = configuration.tlsConfiguration == nil ? "http" : "https"
-        let host = configuration.hostname
-        let port = configuration.port
-        return "\(scheme)://\(host):\(port)"
+    var scheme: String {
+        switch application.environment {
+        case .production: return "https"
+        default: return "http"
+        }
+    }
+    
+    var firstHost: String? {
+        if application.environment == .testing {
+            return "localhost:8080"
+        }
+        return headers["Host"].first
+    }
+    
+    var baseUrl: String? {
+        guard let host = firstHost else { return nil }
+        return "\(scheme)://\(host)"
     }
     
     var searchRange: (Int, Int) {

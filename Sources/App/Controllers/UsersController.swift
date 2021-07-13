@@ -341,13 +341,16 @@ class UsersController: RouteCollection {
             }
             
             let profilePhotoInfo = ProfilePhotoInfo(req, userId, ext: ext)
+            guard let url = profilePhotoInfo.url else {
+                return req.fail(Exception.couldNotCreateProfilePhotoUrl)
+            }
             try FileManager.default.createDirectory(atPath: profilePhotoInfo.directoryPath,
                                                     withIntermediateDirectories: true,
                                                     attributes: nil)
         
             return saveProfilePhotoUrl(req: req,
                                        userId: userId,
-                                       url: profilePhotoInfo.url).flatMap { exception in
+                                       url: url).flatMap { exception in
                 if let exception = exception {
                     return req.fail(exception)
                 }
@@ -359,7 +362,7 @@ class UsersController: RouteCollection {
                                                  buffer: photo.file.data,
                                                  eventLoop: req.eventLoop).flatMapThrowing { _ in
                         try handle.close()
-                        return ProfilePhotoUploadResponse(url: profilePhotoInfo.url)
+                        return ProfilePhotoUploadResponse(url: url)
                     }
                 }
             }
