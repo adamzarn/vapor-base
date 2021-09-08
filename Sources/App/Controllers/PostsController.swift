@@ -40,7 +40,7 @@ class PostsController: RouteCollection {
     func getPosts(req: Request) throws -> EventLoopFuture<[Post.Public]> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
-            guard let userId = req.userId(loggedInUser) else {
+            guard let userId = req.userId(defaultToIdOf: loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             let (start, end) = req.searchRange

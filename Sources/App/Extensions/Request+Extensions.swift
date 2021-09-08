@@ -51,7 +51,7 @@ extension Request {
         return application.environment == .testing
     }
     
-    func userId(_ loggedInUser: User) -> UUID? {
+    func userId(defaultToIdOf loggedInUser: User) -> UUID? {
         var uuidString = parameters.get("userId") ?? loggedInUser.id?.uuidString
         if uuidString == "me" { uuidString = loggedInUser.id?.uuidString }
         guard let userId = uuidString else { return nil }

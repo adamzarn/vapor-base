@@ -25,6 +25,7 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.post(":userId", "follow", use: follow)
         tokenProtectedUsersRoute.delete(":userId", "unfollow", use: unfollow)
         tokenProtectedUsersRoute.get(":userId", ":followType", use: getFollows)
+        tokenProtectedUsersRoute.get(":userId", "followStatus", use: getFollowStatus)
         tokenProtectedUsersRoute.delete(use: deleteUser)
         tokenProtectedUsersRoute.delete(":userId", use: deleteUser)
         tokenProtectedUsersRoute.put(use: updateUser)
@@ -38,7 +39,7 @@ class UsersController: RouteCollection {
     func getUser(req: Request) throws -> EventLoopFuture<User.Public> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
-            guard let userId = req.userId(loggedInUser) else {
+            guard let userId = req.userId(defaultToIdOf: loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMapThrowing { user in
@@ -147,7 +148,7 @@ class UsersController: RouteCollection {
         do {
             let loggedInUser = try req.auth.require(User.self)
             guard let userId = loggedInUser.id,
-                  let otherUserId = req.userId(loggedInUser) else {
+                  let otherUserId = req.userId(defaultToIdOf: loggedInUser) else {
                 return req.fail(Exception.missingUserId)
             }
             return User.find(userId, on: req.db).flatMap { user in
@@ -192,7 +193,7 @@ class UsersController: RouteCollection {
     func getFollows(req: Request) throws -> EventLoopFuture<[User.Public]> {
         do {
             let loggedInUser = try req.auth.require(User.self)
-            guard let userId = req.userId(loggedInUser) else {
+            guard let userId = req.userId(defaultToIdOf: loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             guard let followType = req.parameters.get("followType") else {
@@ -232,12 +233,40 @@ class UsersController: RouteCollection {
         }
     }
     
+    func getFollowStatus(req: Request) -> EventLoopFuture<FollowStatus> {
+        do {
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
+            guard let loggedInUserId = loggedInUser.id,
+                  let otherUserId = req.userId(defaultToIdOf: loggedInUser) else {
+                return req.fail(Exception.missingUserId)
+            }
+            let loggedInFollowingOther = getFutureConnection(req, loggedInUserId, otherUserId)
+            let otherFollowingLoggedIn = getFutureConnection(req, otherUserId, loggedInUserId)
+            let futures = loggedInFollowingOther.and(otherFollowingLoggedIn)
+            return futures.flatMap {
+                return req.success(FollowStatus(loggedInUserIsFollowingOtherUser: $0 != nil,
+                                                otherUserIsFollowingLoggedInUser: $1 != nil))
+            }
+        } catch let error {
+            return AuthUtility.getFailedFuture(for: error, req: req)
+        }
+    }
+    
+    private func getFutureConnection(_ req: Request,
+                                     _ followerId: UUID,
+                                     _ followingId: UUID) -> EventLoopFuture<FollowingFollower?> {
+        return FollowingFollower.query(on: req.db)
+            .filter(\.$follower.$id == followerId)
+            .filter(\.$following.$id == followingId)
+            .first()
+    }
+    
     // MARK: Delete User
     
     func deleteUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
             let loggedInUser = try req.auth.require(User.self)
-            guard let userId = req.userId(loggedInUser) else {
+            guard let userId = req.userId(defaultToIdOf: loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             let _ = try AuthUtility.getAuthorizedUser(req: req, mustBeAdmin: userId != loggedInUser.id)
@@ -283,7 +312,7 @@ class UsersController: RouteCollection {
             guard let userUpdate = try? req.content.decode(UserUpdate.self) else {
                 return req.fail(Exception.missingUserUpdate)
             }
-            guard let userId = loggedInUser.id else {
+            guard let userId = req.userId(defaultToIdOf: loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMap { user in
