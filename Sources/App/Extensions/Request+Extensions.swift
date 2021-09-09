@@ -7,8 +7,24 @@
 
 import Foundation
 import Vapor
+import SotoS3
 
 extension Request {
+    var aws: AWS {
+        .init(request: self)
+    }
+
+    struct AWS {
+        var client: AWSClient {
+            return request.application.aws.client
+        }
+
+        let request: Request
+    }
+    
+    var s3: S3 {
+        return S3(client: aws.client, region: .useast2)
+    }
     
     func fail<T>(_ error: Error) -> EventLoopFuture<T> {
         return eventLoop.makeFailedFuture(error)

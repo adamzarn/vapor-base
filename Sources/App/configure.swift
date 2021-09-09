@@ -3,9 +3,13 @@ import Fluent
 import FluentPostgresDriver
 import Mailgun
 import Leaf
+import SotoS3
 
 /// Called before your application initializes.
 public func configure(_ app: Application) throws {
+    
+    // AWS
+    app.aws.client = AWSClient(httpClientProvider: .shared(app.http.client.shared))
     
     // Leaf
     app.views.use(.leaf)

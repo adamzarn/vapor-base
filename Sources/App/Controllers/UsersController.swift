@@ -10,6 +10,7 @@ import Vapor
 import Fluent
 import Mailgun
 import Leaf
+import SotoS3
 
 class UsersController: RouteCollection {
     
@@ -370,32 +371,23 @@ class UsersController: RouteCollection {
             }
             
             let profilePhotoInfo = ProfilePhotoInfo(req, userId, ext: ext)
-            guard let url = profilePhotoInfo.url else {
-                return req.fail(Exception.couldNotCreateProfilePhotoUrl)
-            }
-            try FileManager.default.createDirectory(atPath: profilePhotoInfo.directoryPath,
-                                                    withIntermediateDirectories: true,
-                                                    attributes: nil)
-        
-            return saveProfilePhotoUrl(req: req,
-                                       userId: userId,
-                                       url: url).flatMap { exception in
-                if let exception = exception {
-                    return req.fail(exception)
-                }
-                return req.application.fileio.openFile(path: profilePhotoInfo.filePath,
-                                                       mode: .write,
-                                                       flags: .allowFileCreation(posixMode: S_IRWXU | S_IRWXG | S_IRWXO),
-                                                       eventLoop: req.eventLoop).flatMap { handle in
-                    req.application.fileio.write(fileHandle: handle,
-                                                 buffer: photo.file.data,
-                                                 eventLoop: req.eventLoop).flatMapThrowing { _ in
-                        try handle.close()
-                        return ProfilePhotoUploadResponse(url: url)
-                    }
-                }
-            }
+
+            let key = profilePhotoInfo.filename
+            let putObjectRequest = S3.PutObjectRequest(acl: .publicRead,
+                                                       body: AWSPayload.byteBuffer(photo.file.data),
+                                                       bucket: Environment.s3Bucket,
+                                                       key: key)
             
+            let url = "https://\(Environment.s3Bucket).s3.us-east-2.amazonaws.com/\(key)"
+            
+            return req.s3.putObject(putObjectRequest).flatMap { _ in
+                return self.saveProfilePhotoUrl(req: req, userId: userId, url: url).flatMap { exception in
+                    if let exception = exception {
+                        return req.fail(exception)
+                    }
+                    return req.success(ProfilePhotoUploadResponse(url: url))
+                }
+            }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }
@@ -414,11 +406,16 @@ class UsersController: RouteCollection {
                     return req.fail(Exception.userDoesNotExist)
                 }
                 let profilePhotoInfo = ProfilePhotoInfo(req, userId, existingUrl: user.profilePhotoUrl)
-                if let existingFilePath = profilePhotoInfo.existingFilePath {
-                    try? FileManager.default.removeItem(atPath: existingFilePath)
+                guard let key = profilePhotoInfo.existingFilename else {
+                    return req.fail(Exception.couldNotCreateProfilePhotoUrl)
                 }
-                user.profilePhotoUrl = nil
-                return user.save(on: req.db).transform(to: HTTPStatus.ok)
+                let deleteObjectRequest = S3.DeleteObjectRequest(bucket: Environment.s3Bucket,
+                                                                 key: key)
+                
+                return req.s3.deleteObject(deleteObjectRequest).flatMap { _ in
+                    user.profilePhotoUrl = nil
+                    return user.save(on: req.db).transform(to: HTTPStatus.ok)
+                }
             }
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)

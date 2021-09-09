@@ -24,6 +24,9 @@ extension Environment {
     static var databaseUrl: String {
         return getValue(for: "DATABASE_URL")
     }
+    static var s3Bucket: String {
+        return getValue(for: "AWS_S3_BUCKET")
+    }
     static func databaseComponents() -> PostgreSQLDatabaseURLComponents {
         guard let components = PostgreSQLDatabaseURLComponents(url: databaseUrl) else {
             print("Could not generate url components from url")
