@@ -8,6 +8,7 @@
 * Querying data in a Postgresql Database using [Fluent](https://docs.vapor.codes/4.0/fluent/overview/)
 * Sending emails using [Mailgun](https://www.mailgun.com/)
 * Creating email templates using [Leaf](https://github.com/vapor/leaf)
+* Storing photos using [AWS S3](https://aws.amazon.com/pm/serv-s3)
 
 There is a companion frontend project [**vue-base**](https://github.com/adamzarn/vue-base), built with [Vue.js](https://github.com/vuejs/vue). It consumes the **vapor-base** API and is a great tool to quickly understand everything that **vapor-base** does, and it should also help you to visualize how you could build on top of it.
 
@@ -194,7 +195,7 @@ Finally, fill in `MAILGUN_FROM` with what you want the from line of the emails t
 
 ### Run
 
-After you've cloned the template, open the project in Xcode by double clicking the **Package.swift** file. Once you open the project, the Swift package dependency fetch will start automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons. Press the play button and your API will be running at http://localhost:8080!
+After you've cloned the template, open the project in Xcode by double clicking the **Package.swift** file. Once you open the project, the Swift package dependency fetch will start automatically, and when it's finished the **vapor-base** scheme should appear next to the Build/Run and Stop buttons. Press the play button and your API will be running at <a>http://localhost:8080</a>!
 
 <a name="reference"/>
 
@@ -229,6 +230,7 @@ After you've cloned the template, open the project in Xcode by double clicking t
 | Unfollow              | **DELETE**  | /users/:userId/unfollow   | Bearer Token  | No Body     | No Response |
 | Get Followers         | **GET**     | /users/:userId/followers  | Bearer Token  | No Body     | [User]      |
 | Get Following         | **GET**     | /users/:userId/following  | Bearer Token  | No Body     | [User]      |
+| Get Follow Status         | **GET**     | /users/:userId/followStatus  | Bearer Token  | No Body     | FollowStatus      |
 | Delete User           | **DELETE**  | /users/:userId            | Bearer Token  | No Body     | No Response |
 | Update User           | **PUT**     | /users/:userId            | Bearer Token  | User Update | User        |
 | Upload Profile Photo  | **POST**    | /users/profilePhoto       | Bearer Token  | File        | No Response |
