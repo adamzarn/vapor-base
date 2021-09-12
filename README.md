@@ -221,20 +221,20 @@ After you've cloned the template, open the project in Xcode by double clicking t
 <a name="users"/>
 
 #### Users
-| Name                  | Method      | Path                      | Authorization | Body        | Response    |
-| --------------------- | ----------- | ------------------------- | ------------- | ----------- | ----------- |
-| Get User              | **GET**     | /users/:userId            | Bearer Token  | No Body     | User        |
-| Get User Status       | **GET**     | /users/status?email=email | No Auth       | No Body     | User Status |
-| Search Users          | **GET**     | /users/search?query=query | Bearer Token  | No Body     | [User]      |
-| Follow                | **POST**    | /users/:userId/follow     | Bearer Token  | No Body     | No Response |
-| Unfollow              | **DELETE**  | /users/:userId/unfollow   | Bearer Token  | No Body     | No Response |
-| Get Followers         | **GET**     | /users/:userId/followers  | Bearer Token  | No Body     | [User]      |
-| Get Following         | **GET**     | /users/:userId/following  | Bearer Token  | No Body     | [User]      |
-| Get Follow Status         | **GET**     | /users/:userId/followStatus  | Bearer Token  | No Body     | FollowStatus      |
-| Delete User           | **DELETE**  | /users/:userId            | Bearer Token  | No Body     | No Response |
-| Update User           | **PUT**     | /users/:userId            | Bearer Token  | User Update | User        |
-| Upload Profile Photo  | **POST**    | /users/profilePhoto       | Bearer Token  | File        | No Response |
-| Delete Profile Photo  | **DELETE**  | /users/profilePhoto       | Bearer Token  | No Body     | No Response |
+| Name                  | Method      | Path                        | Authorization | Body        | Response     |
+| --------------------- | ----------- | --------------------------- | ------------- | ----------- | ------------ |
+| Get User              | **GET**     | /users/:userId              | Bearer Token  | No Body     | User         |
+| Get User Status       | **GET**     | /users/status?email=email   | No Auth       | No Body     | User Status  |
+| Search Users          | **GET**     | /users/search?query=query   | Bearer Token  | No Body     | [User]       |
+| Follow                | **POST**    | /users/:userId/follow       | Bearer Token  | No Body     | No Response  |
+| Unfollow              | **DELETE**  | /users/:userId/unfollow     | Bearer Token  | No Body     | No Response  |
+| Get Followers         | **GET**     | /users/:userId/followers    | Bearer Token  | No Body     | [User]       |
+| Get Following         | **GET**     | /users/:userId/following    | Bearer Token  | No Body     | [User]       |
+| Get Follow Status     | **GET**     | /users/:userId/followStatus | Bearer Token  | No Body     | FollowStatus |
+| Delete User           | **DELETE**  | /users/:userId              | Bearer Token  | No Body     | No Response  |
+| Update User           | **PUT**     | /users/:userId              | Bearer Token  | User Update | User         |
+| Upload Profile Photo  | **POST**    | /users/profilePhoto         | Bearer Token  | File        | No Response  |
+| Delete Profile Photo  | **DELETE**  | /users/profilePhoto         | Bearer Token  | No Body     | No Response  |
 
 <a name="posts"/>
 
