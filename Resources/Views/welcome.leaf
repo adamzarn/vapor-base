@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+    <h1 class="code-line" data-line-start=0 data-line-end=1><a id="Welcome_to_vaporbase_0"></a>Welcome to vapor-base!</h1>
+    <h2 class="code-line" data-line-start=2 data-line-end=3><a id="Reference_2"></a>Reference</h2>
+    <p class="has-line-data" data-line-start="4" data-line-end="5"><a name=“endpoints”/></p>
+    <h3 class="code-line" data-line-start=6 data-line-end=7><a id="Endpoints_6"></a>Endpoints</h3>
+    <p class="has-line-data" data-line-start="8" data-line-end="9"><a name=“auth”/></p>
+    <h4 class="code-line" data-line-start=10 data-line-end=11><a id="Auth_10"></a>Auth</h4>
+    <table border="1" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+    <th width="200px">Name</th>
+    <th width="200px">Method</th>
+    <th width="200px">Path</th>
+    <th width="200px">Authorization</th>
+    <th width="200px">Body</th>
+    <th width="200px">Response</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td width="200px">Register</td>
+    <td width="200px"><strong>POST</strong></td>
+    <td width="200px">/auth/register</td>
+    <td width="200px">No Auth</td>
+    <td width="200px">User</td>
+    <td width="200px">Token and User</td>
+    </tr>
+    <tr>
+    <td width="200px">Login</td>
+    <td width="200px"><strong>POST</strong></td>
+    <td width="200px">/auth/login</td>
+    <td width="200px">Basic Auth</td>
+    <td width="200px">No Body</td>
+    <td width="200px">Token and User</td>
+    </tr>
+    <tr>
+    <td width="200px">Logout</td>
+    <td width="200px"><strong>DELETE</strong></td>
+    <td width="200px">/auth/logout</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Send Email Verification Email</td>
+    <td width="200px"><strong>POST</strong></td>
+    <td width="200px">/auth/sendEmailVerificationEmail</td>
+    <td width="200px">No Auth</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Verify Email</td>
+    <td width="200px"><strong>PUT</strong></td>
+    <td width="200px">/auth/verifyEmail/:tokenId</td>
+    <td width="200px">No Auth</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Send Password Reset Email</td>
+    <td width="200px"><strong>POST</strong></td>
+    <td width="200px">/auth/sendPasswordResetEmail</td>
+    <td width="200px">No Auth</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Reset Password</td>
+    <td width="200px"><strong>PUT</strong></td>
+    <td width="200px">/auth/resetPassword/:tokenId</td>
+    <td width="200px">No Auth</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    </tbody>
+    </table>
+    <p class="has-line-data" data-line-start="21" data-line-end="22"><a name=“users”/></p>
+    <h4 class="code-line" data-line-start=23 data-line-end=24><a id="Users_23"></a>Users</h4>
+    <table border="1" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+    <th width="200px">Name</th>
+    <th width="200px">Method</th>
+    <th width="200px">Path</th>
+    <th width="200px">Authorization</th>
+    <th width="200px">Body</th>
+    <th width="200px">Response</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td width="200px">Get User</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/users/:userId</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">User</td>
+    </tr>
+    <tr>
+    <td width="200px">Get User Status</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/users/status?email=email</td>
+    <td width="200px">No Auth</td>
+    <td width="200px">No Body</td>
+    <td width="200px">User Status</td>
+    </tr>
+    <tr>
+    <td width="200px">Search Users</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/users/search?query=query</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">[User]</td>
+    </tr>
+    <tr>
+    <td width="200px">Follow</td>
+    <td width="200px"><strong>POST</strong></td>
+    <td width="200px">/users/:userId/follow</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Unfollow</td>
+    <td width="200px"><strong>DELETE</strong></td>
+    <td width="200px">/users/:userId/unfollow</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Get Followers</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/users/:userId/followers</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">[User]</td>
+    </tr>
+    <tr>
+    <td width="200px">Get Following</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/users/:userId/following</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">[User]</td>
+    </tr>
+    <tr>
+    <td width="200px">Get Follow Status</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/users/:userId/followStatus</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">FollowStatus</td>
+    </tr>
+    <tr>
+    <td width="200px">Delete User</td>
+    <td width="200px"><strong>DELETE</strong></td>
+    <td width="200px">/users/:userId</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Update User</td>
+    <td width="200px"><strong>PUT</strong></td>
+    <td width="200px">/users/:userId</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">User Update</td>
+    <td width="200px">User</td>
+    </tr>
+    <tr>
+    <td width="200px">Upload Profile Photo</td>
+    <td width="200px"><strong>POST</strong></td>
+    <td width="200px">/users/profilePhoto</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">File</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Delete Profile Photo</td>
+    <td width="200px"><strong>DELETE</strong></td>
+    <td width="200px">/users/profilePhoto</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">No Response</td>
+    </tr>
+    </tbody>
+    </table>
+    <p class="has-line-data" data-line-start="39" data-line-end="40"><a name=“posts”/></p>
+    <h4 class="code-line" data-line-start=41 data-line-end=42><a id="Posts_41"></a>Posts</h4>
+    <table border="1" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+    <th width="200px">Name</th>
+    <th width="200px">Method</th>
+    <th width="200px">Path</th>
+    <th width="200px">Authorization</th>
+    <th width="200px">Body</th>
+    <th width="200px">Response</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td width="200px">Create Post</td>
+    <td width="200px"><strong>POST</strong></td>
+    <td width="200px">/posts</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">Post</td>
+    <td width="200px">No Response</td>
+    </tr>
+    <tr>
+    <td width="200px">Get Posts</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/posts/:userId</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">[Post]</td>
+    </tr>
+    <tr>
+    <td width="200px">Get Feed</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/posts/feed</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">[Post]</td>
+    </tr>
+    </tbody>
+    </table>
+    <p class="has-line-data" data-line-start="48" data-line-end="49"><a name=“settings”/></p>
+    <h4 class="code-line" data-line-start=50 data-line-end=51><a id="Settings_50"></a>Settings</h4>
+    <table border="1" class="table table-striped table-bordered">
+    <thead>
+    <tr>
+    <th width="200px">Name</th>
+    <th width="200px">Method</th>
+    <th width="200px">Path</th>
+    <th width="200px">Authorization</th>
+    <th width="200px">Body</th>
+    <th width="200px">Response</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+    <td width="200px">Get Settings</td>
+    <td width="200px"><strong>GET</strong></td>
+    <td width="200px">/settings</td>
+    <td width="200px">Bearer Token</td>
+    <td width="200px">No Body</td>
+    <td width="200px">Settings</td>
+    </tr>
+    </tbody>
+    </table>
+  </body>
+</html>

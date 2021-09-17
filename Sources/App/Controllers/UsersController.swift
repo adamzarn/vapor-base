@@ -294,12 +294,11 @@ class UsersController: RouteCollection {
             return Post.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
                 // Delete all tokens for this user
                 return Token.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
-                    // Delete user
-                    let profilePhotoInfo = ProfilePhotoInfo(req, userId, existingUrl: user.profilePhotoUrl)
-                    if let existingFilePath = profilePhotoInfo.existingFilePath {
-                        try? FileManager.default.removeItem(atPath: existingFilePath)
+                    // Delete Profile Photo
+                    return self.deleteProfilePhoto(req: req, userId: userId, user: user).flatMap { _ in
+                        // Delete User
+                        return user.delete(on: req.db).transform(to: HTTPStatus.ok)
                     }
-                    return user.delete(on: req.db).transform(to: HTTPStatus.ok)
                 }
             }
         }
@@ -369,23 +368,21 @@ class UsersController: RouteCollection {
                   Settings.allowedImageTypes.contains(ext) else {
                 return req.fail(Exception.invalidImageType)
             }
-            
             let profilePhotoInfo = ProfilePhotoInfo(req, userId, ext: ext)
-
-            let key = profilePhotoInfo.filename
             let putObjectRequest = S3.PutObjectRequest(acl: .publicRead,
                                                        body: AWSPayload.byteBuffer(photo.file.data),
                                                        bucket: Environment.s3Bucket,
-                                                       key: key)
+                                                       key: profilePhotoInfo.filename)
             
-            let url = "https://\(Environment.s3Bucket).s3.us-east-2.amazonaws.com/\(key)"
-            
-            return req.s3.putObject(putObjectRequest).flatMap { _ in
-                return self.saveProfilePhotoUrl(req: req, userId: userId, url: url).flatMap { exception in
-                    if let exception = exception {
-                        return req.fail(exception)
+            let url = profilePhotoInfo.awsUrl
+            return deleteProfilePhoto(req: req, userId: userId, user: loggedInUser).flatMap { _ in
+                return req.s3.putObject(putObjectRequest).flatMap { _ in
+                    return self.saveProfilePhotoUrl(req: req, userId: userId, url: url).flatMap { exception in
+                        if let exception = exception {
+                            return req.fail(exception)
+                        }
+                        return req.success(ProfilePhotoUploadResponse(url: url))
                     }
-                    return req.success(ProfilePhotoUploadResponse(url: url))
                 }
             }
         } catch let error {
@@ -405,14 +402,7 @@ class UsersController: RouteCollection {
                 guard let user = user else {
                     return req.fail(Exception.userDoesNotExist)
                 }
-                let profilePhotoInfo = ProfilePhotoInfo(req, userId, existingUrl: user.profilePhotoUrl)
-                guard let key = profilePhotoInfo.existingFilename else {
-                    return req.fail(Exception.couldNotCreateProfilePhotoUrl)
-                }
-                let deleteObjectRequest = S3.DeleteObjectRequest(bucket: Environment.s3Bucket,
-                                                                 key: key)
-                
-                return req.s3.deleteObject(deleteObjectRequest).flatMap { _ in
+                return self.deleteProfilePhoto(req: req, userId: userId, user: user).flatMap { _ in
                     user.profilePhotoUrl = nil
                     return user.save(on: req.db).transform(to: HTTPStatus.ok)
                 }
@@ -420,6 +410,19 @@ class UsersController: RouteCollection {
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
         }
+    }
+    
+    private func deleteProfilePhoto(req: Request, userId: UUID, user: User) -> EventLoopFuture<HTTPStatus> {
+        guard let existingUrl = user.profilePhotoUrl else {
+            return req.success(HTTPStatus.ok)
+        }
+        let info = ProfilePhotoInfo(req, userId, existingUrl: existingUrl)
+        guard let key = info.existingFilename else {
+            return req.fail(Exception.couldNotCreateProfilePhotoUrl)
+        }
+        let deleteObjectRequest = S3.DeleteObjectRequest(bucket: Environment.s3Bucket,
+                                                         key: key)
+        return req.s3.deleteObject(deleteObjectRequest).transform(to: HTTPStatus.ok)
     }
     
     func saveProfilePhotoUrl(req: Request,

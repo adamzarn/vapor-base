@@ -21,6 +21,7 @@ struct EmailContext: Codable {
         switch leafTemplate {
         case .passwordResetEmail: return "Password Reset"
         case .verifyEmailEmail: return "Please verify your email"
+        default: return ""
         }
     }
     

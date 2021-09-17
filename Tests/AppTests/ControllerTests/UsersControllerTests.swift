@@ -287,11 +287,11 @@ class UsersControllerTests: XCTestCase {
             try request.content.encode(ProfilePhoto(file: file))
         }, afterResponse: { response in
             let uploadResponse = try response.content.decode(ProfilePhotoUploadResponse.self)
-            XCTAssertEqual(uploadResponse.url, "https://vapor-base-test.s3.us-east-2.amazonaws.com/\(userId).png")
+            XCTAssertTrue(uploadResponse.url.contains("https://vapor-base-test.s3.us-east-2.amazonaws.com/\(userId)"))
         })
         try app.test(.GET, "users", headers: testUserSessions.michaelJordan.bearerHeaders, afterResponse: { response in
             let user = try response.content.decode(User.Public.self)
-            XCTAssertEqual(user.profilePhotoUrl, "https://vapor-base-test.s3.us-east-2.amazonaws.com/\(userId).png")
+            XCTAssertTrue(user.profilePhotoUrl?.contains("https://vapor-base-test.s3.us-east-2.amazonaws.com/\(userId)") == true)
         })
 
         try app.test(.DELETE, "users/profilePhoto", afterResponse: { response in

@@ -17,6 +17,7 @@ struct ProfilePhotoInfo {
     let userId: UUID
     let ext: String
     let existingUrl: String?
+    let timestamp: String
     
     init(_ req: Request,
          _ userId: UUID,
@@ -26,42 +27,19 @@ struct ProfilePhotoInfo {
         self.userId = userId
         self.ext = ext
         self.existingUrl = existingUrl
+        self.timestamp = PhotoTimestamp.current
     }
-    
-    // MARK: New and Existing
-    
-    var folder: String {
-        return "\(req.application.environment.name)/images/profile-photos"
-    }
-    
-    var directoryPath: String {
-        return "\(req.application.directory.publicDirectory)\(folder)"
-    }
-    
-    var url: String? {
-        guard let baseUrl = req.baseUrl else { return nil }
-        return "\(baseUrl)/\(folder)/\(filename)"
-    }
-    
-    // MARK: New
     
     var filename: String {
-        return "\(userId.uuidString).\(ext)"
+        return "\(userId.uuidString)-\(timestamp).\(ext)"
     }
     
-    var filePath: String {
-        return "\(directoryPath)/\(filename)"
+    var awsUrl: String {
+        return AWSS3URLGenerator(key: filename).url
     }
-    
-    // MARK: Existing
-    
+
     var existingFilename: String? {
         guard let url = existingUrl, let filename = url.split(separator: "/").last else { return nil }
         return String(filename)
-    }
-    
-    var existingFilePath: String? {
-        guard let filename = existingFilename else { return nil }
-        return "\(directoryPath)/\(filename)"
     }
 }
