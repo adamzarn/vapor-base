@@ -117,7 +117,7 @@ class AuthController: RouteCollection {
     ///     - 400 - missingEmailVerificationObject - You must provide an email and a frontendBaseUrl.
     ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
     ///     - 500 - couldNotCreateToken - An email verification token could not be generated.
-    ///     - 401 - invalidToken - The provided token is either expired or it is not associated with any user.
+    ///     - 500 - couldNotGenerateTokenId - The email verification token id could not be generated.
     ///
     /// - Returns: String
     ///
@@ -171,7 +171,7 @@ class AuthController: RouteCollection {
     ///     - 400 - missingPasswordResetObject - You must provide an email and a frontendBaseUrl.
     ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
     ///     - 500 - couldNotCreateToken - A password reset token could not be generated.
-    ///     - 401 - invalidToken - The provided token is either expired or it is not associated with any user.
+    ///     - 500 - couldNotGenerateTokenId - The password reset token id coud not be generated.
     ///
     /// - Returns: String
     ///
@@ -248,7 +248,7 @@ class AuthController: RouteCollection {
             }
             return token.save(on: req.db).flatMap {
                 guard let tokenId = token.id?.uuidString else {
-                    return req.fail(Exception.invalidToken)
+                    return req.fail(Exception.couldNotGenerateTokenId)
                 }
                 guard !req.testing else { return req.success(tokenId) }
                 let context = EmailContext(user: user,

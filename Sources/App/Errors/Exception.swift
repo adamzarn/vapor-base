@@ -29,6 +29,7 @@ enum Exception: String, AbortError {
     case invalidPost
     case couldNotCreateProfilePhotoUrl
     case couldNotCreateUser
+    case couldNotGenerateTokenId
     case unknown
     
     var reason: String {
@@ -57,6 +58,7 @@ enum Exception: String, AbortError {
         case .invalidPost: return "You must provide a valid post object."
         case .couldNotCreateProfilePhotoUrl: return "The profile photo url could not be created."
         case .couldNotCreateUser: return "A user could not be created."
+        case .couldNotGenerateTokenId: return "There was a problem generating the token id."
         case .unknown: return "An unknown exception occurred."
         }
     }
@@ -83,6 +85,7 @@ enum Exception: String, AbortError {
         case .invalidPost: return .badRequest
         case .couldNotCreateProfilePhotoUrl: return .internalServerError
         case .couldNotCreateUser: return .internalServerError
+        case .couldNotGenerateTokenId: return .internalServerError
         case .unknown: return .internalServerError
         }
     }
