@@ -14,5 +14,4 @@ struct NewPassword: Content, Validatable {
     static func validations(_ validations: inout Validations) {
         validations.add("value", as: String.self, is: .count(6...))
     }
-    
 }

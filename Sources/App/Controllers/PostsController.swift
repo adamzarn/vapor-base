@@ -23,6 +23,15 @@ class PostsController: RouteCollection {
 
     }
     
+    /// Create Post
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - invalidPost - You must provide a valid post object.
+    ///
+    /// - Returns: HTTPStatus
+    ///
     func createPost(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
@@ -37,6 +46,16 @@ class PostsController: RouteCollection {
         }
     }
     
+    /// Get Posts
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///
+    /// - Returns: [Post.Public]
+    ///
     func getPosts(req: Request) throws -> EventLoopFuture<[Post.Public]> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
@@ -61,6 +80,14 @@ class PostsController: RouteCollection {
         }
     }
     
+    /// Get Feed
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///
+    /// - Returns: [Post.Public]
+    ///
     func getFeed(req: Request) throws -> EventLoopFuture<[Post.Public]> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)

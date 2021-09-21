@@ -31,8 +31,16 @@ class AuthController: RouteCollection {
         
     }
     
-    // MARK: Register
-    
+    /// Register
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 400 - Invalid UserData
+    ///     - 403 - userAlreadyExists - A user with same email already exists.
+    ///     - 500 - couldNotCreateToken - A token could not be generated.
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///
+    /// - Returns: NewSession
+    ///
     func register(req: Request) throws -> EventLoopFuture<NewSession> {
         try UserData.validate(content: req)
         let user = try User.from(data: try req.content.decode(UserData.self))
@@ -54,8 +62,14 @@ class AuthController: RouteCollection {
         }
     }
     
-    // MARK: Login
-    
+    /// Login
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///
+    /// - Returns: NewSession
+    ///
     func login(req: Request) throws -> EventLoopFuture<NewSession> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
@@ -74,11 +88,17 @@ class AuthController: RouteCollection {
         }
     }
     
-    // MARK: Logout
-    
+    /// Logout
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///
+    /// - Returns: HTTPStatus
+    ///
     func logout(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let loggedInUser = try req.auth.require(User.self)
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             return Token.query(on: req.db)
                 .filter(\.$user.$id == loggedInUser.id ?? UUID())
                 .group(.or) { group in
@@ -91,8 +111,16 @@ class AuthController: RouteCollection {
         }
     }
     
-    // MARK: Send Email Verification Email
-    
+    /// Send Email Verification Email
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 400 - missingEmailVerificationObject - You must provide an email and a frontendBaseUrl.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///     - 500 - couldNotCreateToken - An email verification token could not be generated.
+    ///     - 401 - invalidToken - The provided token is either expired or it is not associated with any user.
+    ///
+    /// - Returns: String
+    ///
     func sendEmailVerificationEmail(req: Request) throws -> EventLoopFuture<String> {
         guard let emailVerification = try? req.content.decode(EmailVerification.self) else {
             return req.fail(Exception.missingEmailVerificationObject)
@@ -104,8 +132,15 @@ class AuthController: RouteCollection {
                          url: emailVerification.frontendBaseUrl)
     }
     
-    // MARK: Verify Email
-    
+    /// Verify Email
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 400 - missingTokenId - You must provide a token id.
+    ///     - 401 - invalidToken - The provided token is either expired or it is not associated with any user.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///
+    /// - Returns: HTTPStatus
+    ///
     func verifyEmail(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         guard let tokenId = req.parameters.get("tokenId") else {
             return req.fail(Exception.missingTokenId)
@@ -120,9 +155,6 @@ class AuthController: RouteCollection {
                 }
                 user.isEmailVerified = true
                 return user.save(on: req.db).flatMap {
-                    guard token.source == .emailVerification else {
-                        return req.success(HTTPStatus.ok)
-                    }
                     // Delete all email verification tokens for this user
                     return Token.query(on: req.db)
                         .filter(\.$user.$id == user.id ?? UUID())
@@ -133,8 +165,16 @@ class AuthController: RouteCollection {
         }
     }
     
-    // MARK: Send Password Reset Email
-    
+    /// Send Password Reset Email
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 400 - missingPasswordResetObject - You must provide an email and a frontendBaseUrl.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///     - 500 - couldNotCreateToken - A password reset token could not be generated.
+    ///     - 401 - invalidToken - The provided token is either expired or it is not associated with any user.
+    ///
+    /// - Returns: String
+    ///
     func sendPasswordResetEmail(req: Request) throws -> EventLoopFuture<String> {
         guard let passwordReset = try? req.content.decode(PasswordReset.self) else {
             return req.fail(Exception.missingPasswordResetObject)
@@ -146,8 +186,18 @@ class AuthController: RouteCollection {
                          url: passwordReset.frontendBaseUrl)
     }
     
-    // MARK: Reset Password
-    
+    /// Reset Password
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 400 - Invalid NewPassword
+    ///     - 400 - missingTokenId - You must provide a token id.
+    ///     - 401 - invalidToken - The provided token is either expired or it is not associated with any user.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///     - 400 - missingPassword - You must provide a new password to update a user's password.
+    ///     - 500 - couldNotCreatePasswordHash - The password could not be hashed.
+    ///
+    /// - Returns: HTTPStatus
+    ///
     func resetPassword(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         try NewPassword.validate(content: req)
         guard let tokenId = req.parameters.get("tokenId") else {

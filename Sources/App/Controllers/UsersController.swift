@@ -35,8 +35,16 @@ class UsersController: RouteCollection {
         tokenProtectedUsersRoute.delete("profilePhoto", use: deleteProfilePhoto)
     }
     
-    // MARK: Get User
-    
+    /// Get User
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///
+    /// - Returns: User.Public
+    ///
     func getUser(req: Request) throws -> EventLoopFuture<User.Public> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
@@ -52,22 +60,31 @@ class UsersController: RouteCollection {
         }
     }
     
-    // MARK: Get User Status
-    
+    /// Get User Status
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 400 - missingEmail - You must provide an email.
+    ///
+    /// - Returns: UserStatus
+    ///
     func getUserStatusWithEmail(req: Request) throws -> EventLoopFuture<UserStatus> {
         guard let email = req.query[String.self, at: "email"] else {
             throw Exception.missingEmail
         }
-        return User.query(on: req.db).filter(\.$email == email).first().flatMapThrowing { existingUser in
-            guard existingUser != nil else {
-                return UserStatus(email: email, exists: false)
-            }
-            return UserStatus(email: email, exists: true)
+        return User.query(on: req.db).filter(\.$email == email).first().flatMapThrowing { user in
+            return UserStatus(email: email, exists: user != nil)
         }
     }
     
-    // MARK: Search Users
-    
+    /// Search Users
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///
+    /// - Returns: [User.Public]
+    ///
     func searchUsers(req: Request) throws -> EventLoopFuture<[User.Public]> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
@@ -135,22 +152,23 @@ class UsersController: RouteCollection {
         return include ? queryBuilder.filter(\.$id ~~ userIds) : queryBuilder.filter(\.$id !~ userIds)
     }
     
-    // MARK: Set Following Status
-    
-    func follow(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        try setFollowingStatus(req: req, to: true)
-    }
-    
-    func unfollow(req: Request) throws -> EventLoopFuture<HTTPStatus> {
-        try setFollowingStatus(req: req, to: false)
-    }
-    
-    func setFollowingStatus(req: Request, to newFollowingStatus: Bool) throws -> EventLoopFuture<HTTPStatus> {
+    /// Set Following Status
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///     - 400 - cannotFollowSelf - Users cannot follow/unfollow themselves.
+    ///
+    /// - Returns: HTTPStatus
+    ///
+    func setFollowingStatus(to newFollowingStatus: Bool, req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let loggedInUser = try req.auth.require(User.self)
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userId = loggedInUser.id,
                   let otherUserId = req.userId(defaultToIdOf: loggedInUser) else {
-                return req.fail(Exception.missingUserId)
+                return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMap { user in
                 return User.find(otherUserId, on: req.db).flatMap { otherUser in
@@ -171,6 +189,14 @@ class UsersController: RouteCollection {
         }
     }
     
+    func follow(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        try setFollowingStatus(to: true, req: req)
+    }
+    
+    func unfollow(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        try setFollowingStatus(to: false, req: req)
+    }
+    
     private func updateFollowingStatus(req: Request,
                                        user: User,
                                        otherUser: User,
@@ -189,18 +215,25 @@ class UsersController: RouteCollection {
         }
     }
     
-    // MARK: Get Follows
-    
+    /// Get Follows
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///     - 400 - invalidFollowType - You must provide a follow type of followers or following.
+    ///
+    /// - Returns: [User.Public]
+    ///
     func getFollows(req: Request) throws -> EventLoopFuture<[User.Public]> {
         do {
-            let loggedInUser = try req.auth.require(User.self)
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userId = req.userId(defaultToIdOf: loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
             guard let followType = req.parameters.get("followType") else {
-                return req.fail(Exception.missingFollowType)
+                return req.fail(Exception.invalidFollowType)
             }
-            let _ = try AuthUtility.getAuthorizedUser(req: req)
             return follows(req: req, userId: userId, followType: followType)
         } catch let error {
             return AuthUtility.getFailedFuture(for: error, req: req)
@@ -234,12 +267,21 @@ class UsersController: RouteCollection {
         }
     }
     
+    /// Get Follows
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///
+    /// - Returns: FollowStatus
+    ///
     func getFollowStatus(req: Request) -> EventLoopFuture<FollowStatus> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let loggedInUserId = loggedInUser.id,
                   let otherUserId = req.userId(defaultToIdOf: loggedInUser) else {
-                return req.fail(Exception.missingUserId)
+                return req.fail(Exception.invalidUserId)
             }
             let loggedInFollowingOther = getFutureConnection(req, loggedInUserId, otherUserId)
             let otherFollowingLoggedIn = getFutureConnection(req, otherUserId, loggedInUserId)
@@ -262,11 +304,20 @@ class UsersController: RouteCollection {
             .first()
     }
     
-    // MARK: Delete User
-    
+    /// Delete User
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 401 - userIsNotAdmin - User must be an admin to access or modify this resource.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///
+    /// - Returns: HTTPStatus
+    ///
     func deleteUser(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
-            let loggedInUser = try req.auth.require(User.self)
+            let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userId = req.userId(defaultToIdOf: loggedInUser) else {
                 return req.fail(Exception.invalidUserId)
             }
@@ -284,28 +335,31 @@ class UsersController: RouteCollection {
     
     func delete(user: User, req: Request) -> EventLoopFuture<HTTPStatus> {
         guard let userId = user.id else {
-            return req.fail(Exception.missingUserId)
+            return req.fail(Exception.invalidUserId)
         }
-        // Delete following/follower records for this user
-        return FollowingFollower.query(on: req.db).group(.or) { group in
+        let deleteFollows = FollowingFollower.query(on: req.db).group(.or) { group in
             group.filter(\.$follower.$id == userId).filter(\.$following.$id == userId)
-        }.delete().flatMap {
-            // Delete all posts for this user
-            return Post.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
-                // Delete all tokens for this user
-                return Token.query(on: req.db).filter(\.$user.$id == userId).delete().flatMap {
-                    // Delete Profile Photo
-                    return self.deleteProfilePhoto(req: req, userId: userId, user: user).flatMap { _ in
-                        // Delete User
-                        return user.delete(on: req.db).transform(to: HTTPStatus.ok)
-                    }
-                }
-            }
-        }
+        }.delete()
+        return deleteFollows
+            .and(Post.query(on: req.db).filter(\.$user.$id == userId).delete())
+            .and(Token.query(on: req.db).filter(\.$user.$id == userId).delete())
+            .and(self.deleteProfilePhoto(req: req, userId: userId, user: user))
+            .and(user.delete(on: req.db)).transform(to: HTTPStatus.ok)
     }
     
-    // MARK: Update User
-    
+    /// Update User
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - missingUserUpdate - You must provide a valid user update object.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist.
+    ///     - 403 - userAlreadyExists - A user with the same email already exists.
+    ///     - 500 - couldNotCreateUser - A user could not be created.
+    ///
+    /// - Returns: User.Public
+    ///
     func updateUser(req: Request) throws -> EventLoopFuture<User.Public> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
@@ -350,18 +404,28 @@ class UsersController: RouteCollection {
     
     private func saveUpdatedUser(user: User, req: Request) -> EventLoopFuture<User.Public> {
         guard let publicUser = try? user.asPublic() else {
-            return req.fail(Exception.unknown)
+            return req.fail(Exception.couldNotCreateUser)
         }
         return user.save(on: req.db).transform(to: publicUser)
     }
     
-    // MARK: Upload Profile Photo
-    
+    /// Upload Profile Photo
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///     - 400 - Invalid photo
+    ///     - 400 - invalidImageType - Image must have an allowed extension.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist
+    ///
+    /// - Returns: ProfilePhotoUploadResponse
+    ///
     func uploadProfilePhoto(req: Request) throws -> EventLoopFuture<ProfilePhotoUploadResponse> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userId = loggedInUser.id else {
-                return req.fail(Exception.missingUserId)
+                return req.fail(Exception.invalidUserId)
             }
             let photo = try req.content.decode(ProfilePhoto.self)
             guard let ext = photo.file.extension?.lowercased(),
@@ -390,13 +454,22 @@ class UsersController: RouteCollection {
         }
     }
     
-    // MARK: Delete Profile Photo
-    
+    /// Delete Profile Photo
+    ///
+    /// - Possible Errors (in order of execution):
+    ///     - 401 - Invalid email or password
+    ///     - 401 - emailIsNotVerified - Email verification is required.
+    ///     - 400 - invalidUserId - You must provide a valid user id.
+    ///     - 400 - userDoesNotExist - A user with the specified id does not exist
+    ///     - 500 - couldNotCreateProfilePhotoUrl - The existing profile photo url could not be created.
+    ///
+    /// - Returns: HTTPStatus
+    ///
     func deleteProfilePhoto(req: Request) throws -> EventLoopFuture<HTTPStatus> {
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             guard let userId = loggedInUser.id else {
-                return req.fail(Exception.missingUserId)
+                return req.fail(Exception.invalidUserId)
             }
             return User.find(userId, on: req.db).flatMap { user in
                 guard let user = user else {
