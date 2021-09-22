@@ -95,13 +95,23 @@ class UsersController: RouteCollection {
                 guard let user = user else {
                     return req.fail(Exception.userDoesNotExist)
                 }
-                let query = req.query[String.self, at: "query"] ?? ""
-                var futureUsers = User.query(on: req.db)
-                    .group(.or) { group in
+                let query = req.query[String.self, at: "query"]?.trimmingCharacters(in: .whitespaces) ?? ""
+                let words = query.split(separator: " ").map { String($0) }
+                var futureUsers = User.query(on: req.db).group(.or) { group in
                     group.filter(\.$firstName, .caseInsensitiveContains, "%\(query)%")
                         .filter(\.$lastName, .caseInsensitiveContains, "%\(query)%")
                         .filter(\.$username, .caseInsensitiveContains, "%\(query)%")
                         .filter(\.$email, .caseInsensitiveContains, "%\(query)%")
+                        .group(.and) { group in
+                            guard words.count > 1 else { return }
+                            group.filter(\.$firstName, .caseInsensitiveContains, "%\(words[0])%")
+                            group.filter(\.$lastName, .caseInsensitiveContains, "%\(words[1])%")
+                        }
+                        .group(.and) { group in
+                            guard words.count > 1 else { return }
+                            group.filter(\.$lastName, .caseInsensitiveContains, "%\(words[0])%")
+                            group.filter(\.$firstName, .caseInsensitiveContains, "%\(words[1])%")
+                        }
                 }
                 if let excludeMe = req.query[String.self, at: "excludeMe"], excludeMe == "yes" {
                     futureUsers = futureUsers.filter(\.$id != user.id ?? UUID())
