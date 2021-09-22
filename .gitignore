@@ -97,3 +97,4 @@ iOSInjectionProject/
 Public/*/images
 *.coverage.txt
 info.lcov
+codecov
