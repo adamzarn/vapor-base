@@ -68,7 +68,7 @@ extension Request {
     }
     
     var deviceId: String? {
-        let deviceIds = headers["deviceId"] as [String]
+        let deviceIds = headers["Device-ID"] as [String]
         return deviceIds.first
     }
     

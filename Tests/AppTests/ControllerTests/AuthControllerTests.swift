@@ -44,7 +44,7 @@ class AuthControllerTests: XCTestCase {
         var registrationSession: NewSession!
         try app.test(.POST, "auth/register", beforeRequest: { request in
             try request.content.encode(userMissingLastName)
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .badRequest)
         })
@@ -55,7 +55,7 @@ class AuthControllerTests: XCTestCase {
         })
         try app.test(.POST, "auth/register", beforeRequest: { request in
             try request.content.encode(validUser)
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             let session = try response.content.decode(NewSession.self)
@@ -64,32 +64,32 @@ class AuthControllerTests: XCTestCase {
             XCTAssertEqual(session.user?.firstName, validUser.firstName)
         })
         try app.test(.DELETE, "auth/logout", beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.DELETE, "auth/logout", headers: registrationSession.bearerHeaders, beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
         })
         try app.test(.POST, "auth/login", beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.POST, "auth/login", headers: invalidEmailHeaders, beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.POST, "auth/login", headers: wrongPasswordHeaders, beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.POST, "auth/login", headers: validHeaders, beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
             let session = try response.content.decode(NewSession.self)
@@ -101,12 +101,12 @@ class AuthControllerTests: XCTestCase {
     
     func testPasswordReset() throws {
         try app.test(.POST, "auth/login", beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .unauthorized)
         })
         try app.test(.POST, "auth/login", headers: NewSession.basicHeaders(email: "michael-jordan@gmail.com", password: "123456"), beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
         })
@@ -114,19 +114,19 @@ class AuthControllerTests: XCTestCase {
         let newPassword = "1234567"
         try app.test(.POST, "auth/sendPasswordResetEmail", beforeRequest: { request in
             try request.content.encode(PasswordReset(email: "michael-jordan@gmail.com", frontendBaseUrl: "url"))
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             passwordResetTokenId = try response.content.decode(String.self)
         })
         guard let tokenId = passwordResetTokenId else { fatalError() }
         try app.test(.PUT, "auth/resetPassword/\(tokenId)", beforeRequest: { request in
             try request.content.encode(NewPassword(value: newPassword))
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
         })
         try app.test(.POST, "auth/login", headers: NewSession.basicHeaders(email: "michael-jordan@gmail.com", password: newPassword), beforeRequest: { request in
-            request.headers.add(name: "deviceId", value: "1")
+            request.headers.add(name: "Device-ID", value: "1")
         }, afterResponse: { response in
             XCTAssertEqual(response.status, .ok)
         })
