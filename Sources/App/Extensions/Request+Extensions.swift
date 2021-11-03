@@ -67,6 +67,11 @@ extension Request {
         return application.environment == .testing
     }
     
+    var deviceId: String? {
+        let deviceIds = headers["deviceId"] as [String]
+        return deviceIds.first
+    }
+    
     func userId(defaultToIdOf loggedInUser: User) -> UUID? {
         var uuidString = parameters.get("userId") ?? loggedInUser.id?.uuidString
         if uuidString == "me" { uuidString = loggedInUser.id?.uuidString }

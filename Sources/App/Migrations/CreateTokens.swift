@@ -14,10 +14,12 @@ struct CreateTokens: Migration {
         return database.schema(Token.schema)
             .id()
             .field(.userId, .uuid, .references(User.schema, .id))
-            .field(.value, .string, .required).unique(on: .value)
+            .field(.value, .string, .required)
+            .field(.deviceId, .string, .required)
             .field(.source, .int, .required)
             .field(.createdAt, .datetime, .required)
             .field(.expiresAt, .datetime)
+            .unique(on: .value)
             .ignoreExisting()
             .create()
     }

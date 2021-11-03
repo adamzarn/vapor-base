@@ -42,6 +42,9 @@ class AuthController: RouteCollection {
     /// - Returns: NewSession
     ///
     func register(req: Request) throws -> EventLoopFuture<NewSession> {
+        guard let deviceId = req.deviceId else {
+            return req.fail(Exception.missingDeviceId)
+        }
         try UserData.validate(content: req)
         let user = try User.from(data: try req.content.decode(UserData.self))
         return User.query(on: req.db).filter(\.$email == user.email).first().flatMap { existingUser in
@@ -50,7 +53,7 @@ class AuthController: RouteCollection {
             }
             var token: Token!
             return user.save(on: req.db).flatMap {
-                guard let newToken = try? user.createToken(source: .registration) else {
+                guard let newToken = try? user.createToken(deviceId: deviceId, source: .registration) else {
                     return req.fail(Exception.couldNotCreateToken)
                 }
                 token = newToken
@@ -71,11 +74,17 @@ class AuthController: RouteCollection {
     /// - Returns: NewSession
     ///
     func login(req: Request) throws -> EventLoopFuture<NewSession> {
+        guard let deviceId = req.deviceId else {
+            return req.fail(Exception.missingDeviceId)
+        }
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
-            let token = try loggedInUser.createToken(source: .login)
-            // Delete any old access tokens for this user
-            return Token.query(on: req.db).filter(\.$user.$id == loggedInUser.id ?? UUID()).group(.or) { group in
+            let token = try loggedInUser.createToken(deviceId: deviceId, source: .login)
+            // Delete any old access tokens for this device and user
+            return Token.query(on: req.db)
+                .filter(\.$deviceId == deviceId)
+                .filter(\.$user.$id == loggedInUser.id ?? UUID())
+                .group(.or) { group in
                 group.filter(\.$source == .registration).filter(\.$source == .login)
             }.delete().flatMap {
                 // Save new token
@@ -97,9 +106,13 @@ class AuthController: RouteCollection {
     /// - Returns: HTTPStatus
     ///
     func logout(req: Request) throws -> EventLoopFuture<HTTPStatus> {
+        guard let deviceId = req.deviceId else {
+            return req.fail(Exception.missingDeviceId)
+        }
         do {
             let loggedInUser = try AuthUtility.getAuthorizedUser(req: req)
             return Token.query(on: req.db)
+                .filter(\.$deviceId == deviceId)
                 .filter(\.$user.$id == loggedInUser.id ?? UUID())
                 .group(.or) { group in
                     group.filter(\.$source == .registration).filter(\.$source == .login)
@@ -243,7 +256,7 @@ class AuthController: RouteCollection {
             guard let user = user else {
                 return req.fail(Exception.userDoesNotExist)
             }
-            guard let token = try? user.createToken(source: source) else {
+            guard let token = try? user.createToken(deviceId: "", source: source) else {
                 return req.fail(Exception.couldNotCreateToken)
             }
             return token.save(on: req.db).flatMap {

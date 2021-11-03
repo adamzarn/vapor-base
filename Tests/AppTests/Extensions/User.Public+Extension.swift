@@ -24,7 +24,7 @@ extension User.Public {
                         isAdmin: isAdmin,
                         isEmailVerified: isEmailVerified)
         try user.save(on: database).wait()
-        let token = try user.createToken(source: .registration)
+        let token = try user.createToken(deviceId: "1", source: .registration)
         try token.save(on: database).wait()
         return NewSession(id: token.id?.uuidString, token: token.value, user: try user.asPublic())
     }

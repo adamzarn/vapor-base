@@ -60,13 +60,14 @@ final class User: Model, Content {
                     passwordHash: try Bcrypt.hash(data.password))
     }
     
-    func createToken(source: SessionSource) throws -> Token {
+    func createToken(deviceId: String, source: SessionSource) throws -> Token {
         let calendar = Calendar(identifier: .gregorian)
         let expiryDate = calendar.date(byAdding: source.tokenExpiry.component,
                                        value: source.tokenExpiry.value,
                                        to: Date())
         return try Token(userId: requireID(),
                          token: [UInt8].random(count: 16).base64,
+                         deviceId: deviceId,
                          source: source,
                          expiresAt: expiryDate)
     }

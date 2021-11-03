@@ -16,6 +16,7 @@ final class Token: Model, Content {
   
     @ID(key: .id) var id: UUID?
     @Field(key: .value) var value: String
+    @Field(key: .deviceId) var deviceId: String
     @Field(key: .source) var source: SessionSource
     @Field(key: .expiresAt) var expiresAt: Date?
     @Timestamp(key: .createdAt, on: .create) var createdAt: Date?
@@ -25,10 +26,12 @@ final class Token: Model, Content {
     init(id: Token.IDValue? = nil,
          userId: User.IDValue,
          token: String,
+         deviceId: String,
          source: SessionSource,
          expiresAt: Date?) {
         self.id = id
         self.$user.id = userId
+        self.deviceId = deviceId
         self.value = token
         self.source = source
         self.expiresAt = expiresAt
