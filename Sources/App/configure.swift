@@ -22,7 +22,7 @@ public func configure(_ app: Application) throws {
     let corsConfiguration = CORSMiddleware.Configuration(
         allowedOrigin: .all,
         allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
-        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin, .accessControlAllowHeaders, .accessControlAllowCredentials]
+        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith, .userAgent, .accessControlAllowOrigin, .accessControlAllowHeaders, .accessControlAllowCredentials, HTTPHeaders.Name("deviceId")]
     )
     let cors = CORSMiddleware(configuration: corsConfiguration)
     app.middleware.use(cors)
