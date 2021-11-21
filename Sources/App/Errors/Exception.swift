@@ -60,7 +60,7 @@ enum Exception: String, AbortError {
         case .couldNotCreateProfilePhotoUrl: return "The profile photo url could not be created."
         case .couldNotCreateUser: return "A user could not be created."
         case .couldNotGenerateTokenId: return "There was a problem generating the token id."
-        case .missingDeviceId: return "This request requires the deviceId header."
+        case .missingDeviceId: return "This request requires the Device-ID header."
         case .unknown: return "An unknown exception occurred."
         }
     }
