@@ -15,33 +15,39 @@
 							"type": "noauth"
 						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Device-ID",
+								"value": "{{Device-ID}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": [
 								{
 									"key": "firstName",
-									"value": "firstName",
+									"value": "Scottie",
 									"type": "text"
 								},
 								{
 									"key": "lastName",
-									"value": "lastName",
+									"value": "Pippen",
 									"type": "text"
 								},
 								{
 									"key": "username",
-									"value": "username",
+									"value": "Pip",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "email",
+									"value": "sp@gmail.com",
 									"type": "text"
 								},
 								{
 									"key": "password",
-									"value": "password",
+									"value": "123456",
 									"type": "text"
 								}
 							]
@@ -66,19 +72,25 @@
 							"type": "basic",
 							"basic": [
 								{
-									"key": "password",
-									"value": "",
+									"key": "username",
+									"value": "sp@gmail.com",
 									"type": "string"
 								},
 								{
-									"key": "username",
-									"value": "",
+									"key": "password",
+									"value": "123456",
 									"type": "string"
 								}
 							]
 						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Device-ID",
+								"value": "{{Device-ID}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": ""
@@ -99,18 +111,14 @@
 				{
 					"name": "Logout",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "deviceId",
+								"value": "{{Device-ID}}",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "{{baseUrl}}/auth/logout",
 							"host": [
@@ -131,7 +139,13 @@
 							"type": "noauth"
 						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "deviceId",
+								"value": "{{Device-ID}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": [
@@ -195,7 +209,13 @@
 							"type": "noauth"
 						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "deviceId",
+								"value": "{{Device-ID}}",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": [
@@ -209,12 +229,7 @@
 									"value": "frontendBaseUrl",
 									"type": "text"
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{baseUrl}}/auth/sendPasswordResetEmail",
@@ -274,16 +289,6 @@
 				{
 					"name": "Get User",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -298,7 +303,7 @@
 							"variable": [
 								{
 									"key": "userId",
-									"value": ""
+									"value": "me"
 								}
 							]
 						}
@@ -314,7 +319,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/users/status?email=email",
+							"raw": "{{baseUrl}}/users/status?email=",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -325,7 +330,7 @@
 							"query": [
 								{
 									"key": "email",
-									"value": "email"
+									"value": ""
 								}
 							]
 						}
@@ -335,20 +340,10 @@
 				{
 					"name": "Search Users",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/users/search?query=query&isAdmin=yes or no&isFollower=yes or no&isFollowing=yes or no&excludeMe=yes or no&start=0&end=50",
+							"raw": "{{baseUrl}}/users/search?query=&isFollower=&isFollowing=&excludeMe=&start=&end=",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -359,36 +354,31 @@
 							"query": [
 								{
 									"key": "query",
-									"value": "query",
+									"value": "",
 									"description": "Checks if the firstName, lastName, username, or email contains the query"
 								},
 								{
-									"key": "isAdmin",
-									"value": "yes or no",
-									"description": "yes or no: filter users based on if they are an admin or not"
-								},
-								{
 									"key": "isFollower",
-									"value": "yes or no",
+									"value": "",
 									"description": "yes or no: filter users based on if they are following the logged in user"
 								},
 								{
 									"key": "isFollowing",
-									"value": "yes or no",
+									"value": "",
 									"description": "yes or no: filter users based on if the logged in user is following them"
 								},
 								{
 									"key": "excludeMe",
-									"value": "yes or no",
+									"value": "",
 									"description": "yes or no: whether to include the logged in user in the search results"
 								},
 								{
 									"key": "start",
-									"value": "0"
+									"value": ""
 								},
 								{
 									"key": "end",
-									"value": "50"
+									"value": ""
 								}
 							]
 						}
@@ -398,16 +388,6 @@
 				{
 					"name": "Follow",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"url": {
@@ -433,16 +413,6 @@
 				{
 					"name": "Unfollow",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -468,16 +438,6 @@
 				{
 					"name": "Get Followers",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -503,16 +463,6 @@
 				{
 					"name": "Get Following",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -536,18 +486,33 @@
 					"response": []
 				},
 				{
-					"name": "Delete User",
+					"name": "Is Following",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/users/:userId/followStatus",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								":userId",
+								"followStatus"
+							],
+							"variable": [
 								{
-									"key": "token",
-									"value": "",
-									"type": "string"
+									"key": "userId",
+									"value": ""
 								}
 							]
-						},
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -572,16 +537,6 @@
 				{
 					"name": "Update User",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "PUT",
 						"header": [],
 						"body": {
@@ -617,12 +572,7 @@
 									"type": "text",
 									"disabled": true
 								}
-							],
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
+							]
 						},
 						"url": {
 							"raw": "{{baseUrl}}/users/me",
@@ -640,32 +590,15 @@
 				{
 					"name": "Upload Profile Photo",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
-						"header": [
-							{
-								"warning": "This is a duplicate header and will be overridden by the Content-Type header generated by Postman.",
-								"key": "Content-Type",
-								"value": "multipart/form-data",
-								"type": "text"
-							}
-						],
+						"header": [],
 						"body": {
 							"mode": "formdata",
 							"formdata": [
 								{
 									"key": "file",
 									"type": "file",
-									"src": []
+									"src": "/Users/adamzarn/Downloads/SP.png"
 								}
 							]
 						},
@@ -685,16 +618,6 @@
 				{
 					"name": "Delete Profile Photo",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "DELETE",
 						"header": [],
 						"url": {
@@ -718,16 +641,6 @@
 				{
 					"name": "Create Post",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -754,16 +667,6 @@
 				{
 					"name": "Get Posts",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -788,16 +691,6 @@
 				{
 					"name": "Get Feed",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -821,16 +714,6 @@
 				{
 					"name": "Get Settings",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -846,6 +729,36 @@
 					"response": []
 				}
 			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	]
 }
